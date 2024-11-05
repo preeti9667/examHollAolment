@@ -8,4 +8,9 @@ export class AuthService {
         private $prisma: PrismaService,
         private $logger: LoggerService
     ) { }
+
+
+    async sendOtp() {
+
+    }
 }
