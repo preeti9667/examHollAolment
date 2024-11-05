@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EnvModule } from '@app/shared/env/env.module';
@@ -8,6 +8,7 @@ import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import * as path from 'path';
 import { ClsModule } from 'nestjs-cls';
 import { PrismaModule } from './databases/prisma/prisma.module';
+import { HttpsRedirectMiddleware } from './middleware/https-redirect.middleware'; // Import the middleware
 
 @Module({
   imports: [
@@ -38,6 +39,11 @@ import { PrismaModule } from './databases/prisma/prisma.module';
   ],
   controllers: [AppController],
   providers: [AppService],
-
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(HttpsRedirectMiddleware) // Apply the middleware
+      .forRoutes('*'); // Apply to all routes
+  }
+}
