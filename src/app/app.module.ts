@@ -8,7 +8,7 @@ import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import * as path from 'path';
 import { ClsModule } from 'nestjs-cls';
 import { PrismaModule } from './databases/prisma/prisma.module';
-import { HttpsRedirectMiddleware } from './middleware/https-redirect.middleware'; // Import the middleware
+
 
 @Module({
   imports: [
