@@ -12,9 +12,10 @@ export class EnvConfig {
     @Min(100)
     PORT!: number;
 
-    @IsDefined()
-    @IsObject()
-    @ValidateNested()
+    // @IsDefined()
+    // @IsObject()
+    // @ValidateNested()
+    @IsOptional()
     @Type(() => RedisConfig)
     REDIS: RedisConfig;
 
