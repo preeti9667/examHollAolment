@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EnvModule } from '@app/shared/env/env.module';
@@ -6,7 +6,6 @@ import { LoggerModule } from '@app/shared/logger/logger.module';
 import { ApiModule } from '@app/api';
 import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import * as path from 'path';
-import { RequestMiddleware } from './middleware';
 import { ClsModule } from 'nestjs-cls';
 import { PrismaModule } from './databases/prisma/prisma.module';
 
@@ -41,6 +40,4 @@ import { PrismaModule } from './databases/prisma/prisma.module';
   providers: [AppService],
 
 })
-export class AppModule {
-
-}
+export class AppModule { }
