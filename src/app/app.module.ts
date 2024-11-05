@@ -8,6 +8,7 @@ import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import * as path from 'path';
 import { RequestMiddleware } from './middleware';
 import { ClsModule } from 'nestjs-cls';
+import { PrismaModule } from './databases/prisma/prisma.module';
 
 @Module({
   imports: [
@@ -33,7 +34,8 @@ import { ClsModule } from 'nestjs-cls';
         mount: true,
         generateId: true,
       },
-    })
+    }),
+    PrismaModule
   ],
   controllers: [AppController],
   providers: [AppService],
