@@ -37,6 +37,7 @@ export class AuthService {
             //generate otp
         }
 
+        await this.$prisma.auth_otp.deleteMany({ where: { user_id: user.id } })
         const otpRequest = await this.$prisma.auth_otp.create({
             data: {
                 phone_number,
