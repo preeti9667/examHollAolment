@@ -5,6 +5,7 @@ import { EnvConfig } from "src/config";
 @Injectable()
 export class EnvService {
     readonly PORT = this.get('PORT');
+    readonly BYPASS_OTP = this.get('BYPASS_OTP');
     // readonly ADMIN = this.get('ADMIN');
     // readonly MONGO = this.get('MONGO');
     readonly REDIS = this.get('REDIS');

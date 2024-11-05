@@ -1,9 +1,17 @@
-import { IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 
-export class SendOtp {
+export class SendOtpPayloadDto {
     @IsString()
-    phoneNumber: string;
+    phone_number: string;
 
     @IsString()
-    countryCode: string
+    @IsOptional()
+    country_code: string
 }
+
+
+export class SendOtpResultDto {
+    @IsString()
+    request_id: string;
+}
+

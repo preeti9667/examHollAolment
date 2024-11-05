@@ -26,6 +26,17 @@ model user {
   address          user_address[]
 }
 
+model auth_otp {
+  id           String   @id @default(uuid())
+  otp          String
+  user_id      String?
+  phone_number String?
+  country_code String?
+  email        String?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+}
+
 model user_address {
   id           String   @id @default(uuid())
   house_no     String?

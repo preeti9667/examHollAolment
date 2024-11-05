@@ -1,4 +1,4 @@
-import { IsDefined, IsNumber, IsObject, IsString, Min, ValidateNested } from "class-validator";
+import { IsDefined, IsNumber, IsObject, IsOptional, IsString, Min, ValidateNested } from "class-validator";
 import { RedisConfig } from "./redis.config";
 import { Type } from "class-transformer";
 
@@ -16,5 +16,9 @@ export class EnvConfig {
     @IsObject()
     @ValidateNested()
     @Type(() => RedisConfig)
-    REDIS: RedisConfig
+    REDIS: RedisConfig;
+
+
+    @IsOptional()
+    BYPASS_OTP: string;
 }
