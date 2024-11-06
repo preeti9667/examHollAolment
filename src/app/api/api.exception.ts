@@ -17,6 +17,10 @@ export class ApiException extends HttpException {
     static badData(...errors: string[]): never {
         throw new ApiException(null, HttpStatus.UNPROCESSABLE_ENTITY, ...errors);
     }
+    static gone(...errors: string[]): never {
+        throw new ApiException(null, HttpStatus.GONE, ...errors);
+    }
+
     static badDataWith(data: object, ...errors: string[]): never {
         throw new ApiException(data, HttpStatus.UNPROCESSABLE_ENTITY, ...errors);
     }

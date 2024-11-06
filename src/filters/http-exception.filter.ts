@@ -47,12 +47,12 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
             if (exception instanceof HttpException) {
                 const status = exception.getStatus();
                 res.status(status).json({
-                    statusCode: status,
+                    status,
                     message: exception.message,
                 });
             } else {
                 res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-                    statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                    status: HttpStatus.INTERNAL_SERVER_ERROR,
                     message: 'Internal server error',
                 });
             }
