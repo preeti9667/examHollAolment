@@ -1,17 +1,17 @@
 import { Module } from "@nestjs/common";
-import { UserAdminService, UserService } from "./services";
-import { UserAdminController, UserController } from "./controllers";
 import { LoggerModule } from "@app/shared/logger";
+import { UserController } from "./user.controller";
+import { UserService } from "./user.service";
 
 @Module({
-    controllers: [UserAdminController, UserController],
+    controllers: [UserController],
     imports: [
         LoggerModule.register({
             context: UserModule.name
         })
     ],
     exports: [],
-    providers: [UserService, UserAdminService]
+    providers: [UserService]
 })
 
 export class UserModule { };

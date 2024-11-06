@@ -1,9 +1,8 @@
 import { PrismaService } from "@app/databases/prisma/prisma.service";
 import { LoggerService } from "@app/shared/logger";
 import { Injectable } from "@nestjs/common";
-import { SendOtpPayloadDto } from "../dto/send-otp.dto";
-import { ApiException } from "@app/api/api.exception";
 import { EnvService } from "@app/shared/env";
+import { SendOtpPayloadDto } from "./dto/send-otp.dto";
 
 @Injectable()
 export class AuthService {

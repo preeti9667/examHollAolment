@@ -1,7 +1,7 @@
 import { Body, Controller, Param, Post } from "@nestjs/common";
-import { AuthService } from "../services";
-import { SendOtpPayloadDto } from "../dto/send-otp.dto";
 import { ApiTags } from "@nestjs/swagger";
+import { AuthService } from "./auth.service";
+import { SendOtpPayloadDto } from "./dto/send-otp.dto";
 
 @Controller({
     path: 'auth',
