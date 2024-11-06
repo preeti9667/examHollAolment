@@ -1,7 +1,8 @@
 import { Body, Controller, Param, Post } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
-import { SendOtpPayloadDto } from "./dto/send-otp.dto";
+import { SendOtpPayloadDto, SendOtpResponseDto } from "./dto/send-otp.dto";
+import { Message } from "@app/decorators";
 
 @Controller({
     path: 'auth',
@@ -16,6 +17,11 @@ export class AuthController {
 
 
     @Post('/send-otp')
+    // @UseGuards(AccessGuard)
+    // @ApiBearerAuth('AccessToken')
+    @Message('AUTH.OTP_SENT')
+    @ApiOkResponse({ type: SendOtpResponseDto })
+    @ApiOperation({ summary: 'Send Otp for login' })
     async sendOtp(@Body() payload: SendOtpPayloadDto) {
         return this.$auth.sendOtp(payload)
     }

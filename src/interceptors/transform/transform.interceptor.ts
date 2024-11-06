@@ -43,7 +43,7 @@ export class TransformInterceptor implements NestInterceptor<any> {
                         message = msg;
                     }
                 }
-                return { statusCode, message, result };
+                return { status: statusCode, message, result };
             }),
         );
     }

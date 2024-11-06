@@ -1,5 +1,7 @@
+import { ResponseDto } from "@app/api/response.dto";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsOptional, IsString } from "class-validator";
+import { AccountType } from "@prisma/client";
+import { IsObject, IsOptional, IsString } from "class-validator";
 
 export class SendOtpPayloadDto {
     @ApiProperty({
@@ -23,8 +25,24 @@ export class SendOtpPayloadDto {
 export class SendOtpResultDto {
     @ApiProperty({
         type: String,
+        example: '2e9e93bd-ff1f-4c89-bd12-f09bb8b7f3d3'
     })
     @IsString()
     request_id: string;
+
+    @ApiProperty({
+        type: String,
+        enum: AccountType
+    })
+    @IsString()
+    type: AccountType;
+}
+
+export class SendOtpResponseDto extends ResponseDto {
+    @ApiProperty({
+        type: SendOtpResultDto
+    })
+    @IsObject()
+    result: SendOtpResultDto;
 }
 

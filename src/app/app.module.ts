@@ -8,6 +8,8 @@ import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import * as path from 'path';
 import { ClsModule } from 'nestjs-cls';
 import { PrismaModule } from './databases/prisma/prisma.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { TransformInterceptor } from '@interceptors/transform/transform.interceptor';
 
 @Module({
   imports: [
@@ -37,7 +39,12 @@ import { PrismaModule } from './databases/prisma/prisma.module';
     PrismaModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformInterceptor,
+    }
+  ],
 
 })
 export class AppModule { }
