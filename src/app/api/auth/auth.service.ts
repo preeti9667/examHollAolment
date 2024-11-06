@@ -15,15 +15,15 @@ export class AuthService {
 
     async sendOtp(payload: SendOtpPayloadDto) {
         const { country_code = '+91', phone_number } = payload;
-        let user = await this.$prisma.user.findFirst({
+        let authUser = await this.$prisma.auth.findFirst({
             where: {
                 phone_number,
                 country_code
             }
         });
 
-        if (!user) {
-            user = await this.$prisma.user.create({
+        if (!authUser) {
+            authUser = await this.$prisma.auth.create({
                 data: {
                     phone_number,
                     country_code
@@ -36,18 +36,19 @@ export class AuthService {
             //generate otp
         }
 
-        await this.$prisma.auth_otp.deleteMany({ where: { user_id: user.id } })
+        await this.$prisma.auth_otp.deleteMany({ where: { user_id: authUser.id } })
         const otpRequest = await this.$prisma.auth_otp.create({
             data: {
                 phone_number,
                 country_code,
                 otp,
-                user_id: user.id
+                user_id: authUser.id
             }
         });
 
         return {
-            request_id: otpRequest.id
+            request_id: otpRequest.id,
+            type: authUser.type
         }
     }
 }

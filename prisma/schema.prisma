@@ -24,6 +24,8 @@ model user {
   created_at       DateTime       @default(now())
   updated_at       DateTime       @updatedAt
   address          user_address[]
+  isActive         Boolean        @default(true)
+  isDeleted        Boolean        @default(false)
 }
 
 model auth_otp {
@@ -35,6 +37,21 @@ model auth_otp {
   email        String?
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
+}
+
+model auth {
+  id           String      @id @default(uuid())
+  phone_number String?
+  country_code String?
+  email        String?
+  isActive     Boolean     @default(true)
+  isDeleted    Boolean     @default(false)
+  type         AccountType @default(CUSTOMER)
+  created_at   DateTime    @default(now())
+  updated_at   DateTime    @updatedAt
+
+  @@index([country_code, phone_number])
+  @@index([email])
 }
 
 model user_address {
@@ -50,4 +67,9 @@ model user_address {
   is_default   Boolean  @default(false)
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
+}
+
+enum AccountType {
+  ADMIN
+  CUSTOMER
 }
