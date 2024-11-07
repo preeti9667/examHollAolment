@@ -93,19 +93,19 @@ enum AccountType {
 }
 
 model hall {
-  id            String    @id @default(uuid())
-  display_id    String    @unique()
+  id            String         @id @default(uuid())
+  display_id    String         @unique()
   name          String
   group_name    String
   capacity      Int
   slots         String[]
-  add_on        add_on    @relation(fields: [add_ons], references: [id])
-  add_ons       String[]
-  isActive      Boolean   @default(true)
-  booking_count Int       @default(0)
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
-  booking       booking[]
+  add_ons       add_on[]       @relation("hall_add_ons")
+  add_on_ids    String[]
+  isActive      Boolean        @default(true)
+  booking_count Int            @default(0)
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+  booking_hall  booking_hall[]
 }
 
 model add_on {
@@ -116,8 +116,8 @@ model add_on {
   price          Int
   created_at     DateTime         @default(now())
   updated_at     DateTime         @updatedAt
-  hall           hall[]
   booking_add_on booking_add_on[]
+  hall           hall[]           @relation("hall_add_ons")
 }
 
 enum AddOnType {
@@ -127,26 +127,25 @@ enum AddOnType {
 }
 
 model time_slot {
-  id         String    @id @default(uuid())
+  id         String   @id @default(uuid())
   from       Int
   to         Int
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
-  exam       exam[]
-  booking    booking[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  exam       exam[]   @relation("exam_time_slots")
 }
 
 model exam {
-  id               String    @id @default(uuid())
+  id               String      @id @default(uuid())
   display_id       String
   name             String
   start_date       DateTime
   end_date         DateTime
-  time_slot        time_slot @relation(fields: [time_slots], references: [id])
-  time_slots       String[]
+  time_slots       time_slot[] @relation("exam_time_slots")
+  time_slot_ids    String[]
   no_of_condidates Int
-  created_at       DateTime  @default(now())
-  updated_at       DateTime  @updatedAt
+  created_at       DateTime    @default(now())
+  updated_at       DateTime    @updatedAt
   booking          booking[]
 }
 
@@ -155,26 +154,39 @@ model booking {
   display_id     String           @unique()
   user           user?            @relation(fields: [user_id], references: [id])
   user_id        String
-  hall           hall?            @relation(fields: [hall_id], references: [id])
-  hall_id        String[]
   halls          Json
+  hall_ids       String[]
   exam           exam             @relation(fields: [exam_id], references: [id])
   exam_id        String
-  time_slot      time_slot        @relation(fields: [time_slots], references: [id])
-  time_slots     String[]
   total_cost     Float
   from           DateTime
   to             DateTime
+  time_slots     Json
+  time_slots_ids String[]
   payment_method PaymentMethod
   status         BookingStatus    @default(DRAFT)
   created_at     DateTime         @default(now())
   updated_at     DateTime         @updatedAt
   booking_add_on booking_add_on[]
+  booking_hall   booking_hall[]
 
-  @@index([user_id, exam_id, hall_id])
+  @@index([user_id, exam_id])
   @@index([user_id])
   @@index([exam_id])
-  @@index([hall_id])
+}
+
+model booking_hall {
+  id          String   @id @default(uuid())
+  booking     booking  @relation(fields: [booking_id], references: [id])
+  booking_id  String
+  hall        hall     @relation(fields: [hall_id], references: [id])
+  hall_id     String
+  quantity    Int
+  total_price Float
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@index([booking_id])
 }
 
 model booking_add_on {
