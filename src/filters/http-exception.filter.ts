@@ -16,12 +16,14 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
     i18n!: I18nService;
     logger!: LoggerService;
     catch(exception: HttpException, host: ArgumentsHost) {
+        let message = '';
         if (exception instanceof ApiException) {
             const resp = exception.getResponse();
             const { i18nLang } = host.switchToHttp().getRequest();
             resp.message = this.i18n.translate(resp.message, {
                 lang: i18nLang,
             });
+            message = resp.message;
             if (exception.data) {
                 Object.entries(exception.data).forEach(([key, value]) => {
                     resp.message = resp.message?.replace(`{{${key}}}`, value);
@@ -48,7 +50,7 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
                 const status = exception.getStatus();
                 res.status(status).json({
                     status,
-                    message: exception.message,
+                    message: message || exception.message,
                 });
             } else {
                 res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
