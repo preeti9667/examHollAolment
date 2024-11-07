@@ -1,4 +1,4 @@
-const TIME_SLOTS = [
+export const TIME_SLOTS = [
     {
         from: 9,
         to: 12
