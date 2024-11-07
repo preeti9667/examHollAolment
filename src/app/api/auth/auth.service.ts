@@ -3,7 +3,7 @@ import { LoggerService } from "@app/shared/logger";
 import { Injectable } from "@nestjs/common";
 import { EnvService } from "@app/shared/env";
 import { SendOtpPayloadDto } from "./dto/send-otp.dto";
-import { VerifyOtpPayloadDto } from "./dto/verify-otp.dto";
+import { VerifyOtpLoginPayloadDto } from "./dto/verify-otp-login.dto";
 import { ApiException } from "../api.exception";
 import * as moment from 'moment';
 import { JwtService } from "@nestjs/jwt";
@@ -58,21 +58,17 @@ export class AuthService {
     }
 
 
-    async verifyOtpLogin(payload: VerifyOtpPayloadDto) {
+    async verifyOtpLogin(payload: VerifyOtpLoginPayloadDto) {
         const { request_id, otp } = payload;
-
         const authOtp = await this.$prisma.auth_otp.findFirst({
             where: { id: request_id }
         });
-
         if (!authOtp) {
             ApiException.badData('AUTH.INVALID_REQUEST_ID')
         }
-
         if (authOtp.otp !== otp) {
             ApiException.badData('AUTH.INVALID_OTP')
         }
-
         const timeDifference = moment().diff(moment(authOtp.created_at), 'minutes');
         if (timeDifference > 10) {
             ApiException.gone('AUTH.OTP_EXPIRED');
@@ -81,7 +77,6 @@ export class AuthService {
             this.$prisma.auth.findFirst({ where: { id: authOtp.user_id } }),
             this.$prisma.login_history.updateMany({ where: { user_id: authOtp.user_id }, data: { isActive: false } })
         ])
-
         const [loginHistory, user] = await Promise.all([
             this.$prisma.login_history.create({
                 data: {
@@ -101,15 +96,24 @@ export class AuthService {
             }),
             this.$prisma.auth_otp.delete({ where: { id: request_id } })
         ]);
-
         const jwtPayload = {
             tid: loginHistory.id,
             type: authUser.type
         }
+        const accessToken = await this.$jwt.signAsync(jwtPayload, {
+            secret: this.$env.SECRETS.AUTH_TOKEN,
+            privateKey: this.$env.SECRETS.PRIVATE_KEY,
+            expiresIn: '1d'
+        });
 
-        // const accessToken = await this.$jwt.signAsync(payload, {
-        //     secret: 
-        // })
+        return {
+            accessToken,
+            type: authUser.type,
+            user: {
+                id: user.id,
+                name: user.name
+            }
+        }
 
     }
 }
