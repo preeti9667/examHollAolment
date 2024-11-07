@@ -35,4 +35,10 @@ export class TimeSlotService {
             this.$logger.error(error.message, error.stack);
         }
     }
+
+
+    async slotList() {
+        const slots = await this.$prisma.time_slot.findMany({});
+        return { slots }
+    }
 }
