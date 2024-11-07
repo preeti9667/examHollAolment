@@ -77,11 +77,18 @@ export class AuthService {
         if (timeDifference > 10) {
             ApiException.gone('AUTH.OTP_EXPIRED');
         }
-        const authUser = await this.$prisma.auth.findFirst({ where: { id: authOtp.user_id } })
+        const [authUser] = await Promise.all([
+            this.$prisma.auth.findFirst({ where: { id: authOtp.user_id } }),
+            this.$prisma.login_history.updateMany({ where: { user_id: authOtp.user_id }, data: { isActive: false } })
+        ])
 
-
-        await Promise.all([
-            this.$prisma.auth_otp.delete({ where: { id: request_id } }),
+        const [loginHistory, user] = await Promise.all([
+            this.$prisma.login_history.create({
+                data: {
+                    user_id: authUser.id,
+                    isActive: true
+                }
+            }),
             this.$prisma.user.create({
                 data: {
                     id: authUser.id,
@@ -91,8 +98,18 @@ export class AuthService {
                     isActive: authUser.isActive,
                     isDeleted: authUser.isDeleted
                 }
-            })
+            }),
+            this.$prisma.auth_otp.delete({ where: { id: request_id } })
         ]);
+
+        const jwtPayload = {
+            tid: loginHistory.id,
+            type: authUser.type
+        }
+
+        // const accessToken = await this.$jwt.signAsync(payload, {
+        //     secret: 
+        // })
 
     }
 }

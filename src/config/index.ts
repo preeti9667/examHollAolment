@@ -1,6 +1,7 @@
 import { IsDefined, IsNumber, IsObject, IsOptional, IsString, Min, ValidateNested } from "class-validator";
 import { RedisConfig } from "./redis.config";
 import { Type } from "class-transformer";
+import { SecretConfig } from "./secret.config";
 
 export class EnvConfig {
     @IsDefined()
@@ -18,6 +19,13 @@ export class EnvConfig {
     @IsOptional()
     @Type(() => RedisConfig)
     REDIS: RedisConfig;
+
+    @IsDefined()
+    @IsObject()
+    @ValidateNested()
+    @IsOptional()
+    @Type(() => SecretConfig)
+    SECRETS: SecretConfig;
 
 
     @IsOptional()

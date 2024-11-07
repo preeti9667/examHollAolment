@@ -11,7 +11,7 @@ export class EnvService {
     readonly REDIS = this.get('REDIS');
     // readonly KAFKA = this.get('KAFKA');
     // readonly GRPC = this.get('GRPC');
-    // readonly SECRETS = this.get('SECRETS');
+    readonly SECRETS = this.get('SECRETS');
     // readonly AEROSPIKE = this.get('AEROSPIKE');
     // readonly NODE_ENV = this.get('NODE_ENV');
     // readonly S3 = this.get('S3');
