@@ -84,8 +84,16 @@ export class AuthService {
                     isActive: true
                 }
             }),
-            this.$prisma.user.create({
-                data: {
+            this.$prisma.user.upsert({
+                where: { id: authUser.id },
+                update: {
+                    email: authUser.email,
+                    phone_number: authUser.phone_number,
+                    country_code: authUser.country_code,
+                    isActive: authUser.isActive,
+                    isDeleted: authUser.isDeleted
+                },
+                create: {
                     id: authUser.id,
                     email: authUser.email,
                     phone_number: authUser.phone_number,
@@ -96,6 +104,7 @@ export class AuthService {
             }),
             this.$prisma.auth_otp.delete({ where: { id: request_id } })
         ]);
+
         const jwtPayload = {
             tid: loginHistory.id,
             type: authUser.type
@@ -105,7 +114,7 @@ export class AuthService {
             privateKey: this.$env.SECRETS.PRIVATE_KEY,
             expiresIn: '1d'
         });
-
+        this.$logger.log("Token created, user logged on ")
         return {
             accessToken,
             type: authUser.type,
