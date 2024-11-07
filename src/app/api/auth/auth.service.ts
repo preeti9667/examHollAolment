@@ -6,13 +6,15 @@ import { SendOtpPayloadDto } from "./dto/send-otp.dto";
 import { VerifyOtpPayloadDto } from "./dto/verify-otp.dto";
 import { ApiException } from "../api.exception";
 import * as moment from 'moment';
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class AuthService {
     constructor(
         private $prisma: PrismaService,
         private $logger: LoggerService,
-        private $env: EnvService
+        private $env: EnvService,
+        private $jwt: JwtService
     ) { }
 
 
@@ -75,8 +77,22 @@ export class AuthService {
         if (timeDifference > 10) {
             ApiException.gone('AUTH.OTP_EXPIRED');
         }
+        const authUser = await this.$prisma.auth.findFirst({ where: { id: authOtp.user_id } })
 
 
+        await Promise.all([
+            this.$prisma.auth_otp.delete({ where: { id: request_id } }),
+            this.$prisma.user.create({
+                data: {
+                    id: authUser.id,
+                    email: authUser.email,
+                    phone_number: authUser.phone_number,
+                    country_code: authUser.country_code,
+                    isActive: authUser.isActive,
+                    isDeleted: authUser.isDeleted
+                }
+            })
+        ]);
 
     }
 }

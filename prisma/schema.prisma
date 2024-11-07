@@ -40,18 +40,28 @@ model auth_otp {
 }
 
 model auth {
-  id           String      @id @default(uuid())
-  phone_number String?
-  country_code String?
-  email        String?
-  isActive     Boolean     @default(true)
-  isDeleted    Boolean     @default(false)
-  type         AccountType @default(CUSTOMER)
-  created_at   DateTime    @default(now())
-  updated_at   DateTime    @updatedAt
+  id            String          @id @default(uuid())
+  phone_number  String?
+  country_code  String?
+  email         String?
+  isActive      Boolean         @default(true)
+  isDeleted     Boolean         @default(false)
+  type          AccountType     @default(CUSTOMER)
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @updatedAt
+  login_history login_history[]
 
   @@index([country_code, phone_number])
   @@index([email])
+}
+
+model login_history {
+  id         String   @id @default(uuid())
+  isActive   Boolean  @default(true)
+  auth_user  auth?    @relation(fields: [user_id], references: [id])
+  user_id    String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model user_address {
