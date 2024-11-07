@@ -10,12 +10,12 @@ export class RedisService {
         private $logger: LoggerService
 
     ) {
-        this.connect();
+        // this.connect();
     }
     private connect() {
-        const host = this.$env.REDIS.HOST;
-        const port = this.$env.REDIS.PORT;
-        const password = this.$env.REDIS.PASSWORD;
+        const host = this.$env.REDIS_HOST;
+        const port = this.$env.REDIS_PORT;
+        const password = this.$env.REDIS_PASSWORD;
         this.redis = new Redis({
             host,
             port,

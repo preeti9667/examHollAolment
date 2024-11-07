@@ -29,7 +29,6 @@ import { error } from "console";
                     }
                 });
 
-                console.log("envs", JSON.stringify(envs, undefined, 2))
                 const validatedConfig = plainToInstance(EnvConfig, envs, { enableImplicitConversion: true });
                 const errors = validateSync(validatedConfig, {
                     skipMissingProperties: false,

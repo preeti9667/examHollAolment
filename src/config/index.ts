@@ -1,7 +1,8 @@
 import { IsDefined, IsNumber, IsObject, IsOptional, IsString, Min, ValidateNested } from "class-validator";
 import { RedisConfig } from "./redis.config";
-import { Type } from "class-transformer";
-import { SecretConfig } from "./secret.config";
+import { Expose, Transform, Type } from "class-transformer";
+import { resolve } from "path";
+import { readFileSync } from "fs";
 
 export class EnvConfig {
     @IsDefined()
@@ -13,20 +14,52 @@ export class EnvConfig {
     @Min(100)
     PORT!: number;
 
-    // @IsDefined()
-    // @IsObject()
-    // @ValidateNested()
+    @IsDefined()
+    @IsString()
     @IsOptional()
-    @Type(() => RedisConfig)
-    REDIS: RedisConfig;
+    readonly REDIS_HOST: string;
 
     @IsDefined()
-    @IsObject()
-    @ValidateNested()
+    @IsNumber()
     @IsOptional()
-    @Type(() => SecretConfig)
-    SECRETS: SecretConfig;
+    readonly REDIS_PORT: number;
 
+    @IsDefined()
+    @IsNumber()
+    @IsOptional()
+    readonly REDIS_DB: number;
+
+    @IsDefined()
+    @IsString()
+    @IsOptional()
+    readonly REDIS_PASSWORD: string;
+
+
+    @IsDefined()
+    @IsString()
+    SECRETS_PASSWORD_TOKEN: string;
+
+    @IsDefined()
+    @IsString()
+    SECRETS_REFRESH_TOKEN: string;
+
+    @IsDefined()
+    @IsString()
+    SECRETS_AUTH_TOKEN: string;
+    // @IsDefined()
+    // @IsString()
+    // MFA_TOKEN: string;
+    @Expose()
+    @Transform(() =>
+        readFileSync(resolve(__dirname, '../../secrets/jwt-private.pem'), 'utf8'),
+    )
+    SECRETS_PRIVATE_KEY: string;
+
+    @Expose()
+    @Transform(() =>
+        readFileSync(resolve(__dirname, '../../secrets/jwt-public.pem'), 'utf8'),
+    )
+    SECRETS_PUBLIC_KEY: string;
 
     @IsOptional()
     BYPASS_OTP: string;

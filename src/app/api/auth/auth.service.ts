@@ -110,8 +110,8 @@ export class AuthService {
             type: authUser.type
         }
         const accessToken = await this.$jwt.signAsync(jwtPayload, {
-            secret: this.$env.SECRETS.AUTH_TOKEN,
-            privateKey: this.$env.SECRETS.PRIVATE_KEY,
+            secret: this.$env.SECRETS_AUTH_TOKEN,
+            privateKey: this.$env.SECRETS_PRIVATE_KEY,
             expiresIn: '1d'
         });
         this.$logger.log("Token created, user logged on ")
