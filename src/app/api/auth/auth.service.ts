@@ -76,13 +76,18 @@ export class AuthService {
         }
         const [authUser] = await Promise.all([
             this.$prisma.auth.findFirst({ where: { id: authOtp.user_id } }),
-            this.$prisma.login_history.updateMany({ where: { user_id: authOtp.user_id }, data: { isActive: false } })
+            this.$prisma.login_history.updateMany(
+                {
+                    where: { user_id: authOtp.user_id },
+                    data: { is_active: false }
+                }
+            )
         ])
         const [loginHistory, user] = await Promise.all([
             this.$prisma.login_history.create({
                 data: {
                     user_id: authUser.id,
-                    isActive: true
+                    is_active: true
                 }
             }),
             this.$prisma.user.upsert({
@@ -91,16 +96,16 @@ export class AuthService {
                     email: authUser.email,
                     phone_number: authUser.phone_number,
                     country_code: authUser.country_code,
-                    isActive: authUser.isActive,
-                    isDeleted: authUser.isDeleted
+                    is_active: authUser.is_active,
+                    is_deleted: authUser.is_deleted
                 },
                 create: {
                     id: authUser.id,
                     email: authUser.email,
                     phone_number: authUser.phone_number,
                     country_code: authUser.country_code,
-                    isActive: authUser.isActive,
-                    isDeleted: authUser.isDeleted
+                    is_active: authUser.is_active,
+                    is_deleted: authUser.is_deleted
                 }
             }),
             this.$prisma.auth_otp.delete({ where: { id: request_id } })
@@ -130,21 +135,21 @@ export class AuthService {
         const user = await this.$prisma.login_history.findFirst({
             where: {
                 id: tid,
-                isActive: true
+                is_active: true
             },
             select: {
                 auth_user: {
                     where: {
-                        isDeleted: false
+                        is_deleted: false
                     }
                 }
             }
         })
 
         if (!user) ApiException.unAuthorized();
-        const { id, isActive, phone_number, country_code, email, type } = user.auth_user;
+        const { id, is_active, phone_number, country_code, email, type } = user.auth_user;
         if (decoded.type !== type) ApiException.unAuthorized();
-        if (!isActive) ApiException.unAuthorized("AUTH.ACCOUNT_DEACTIVATED");
+        if (!is_active) ApiException.unAuthorized("AUTH.ACCOUNT_DEACTIVATED");
 
         return {
             id,
