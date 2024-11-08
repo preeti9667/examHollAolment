@@ -24,8 +24,8 @@ model user {
   created_at       DateTime       @default(now())
   updated_at       DateTime       @updatedAt
   address          user_address[]
-  isActive         Boolean        @default(true)
-  isDeleted        Boolean        @default(false)
+  is_active        Boolean        @default(true)
+  is_deleted       Boolean        @default(false)
   booking          booking[]
 
   @@index([email])
@@ -48,8 +48,8 @@ model auth {
   phone_number  String?
   country_code  String?
   email         String?
-  isActive      Boolean         @default(true)
-  isDeleted     Boolean         @default(false)
+  is_active     Boolean         @default(true)
+  is_deleted    Boolean         @default(false)
   type          AccountType     @default(CUSTOMER)
   created_at    DateTime        @default(now())
   updated_at    DateTime        @updatedAt
@@ -61,7 +61,7 @@ model auth {
 
 model login_history {
   id         String   @id @default(uuid())
-  isActive   Boolean  @default(true)
+  is_active  Boolean  @default(true)
   auth_user  auth?    @relation(fields: [user_id], references: [id])
   user_id    String
   created_at DateTime @default(now())
@@ -101,7 +101,8 @@ model hall {
   slots         String[]
   add_ons       add_on[]       @relation("hall_add_ons")
   add_on_ids    String[]
-  isActive      Boolean        @default(true)
+  is_active     Boolean        @default(true)
+  is_deleted    Boolean        @default(false)
   booking_count Int            @default(0)
   created_at    DateTime       @default(now())
   updated_at    DateTime       @updatedAt
@@ -216,9 +217,9 @@ model role {
   id          String   @id @default(uuid())
   display_id  String   @unique()
   name        String   @unique() @default("SUPER_ADMIN")
-  isSuper     Boolean  @default(false)
+  is_super    Boolean  @default(false)
   permissions Json
-  isActive    Boolean  @default(true)
+  is_active   Boolean  @default(true)
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
   admin       admin[]
