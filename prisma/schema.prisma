@@ -14,77 +14,77 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model user {
-  id               String         @id @default(uuid())
-  name             String?
-  email            String?
-  phone_number     String?
-  country_code     String?
-  institution_type String?
-  created_at       DateTime       @default(now())
-  updated_at       DateTime       @updatedAt
-  address          user_address[]
-  is_active        Boolean        @default(true)
-  is_deleted       Boolean        @default(false)
-  booking          booking[]
+model User {
+  id              String        @id @default(uuid())
+  name            String?
+  email           String?
+  phoneNumber     String?
+  countryCode     String?
+  institutionType String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  address         UserAddress[]
+  isActive        Boolean       @default(true)
+  isDeleted       Boolean       @default(false)
+  booking         Booking[]
 
   @@index([email])
-  @@index([country_code, phone_number])
+  @@index([countryCode, phoneNumber])
 }
 
-model auth_otp {
-  id           String   @id @default(uuid())
-  otp          String
-  user_id      String?
-  phone_number String?
-  country_code String?
+model AuthOtp {
+  id          String   @id @default(uuid())
+  otp         String
+  userId      String?
+  phoneNumber String?
+  countryCode String?
+  email       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Auth {
+  id           String         @id @default(uuid())
+  phoneNumber  String?
+  countryCode  String?
   email        String?
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
-}
+  isActive     Boolean        @default(true)
+  isDeleted    Boolean        @default(false)
+  type         AccountType    @default(CUSTOMER)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  loginHistory LoginHistory[]
 
-model auth {
-  id            String          @id @default(uuid())
-  phone_number  String?
-  country_code  String?
-  email         String?
-  is_active     Boolean         @default(true)
-  is_deleted    Boolean         @default(false)
-  type          AccountType     @default(CUSTOMER)
-  created_at    DateTime        @default(now())
-  updated_at    DateTime        @updatedAt
-  login_history login_history[]
-
-  @@index([country_code, phone_number])
+  @@index([countryCode, phoneNumber])
   @@index([email])
 }
 
-model login_history {
-  id         String   @id @default(uuid())
-  is_active  Boolean  @default(true)
-  auth_user  auth?    @relation(fields: [user_id], references: [id])
-  user_id    String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+model LoginHistory {
+  id        String   @id @default(uuid())
+  isActive  Boolean  @default(true)
+  authUser  Auth?    @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@index([user_id])
+  @@index([userId])
 }
 
-model user_address {
-  id           String   @id @default(uuid())
-  house_no     String?
-  street       String?
-  address_line String?
-  pincode      String
-  city         String
-  state        String
-  user         user?    @relation(fields: [user_id], references: [id])
-  user_id      String
-  is_default   Boolean  @default(false)
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
+model UserAddress {
+  id          String   @id @default(uuid())
+  houseNo     String?
+  street      String?
+  addressLine String?
+  pincode     String
+  city        String
+  state       String
+  user        User?    @relation(fields: [userId], references: [id])
+  userId      String
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  @@index([user_id])
+  @@index([userId])
 }
 
 enum AccountType {
@@ -92,113 +92,113 @@ enum AccountType {
   CUSTOMER
 }
 
-model hall {
-  id            String         @id @default(uuid())
-  display_id    String         @unique()
-  name          String
-  group_name    String
-  capacity      Int
-  slots         String[]
-  add_ons       add_on[]       @relation("hall_add_ons")
-  add_on_ids    String[]
-  is_active     Boolean        @default(true)
-  is_deleted    Boolean        @default(false)
-  booking_count Int            @default(0)
-  created_at    DateTime       @default(now())
-  updated_at    DateTime       @updatedAt
-  booking_hall  booking_hall[]
+model Hall {
+  id           String        @id @default(uuid())
+  displayId    String        @unique()
+  name         String
+  groupName    String
+  capacity     Int
+  slots        String[]
+  addOns       AddOn[]       @relation("HallAddOns")
+  addOnIds     String[]
+  isActive     Boolean       @default(true)
+  isDeleted    Boolean       @default(false)
+  bookingCount Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  bookingHall  BookingHall[]
 }
 
-model add_on {
-  id             String           @id @default(uuid())
-  display_id     String
-  name           String
-  type           AddOnType        @default(SECURITY)
-  price          Int
-  created_at     DateTime         @default(now())
-  updated_at     DateTime         @updatedAt
-  booking_add_on booking_add_on[]
-  hall           hall[]           @relation("hall_add_ons")
+model AddOn {
+  id           String         @id @default(uuid())
+  displayId    String
+  name         String
+  type         AddOnType      @default(SECURITY)
+  price        Int
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  bookingAddOn BookingAddOn[]
+  hall         Hall[]         @relation("HallAddOns")
 }
 
 enum AddOnType {
   SURVEILLANCE
   SECURITY
-  FACE_RECOGINATION
+  FACE_RECOGNITION
 }
 
-model time_slot {
-  id         String   @id @default(uuid())
-  from       Float
-  to         Float
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+model TimeSlot {
+  id        String   @id @default(uuid())
+  from      Float
+  to        Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([from, to])
 }
 
-model exam {
-  id               String   @id @default(uuid())
-  display_id       String
-  name             String
-  start_date       DateTime
-  end_date         DateTime
-  time_slot_ids    String[]
-  no_of_condidates Int
-  created_at       DateTime @default(now())
-  updated_at       DateTime @updatedAt
+model Exam {
+  id             String   @id @default(uuid())
+  displayId      String
+  name           String
+  startDate      DateTime
+  endDate        DateTime
+  timeSlotIds    String[]
+  noOfCandidates Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
-model booking {
-  id             String           @id @default(uuid())
-  display_id     String           @unique()
-  user           user?            @relation(fields: [user_id], references: [id])
-  user_id        String
-  halls          Json?
-  hall_ids       String[]
-  exam_name      String
-  total_cost     Float
-  from           DateTime
-  to             DateTime
-  time_slots     Json?
-  time_slots_ids String[]
-  address        Json?
-  payment_method PaymentMethod
-  status         BookingStatus    @default(DRAFT)
-  created_at     DateTime         @default(now())
-  updated_at     DateTime         @updatedAt
-  booking_add_on booking_add_on[]
-  booking_hall   booking_hall[]
+model Booking {
+  id            String         @id @default(uuid())
+  displayId     String         @unique()
+  user          User?          @relation(fields: [userId], references: [id])
+  userId        String
+  halls         Json?
+  hallIds       String[]
+  examName      String
+  totalCost     Float
+  from          DateTime
+  to            DateTime
+  timeSlots     Json?
+  timeSlotIds   String[]
+  address       Json?
+  paymentMethod PaymentMethod
+  status        BookingStatus  @default(DRAFT)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  bookingAddOn  BookingAddOn[]
+  bookingHall   BookingHall[]
 
-  @@index([user_id])
+  @@index([userId])
 }
 
-model booking_hall {
-  id          String   @id @default(uuid())
-  booking     booking  @relation(fields: [booking_id], references: [id])
-  booking_id  String
-  hall        hall     @relation(fields: [hall_id], references: [id])
-  hall_id     String
-  quantity    Int
-  total_price Float
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+model BookingHall {
+  id         String   @id @default(uuid())
+  booking    Booking  @relation(fields: [bookingId], references: [id])
+  bookingId  String
+  hall       Hall     @relation(fields: [hallId], references: [id])
+  hallId     String
+  quantity   Int
+  totalPrice Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  @@index([booking_id])
+  @@index([bookingId])
 }
 
-model booking_add_on {
-  id          String   @id @default(uuid())
-  booking     booking  @relation(fields: [booking_id], references: [id])
-  booking_id  String
-  add_on      add_on   @relation(fields: [add_on_id], references: [id])
-  add_on_id   String
-  quantity    Int
-  total_price Float
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+model BookingAddOn {
+  id         String   @id @default(uuid())
+  booking    Booking  @relation(fields: [bookingId], references: [id])
+  bookingId  String
+  addOn      AddOn    @relation(fields: [addOnId], references: [id])
+  addOnId    String
+  quantity   Int
+  totalPrice Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  @@index([booking_id])
+  @@index([bookingId])
 }
 
 enum BookingStatus {
@@ -215,30 +215,30 @@ enum PaymentMethod {
   CARD
 }
 
-model role {
+model Role {
   id          String   @id @default(uuid())
-  display_id  String   @unique()
+  displayId   String   @unique()
   name        String   @unique() @default("SUPER_ADMIN")
-  is_super    Boolean  @default(false)
+  isSuper     Boolean  @default(false)
   permissions Json
-  is_active   Boolean  @default(true)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-  admin       admin[]
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  admin       Admin[]
 }
 
-model admin {
-  id           String   @id @default(uuid())
-  display_id   String   @unique()
-  name         String
-  role         role     @relation(fields: [role_id], references: [id])
-  role_id      String
-  email        String?
-  phone_number String?
-  country_code String?
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
+model Admin {
+  id          String   @id @default(uuid())
+  displayId   String   @unique()
+  name        String
+  role        Role     @relation(fields: [roleId], references: [id])
+  roleId      String
+  email       String?
+  phoneNumber String?
+  countryCode String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  @@index([phone_number, country_code])
+  @@index([phoneNumber, countryCode])
   @@index([email])
 }
