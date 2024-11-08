@@ -128,10 +128,12 @@ enum AddOnType {
 
 model time_slot {
   id         String   @id @default(uuid())
-  from       Int
-  to         Int
+  from       Float
+  to         Float
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  @@unique([from, to])
 }
 
 model exam {
