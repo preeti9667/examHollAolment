@@ -132,21 +132,18 @@ model time_slot {
   to         Int
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-  exam       exam[]   @relation("exam_time_slots")
 }
 
 model exam {
-  id               String      @id @default(uuid())
+  id               String   @id @default(uuid())
   display_id       String
   name             String
   start_date       DateTime
   end_date         DateTime
-  time_slots       time_slot[] @relation("exam_time_slots")
   time_slot_ids    String[]
   no_of_condidates Int
-  created_at       DateTime    @default(now())
-  updated_at       DateTime    @updatedAt
-  booking          booking[]
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
 }
 
 model booking {
@@ -154,15 +151,15 @@ model booking {
   display_id     String           @unique()
   user           user?            @relation(fields: [user_id], references: [id])
   user_id        String
-  halls          Json
+  halls          Json?
   hall_ids       String[]
-  exam           exam             @relation(fields: [exam_id], references: [id])
-  exam_id        String
+  exam_name      String
   total_cost     Float
   from           DateTime
   to             DateTime
-  time_slots     Json
+  time_slots     Json?
   time_slots_ids String[]
+  address        Json?
   payment_method PaymentMethod
   status         BookingStatus    @default(DRAFT)
   created_at     DateTime         @default(now())
@@ -170,9 +167,7 @@ model booking {
   booking_add_on booking_add_on[]
   booking_hall   booking_hall[]
 
-  @@index([user_id, exam_id])
   @@index([user_id])
-  @@index([exam_id])
 }
 
 model booking_hall {
