@@ -11,6 +11,7 @@ import { TimeoutInterceptor } from '@interceptors/timeout/timeout.interceptor';
 import { I18nService } from 'nestjs-i18n';
 import { HttpExceptionFilter } from './filters/http-exception.filter';
 import { CorrelationInterceptor } from '@interceptors/correlation.interceptor';
+import { SecuritySchemeType } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 
 
 class Server {
@@ -78,6 +79,12 @@ class Server {
       .setTitle(SWAGGER_CONFIG.TITLE)
       .setDescription(SWAGGER_CONFIG.DESCRIPTION)
       .setVersion(SWAGGER_CONFIG.VERSION)
+      .addBearerAuth({
+        type: SWAGGER_CONFIG.AUTH_SCHEME.type as SecuritySchemeType,
+        scheme: SWAGGER_CONFIG.AUTH_SCHEME.scheme,
+        bearerFormat: SWAGGER_CONFIG.AUTH_SCHEME.bearerFormat
+      },
+        SWAGGER_CONFIG.ACCESS_TOKEN)
       .build();
 
     const document = SwaggerModule.createDocument(this.app, config);
