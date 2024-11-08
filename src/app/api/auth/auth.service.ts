@@ -7,6 +7,7 @@ import { VerifyOtpLoginPayloadDto } from "./dto/verify-otp-login.dto";
 import { ApiException } from "../api.exception";
 import * as moment from 'moment';
 import { TokenService } from "../token/token.service";
+import { TokenDecoded } from "../token/interfaces/token-decoded";
 
 @Injectable()
 export class AuthService {
@@ -120,5 +121,19 @@ export class AuthService {
             }
         }
 
+    }
+
+
+    async veryAccessToken(payload: TokenDecoded) {
+        const { tid, type } = payload;
+        const loginHistory = await this.$prisma.login_history.findFirst({
+            where: {
+                id: tid,
+                isActive: true
+            },
+            select: {
+                auth_user: true
+            }
+        })
     }
 }

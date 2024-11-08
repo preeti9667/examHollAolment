@@ -17,4 +17,14 @@ export class TokenService {
             expiresIn: '1d'
         });
     }
+
+    async decodeToken(token: string) {
+        const payload = await this.$jwt.verifyAsync(
+            token,
+            {
+                secret: this.$env.SECRETS_AUTH_TOKEN
+            }
+        );
+        return payload;
+    }
 }
