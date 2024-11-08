@@ -12,7 +12,6 @@ import { Request } from 'express';
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
-    private $token: TokenService,
     private $auth: AuthService
   ) { }
 
@@ -23,8 +22,7 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException();
     }
     try {
-      const decoded = await this.$token.decodeToken(token);
-      await this.$auth.veryAccessToken(decoded);
+      await this.$auth.veryAccessToken(token);
     } catch {
       throw new UnauthorizedException();
     }

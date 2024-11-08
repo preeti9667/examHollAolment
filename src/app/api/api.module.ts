@@ -4,12 +4,14 @@ import { ApiService } from "./api.service";
 import { AuthModule } from "./auth/auth.module";
 import { UserModule } from "./users/user.module";
 import { TimeSlotModule } from "./time-slots/time-slot.module";
+import { HallModule } from "./halls/hall.module";
 
 @Module({
     imports: [
         UserModule,
         AuthModule,
-        TimeSlotModule
+        TimeSlotModule,
+        HallModule
     ],
     exports: [],
     controllers: [ApiController],

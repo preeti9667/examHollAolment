@@ -124,8 +124,9 @@ export class AuthService {
     }
 
 
-    async veryAccessToken(payload: TokenDecoded) {
-        const { tid, type } = payload;
+    async veryAccessToken(token: string) {
+        const decoded = await this.$token.decodeToken(token);
+        const { tid, type } = decoded;
         const loginHistory = await this.$prisma.login_history.findFirst({
             where: {
                 id: tid,
