@@ -126,15 +126,32 @@ export class AuthService {
 
     async veryAccessToken(token: string) {
         const decoded = await this.$token.decodeToken(token);
-        const { tid, type } = decoded;
-        const loginHistory = await this.$prisma.login_history.findFirst({
+        const { tid } = decoded;
+        const user = await this.$prisma.login_history.findFirst({
             where: {
                 id: tid,
                 isActive: true
             },
             select: {
-                auth_user: true
+                auth_user: {
+                    where: {
+                        isDeleted: false
+                    }
+                }
             }
         })
+
+        if (!user) ApiException.unAuthorized();
+        const { id, isActive, phone_number, country_code, email, type } = user.auth_user;
+        if (decoded.type !== type) ApiException.unAuthorized();
+        if (!isActive) ApiException.unAuthorized("AUTH.ACCOUNT_DEACTIVATED");
+
+        return {
+            id,
+            phone_number,
+            country_code,
+            email,
+            type
+        }
     }
 }

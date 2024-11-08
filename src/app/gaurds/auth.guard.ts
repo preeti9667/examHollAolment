@@ -22,7 +22,8 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException();
     }
     try {
-      await this.$auth.veryAccessToken(token);
+      const authUser = await this.$auth.veryAccessToken(token);
+      request['user'] = authUser;
     } catch {
       throw new UnauthorizedException();
     }
