@@ -6,7 +6,7 @@ import { SendOtpPayloadDto } from "./dto/send-otp.dto";
 import { VerifyOtpLoginPayloadDto } from "./dto/verify-otp-login.dto";
 import { ApiException } from "../api.exception";
 import * as moment from 'moment';
-import { JwtService } from "@nestjs/jwt";
+import { TokenService } from "../token/token.service";
 
 @Injectable()
 export class AuthService {
@@ -14,7 +14,7 @@ export class AuthService {
         private $prisma: PrismaService,
         private $logger: LoggerService,
         private $env: EnvService,
-        private $jwt: JwtService
+        private $token: TokenService
     ) { }
 
 
@@ -109,12 +109,8 @@ export class AuthService {
             tid: loginHistory.id,
             type: authUser.type
         }
-        const accessToken = await this.$jwt.signAsync(jwtPayload, {
-            secret: this.$env.SECRETS_AUTH_TOKEN,
-            privateKey: this.$env.SECRETS_PRIVATE_KEY,
-            expiresIn: '1d'
-        });
-        this.$logger.log("Token created, user logged on ")
+        const accessToken = await this.$token.createAccessToken(jwtPayload);
+
         return {
             accessToken,
             type: authUser.type,

@@ -4,6 +4,7 @@ import { EnvModule } from "@app/shared/env/env.module";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { JwtModule } from "@nestjs/jwt";
+import { TokenModule } from "../token/token.module";
 
 @Module({
     imports: [
@@ -11,7 +12,8 @@ import { JwtModule } from "@nestjs/jwt";
             { context: AuthModule.name }
         ),
         EnvModule,
-        JwtModule
+        JwtModule,
+        TokenModule
     ],
     controllers: [
         AuthController
