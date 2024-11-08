@@ -20,19 +20,21 @@ export class AuthService {
 
 
     async sendOtp(payload: SendOtpPayloadDto) {
-        const { country_code = '+91', phone_number } = payload;
+        const phoneNumber = payload.phone_number;
+        const countryCode = payload.country_code;
+
         let authUser = await this.$prisma.auth.findFirst({
             where: {
-                phone_number,
-                country_code
+                phoneNumber,
+                countryCode
             }
         });
 
         if (!authUser) {
             authUser = await this.$prisma.auth.create({
                 data: {
-                    phone_number,
-                    country_code
+                    phoneNumber,
+                    countryCode
                 }
             });
         }
@@ -42,13 +44,13 @@ export class AuthService {
             //generate otp
         }
 
-        await this.$prisma.auth_otp.deleteMany({ where: { user_id: authUser.id } })
-        const otpRequest = await this.$prisma.auth_otp.create({
+        await this.$prisma.authOtp.deleteMany({ where: { userId: authUser.id } })
+        const otpRequest = await this.$prisma.authOtp.create({
             data: {
-                phone_number,
-                country_code,
+                phoneNumber,
+                countryCode,
                 otp,
-                user_id: authUser.id
+                userId: authUser.id
             }
         });
 
@@ -61,7 +63,7 @@ export class AuthService {
 
     async verifyOtpLogin(payload: VerifyOtpLoginPayloadDto) {
         const { request_id, otp } = payload;
-        const authOtp = await this.$prisma.auth_otp.findFirst({
+        const authOtp = await this.$prisma.authOtp.findFirst({
             where: { id: request_id }
         });
         if (!authOtp) {
@@ -70,45 +72,45 @@ export class AuthService {
         if (authOtp.otp !== otp) {
             ApiException.badData('AUTH.INVALID_OTP')
         }
-        const timeDifference = moment().diff(moment(authOtp.created_at), 'minutes');
+        const timeDifference = moment().diff(moment(authOtp.createdAt), 'minutes');
         if (timeDifference > 10) {
             ApiException.gone('AUTH.OTP_EXPIRED');
         }
         const [authUser] = await Promise.all([
-            this.$prisma.auth.findFirst({ where: { id: authOtp.user_id } }),
-            this.$prisma.login_history.updateMany(
+            this.$prisma.auth.findFirst({ where: { id: authOtp.userId } }),
+            this.$prisma.loginHistory.updateMany(
                 {
-                    where: { user_id: authOtp.user_id },
-                    data: { is_active: false }
+                    where: { userId: authOtp.userId },
+                    data: { isActive: false }
                 }
             )
         ])
         const [loginHistory, user] = await Promise.all([
-            this.$prisma.login_history.create({
+            this.$prisma.loginHistory.create({
                 data: {
-                    user_id: authUser.id,
-                    is_active: true
+                    userId: authUser.id,
+                    isActive: true
                 }
             }),
             this.$prisma.user.upsert({
                 where: { id: authUser.id },
                 update: {
                     email: authUser.email,
-                    phone_number: authUser.phone_number,
-                    country_code: authUser.country_code,
-                    is_active: authUser.is_active,
-                    is_deleted: authUser.is_deleted
+                    phoneNumber: authUser.phoneNumber,
+                    countryCode: authUser.countryCode,
+                    isActive: authUser.isActive,
+                    isDeleted: authUser.isDeleted
                 },
                 create: {
                     id: authUser.id,
                     email: authUser.email,
-                    phone_number: authUser.phone_number,
-                    country_code: authUser.country_code,
-                    is_active: authUser.is_active,
-                    is_deleted: authUser.is_deleted
+                    phoneNumber: authUser.phoneNumber,
+                    countryCode: authUser.countryCode,
+                    isActive: authUser.isActive,
+                    isDeleted: authUser.isDeleted
                 }
             }),
-            this.$prisma.auth_otp.delete({ where: { id: request_id } })
+            this.$prisma.authOtp.delete({ where: { id: request_id } })
         ]);
 
         const jwtPayload = {
@@ -132,29 +134,29 @@ export class AuthService {
     async veryAccessToken(token: string) {
         const decoded = await this.$token.decodeToken(token);
         const { tid } = decoded;
-        const user = await this.$prisma.login_history.findFirst({
+        const user = await this.$prisma.loginHistory.findFirst({
             where: {
                 id: tid,
-                is_active: true
+                isActive: true
             },
             select: {
-                auth_user: {
+                authUser: {
                     where: {
-                        is_deleted: false
+                        isDeleted: false
                     }
                 }
             }
         })
 
         if (!user) ApiException.unAuthorized();
-        const { id, is_active, phone_number, country_code, email, type } = user.auth_user;
+        const { id, isActive, phoneNumber, countryCode, email, type } = user.authUser;
         if (decoded.type !== type) ApiException.unAuthorized();
-        if (!is_active) ApiException.unAuthorized("AUTH.ACCOUNT_DEACTIVATED");
+        if (!isActive) ApiException.unAuthorized("AUTH.ACCOUNT_DEACTIVATED");
 
         return {
             id,
-            phone_number,
-            country_code,
+            phoneNumber,
+            countryCode,
             email,
             type
         }

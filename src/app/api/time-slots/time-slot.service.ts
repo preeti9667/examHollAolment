@@ -15,18 +15,18 @@ export class TimeSlotService {
 
     async createSlots() {
         try {
-            const count = await this.$prisma.time_slot.count({});
+            const count = await this.$prisma.timeSlot.count({});
             if (count === TIME_SLOTS.length) {
                 this.$logger.log("Time slots exists already");
             }
             else {
                 for (const slot of TIME_SLOTS) {
                     const { from, to } = slot;
-                    const slotExist = await this.$prisma.time_slot.findFirst({ where: { from, to } });
+                    const slotExist = await this.$prisma.timeSlot.findFirst({ where: { from, to } });
                     if (slotExist) {
                         this.$logger.log(`Slot exists : ${[from, to]}`)
                     } else {
-                        await this.$prisma.time_slot.create({ data: { from, to } });
+                        await this.$prisma.timeSlot.create({ data: { from, to } });
                         this.$logger.log(`Slot created : ${[from, to]}`)
                     }
                 }
@@ -38,7 +38,7 @@ export class TimeSlotService {
 
 
     async slotList() {
-        const slots = await this.$prisma.time_slot.findMany({});
+        const slots = await this.$prisma.timeSlot.findMany({});
         return { slots }
     }
 }
