@@ -3,10 +3,15 @@ import { Injectable } from "@nestjs/common";
 import { dateStringToUtc, format24TO12, OpenId } from "src/utils";
 import { HallAvailabilityQueryDto } from "./dto/availability.dto";
 import { ApiException } from "../api.exception";
+import { CreateHallDto } from "./dto/create.dto";
+import { LoggerService } from "@app/shared/logger";
 
 @Injectable()
 export class HallService {
-    constructor(private $prisma: PrismaService) {
+    constructor(
+        private $prisma: PrismaService,
+        private $logger: LoggerService
+    ) {
         // this.createDummyHall();
 
         // this.availableHallsForDate('93a54500-eb70-4ec0-be40-41bb735b9dc7', dateStringToUtc('2024-11-11'))
@@ -144,4 +149,21 @@ export class HallService {
         console.log(data)
 
     }
+
+
+    async create(payload: CreateHallDto) {
+        try {
+            await this.$prisma.hall.create({
+                data: {
+                    displayId: OpenId.format('HALL'),
+                    ...payload
+                }
+            })
+            return true;
+        } catch (err) {
+            this.$logger.error(err.message, err.stack);
+            throw err;
+        }
+    }
+
 }
