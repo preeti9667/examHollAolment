@@ -150,25 +150,30 @@ model Exam {
 }
 
 model Booking {
-  id            String         @id @default(uuid())
-  displayId     String         @unique()
-  user          User?          @relation(fields: [userId], references: [id])
-  userId        String
-  halls         Json?
-  hallIds       String[]
-  examName      String
-  totalCost     Float
-  from          DateTime
-  to            DateTime
-  timeSlots     Json?
-  timeSlotIds   String[]
-  address       Json?
-  paymentMethod PaymentMethod
-  status        BookingStatus  @default(DRAFT)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  bookingAddOn  BookingAddOn[]
-  bookingHall   BookingHall[]
+  id               String         @id @default(uuid())
+  displayId        String         @unique()
+  user             User?          @relation(fields: [userId], references: [id])
+  userId           String
+  halls            Json?
+  hallIds          String[]       @default([])
+  noOfCandidates   Int            @default(0)
+  examName         String?
+  organizationName String?
+  institutionType  String?
+  applicantName    String?
+  totalCost        Float          @default(0)
+  startDate        DateTime?
+  endDate          DateTime?
+  timeSlots        Json?
+  timeSlotIds      String[]       @default([])
+  address          Json?
+  contact          Json?
+  paymentMethod    PaymentMethod?
+  status           BookingStatus  @default(DRAFT)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  bookingAddOn     BookingAddOn[]
+  bookingHall      BookingHall[]
 
   @@index([userId])
 }
