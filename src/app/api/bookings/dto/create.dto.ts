@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsOptional, IsString } from "class-validator";
+import { IsArray, IsEAN, IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateBookingPayloadDto {
     @ApiProperty({
@@ -86,4 +86,13 @@ export class CreateBookingPayloadDto {
     @IsString()
     timeSlotIds: string[]
 
+
+    @ApiProperty({
+        type: Number,
+        enum: BookingStatus,
+        example: BookingStatus.BOOKED
+    })
+    @IsNumber()
+    @IsEnum(BookingStatus)
+    status: number;
 }
