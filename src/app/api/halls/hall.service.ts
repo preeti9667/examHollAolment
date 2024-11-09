@@ -5,6 +5,7 @@ import { HallAvailabilityQueryDto } from "./dto/availability.dto";
 import { ApiException } from "../api.exception";
 import { CreateHallDto } from "./dto/create.dto";
 import { LoggerService } from "@app/shared/logger";
+import { ListHallQueryDto } from "./dto/list.dto";
 
 @Injectable()
 export class HallService {
@@ -152,18 +153,52 @@ export class HallService {
 
 
     async create(payload: CreateHallDto) {
-        try {
-            await this.$prisma.hall.create({
-                data: {
-                    displayId: OpenId.format('HALL'),
-                    ...payload
-                }
-            })
-            return true;
-        } catch (err) {
-            this.$logger.error(err.message, err.stack);
-            throw err;
-        }
+        await this.$prisma.hall.create({
+            data: {
+                displayId: OpenId.format('HALL'),
+                ...payload
+            }
+        })
+        return true;
     }
 
+    async list(query: ListHallQueryDto) {
+        let where: Record<string, unknown> = {isDeleted: false};
+        const { page = 1, limit = 10, sortBy = 'createdAt', sort = 'desc' } = query;
+
+        const skip = limit * page - limit;
+        const take = limit;
+        if (query.isActive !== undefined) where['isActive'] = query.isActive;
+
+        const [halls, total] = await Promise.all([
+            this.$prisma.hall.findMany({
+                where,
+                skip,
+                take,
+                orderBy: { [sortBy]: sort },
+            }),
+            this.$prisma.hall.count({ where }),
+        ]);
+
+        const slots = await this.$prisma.timeSlot.findMany({});
+        const slotsFormat = slots.reduce((acc, slot) => {
+            acc[slot.id] = {
+                from: format24TO12(slot.from),
+                to: format24TO12(slot.to),
+            };
+            return acc;
+        }, {});
+
+        const hallDataWithSlots = halls.map(hall => ({
+            ...hall,
+            slots: hall.slots.map(slotId => slotsFormat[slotId]),
+        }));
+        
+        return {
+            total,
+            page,
+            limit,
+            data: hallDataWithSlots,
+        };
+    }
 }

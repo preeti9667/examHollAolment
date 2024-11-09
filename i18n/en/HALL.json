@@ -1,3 +1,4 @@
 {
-    "CREATE": "Device created successfully"
+    "CREATE": "Hall created successfully",
+    "LIST": "Hall List"
 }

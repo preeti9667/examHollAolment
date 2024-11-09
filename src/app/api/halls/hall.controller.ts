@@ -7,6 +7,7 @@ import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { HallService } from "./hall.service";
 import { CreateHallDto, CreateHallResponseDto } from "./dto/create.dto";
+import { HallListResponseDto, HallListResultDto, ListHallDto, ListHallQueryDto } from "./dto/list.dto";
 
 @Controller({
     path: 'hall',
@@ -47,4 +48,16 @@ export class HallController {
         );
     }
 
+    @Get('')
+    @Message('HALL.LIST')
+    @ApiOkResponse({ type: HallListResponseDto })
+    @ApiOperation({ summary: 'Hall Listing' })
+    async list(
+        @Query() query: ListHallQueryDto
+    ) {
+        const result = await this.$hall.list(
+            query
+        );
+        return HallListResultDto.parse(result);
+    }
 }
