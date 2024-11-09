@@ -1,9 +1,10 @@
 import { PrismaService } from "@app/databases/prisma/prisma.service";
 import { LoggerService } from "@app/shared/logger";
 import { Injectable } from "@nestjs/common";
-import { OpenId } from "src/utils";
-import { CreateBookingPayloadDto } from "./dto/create.dto";
+import { dateStringToUtc, OpenId } from "src/utils";
+import { BookingDateTimeSlotDto, CreateBookingPayloadDto } from "./dto/create.dto";
 import { BookingStatus } from "./booking.constant";
+import { v4 as uuid } from 'uuid'
 
 @Injectable()
 export class BookingService {
@@ -20,6 +21,10 @@ export class BookingService {
     async createBooking(payload: CreateBookingPayloadDto, userId: string) {
         if (payload.status === BookingStatus.Draft) {
             return this.handleBookingDraft(payload, userId);
+        }
+
+        if (payload.status === BookingStatus.AwaitingForPayment) {
+
         }
     }
 
@@ -49,5 +54,47 @@ export class BookingService {
             id: newBooking.id,
             displayId: newBooking.displayId,
         }
+    }
+
+    private async handleAwaitingForPayment(payload: CreateBookingPayloadDto, userId: String) {
+
+        const bookingData = {
+            id: payload.id || uuid(),
+            organizationName: payload.organizationName,
+            applicantName: payload.applicantName,
+            displayId: this.getBookingDisplayId(),
+            institutionType: payload.institutionType,
+            examName: payload.examName,
+            noOfCandidates: payload.noOfCandidates,
+            contact: {
+                phoneNumber: payload.phoneNumber,
+                countryCode: payload.countryCode,
+                email: payload.email
+            },
+            address: {
+                ...payload.address
+            },
+            status: BookingStatus.AwaitingForPayment,
+            userId,
+            startDate: dateStringToUtc(payload.startDate),
+            endDate: dateStringToUtc(payload.endDate)
+        }
+        let halls = {};
+        let slots = {};
+        const bookingHall = [];
+
+        payload.timeSlots.forEach((slot: BookingDateTimeSlotDto) => {
+            const date = dateStringToUtc(slot.date);
+            const bookingHallObj = {
+                bookingId: bookingData.id,
+                timeSlotId: slot.slotId,
+                quantity: 0,
+                totalPrice: 0,
+                date
+            }
+
+            slots[slot.slotId] = date;
+        })
+
     }
 }

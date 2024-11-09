@@ -67,3 +67,8 @@ export function SecondsToHours() {
         return secondsToHours(obj.value);
     });
 }
+
+
+export function dateStringToUtc(date: string): Date {
+    return moment(date).utc().toDate()
+}

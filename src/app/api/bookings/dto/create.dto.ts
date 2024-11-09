@@ -57,6 +57,22 @@ export class BookingAddressDto {
     @IsString()
     state: string
 }
+
+export class BookingDateTimeSlotDto {
+    @ApiProperty({
+        type: String,
+        example: '2024-11-09'
+    })
+    @IsString()
+    date: string;
+
+    @ApiProperty({
+        type: String,
+        description: 'time slot id'
+    })
+    @IsString()
+    slotId: string;
+}
 export class CreateBookingPayloadDto {
     @ApiProperty({
         type: String,
@@ -123,7 +139,7 @@ export class CreateBookingPayloadDto {
     })
     @IsString()
     @IsOptional()
-    startDate: Date;
+    startDate: string;
 
     @ApiProperty({
         type: String,
@@ -131,7 +147,7 @@ export class CreateBookingPayloadDto {
     })
     @IsString()
     @IsOptional()
-    endDate: Date;
+    endDate: string;
 
     @ApiProperty({
         type: Number,
@@ -168,6 +184,15 @@ export class CreateBookingPayloadDto {
     @IsObject()
     @Type(() => BookingAddressDto)
     address: BookingAddressDto
+
+    @ApiProperty({
+        type: [BookingDateTimeSlotDto],
+        required: false,
+    })
+    @IsArray()
+    @IsOptional()
+    @Type(() => BookingDateTimeSlotDto)
+    timeSlots: BookingDateTimeSlotDto[]
 }
 
 
