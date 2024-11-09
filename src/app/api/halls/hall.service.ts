@@ -8,6 +8,8 @@ import { ApiException } from "../api.exception";
 export class HallService {
     constructor(private $prisma: PrismaService) {
         // this.createDummyHall();
+
+        // this.availableHallsForDate('93a54500-eb70-4ec0-be40-41bb735b9dc7', dateStringToUtc('2024-11-11'))
     }
 
 
@@ -111,6 +113,35 @@ export class HallService {
         });
 
         return Object.values(groupByDateObj)
+
+    }
+
+
+    async availableHallsForDate(slotId: string, date: Date) {
+        const query = `
+        SELECT
+            *
+            FROM
+            public."Hall" AS H
+            WHERE
+            H."isActive" = true
+            AND H."isDeleted" = false
+            AND $1 = ANY(H."slots")
+            AND H."id" NOT IN (
+                SELECT "hallId"
+                FROM public."BookingHall"
+                WHERE "date" <> $2:date
+                AND "bookingId" NOT IN (
+                SELECT "id"
+                FROM public."Booking"
+                WHERE "status" NOT IN (30, 50)
+                )
+            )
+                `;
+
+        const data = await this.$prisma.$queryRawUnsafe(query);
+
+        console.log(data)
 
     }
 }
