@@ -3,7 +3,7 @@ export class OpenId {
 
     private static generate(characters: string, len: number) {
         let result = '';
-        for (let i = 0; i < length; i++) {
+        for (let i = 0; i < len; i++) {
             const randomIndex = Math.floor(Math.random() * characters.length);
             result += characters[randomIndex];
         }
