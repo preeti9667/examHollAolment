@@ -165,7 +165,7 @@ model Booking {
   startDate        DateTime?
   endDate          DateTime?
   timeSlots        Json?
-  timeSlotIds      String[]       @default([])
+  timeSlotId       String?
   address          Json?
   contact          Json?
   paymentMethod    String?
