@@ -1,11 +1,13 @@
 import { PrismaService } from "@app/databases/prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
-import { OpenId } from "src/utils";
+import { dateStringToUtc, format24TO12, OpenId } from "src/utils";
+import { HallAvailabilityQueryDto } from "./dto/availability.dto";
+import { ApiException } from "../api.exception";
 
 @Injectable()
 export class HallService {
     constructor(private $prisma: PrismaService) {
-        this.createDummyHall();
+        // this.createDummyHall();
     }
 
 
@@ -27,5 +29,88 @@ export class HallService {
                 }
             })
         }
+    }
+
+
+    async availability(query: HallAvailabilityQueryDto) {
+        const startDate = dateStringToUtc(query.startDate);
+        const endDate = dateStringToUtc(query.endDate);
+        if (startDate > endDate || startDate < new Date() || endDate < new Date()) {
+            ApiException.badData('HALL.INVALID_DATES')
+        }
+        const noOfCandidates = query.noOfCandidates;
+
+        const sqlQuery = `
+                WITH date_series AS (
+                    SELECT generate_series(
+                    $1::date, 
+                    $2::date, 
+                    '1 day'::interval
+                    )::date AS "bookingDate"
+                )
+                SELECT
+                    ds."bookingDate",
+                    slot,
+                    SUM(H.capacity) AS "totalCapacity"
+                FROM
+                    date_series ds
+                CROSS JOIN
+                    public."Hall" AS H,
+                    unnest(H."slots") AS slot
+                WHERE
+                    H."isActive" = true
+                    AND H."isDeleted" = false
+                    AND ds."bookingDate" NOT IN (
+                    SELECT "date"
+                    FROM public."BookingHall"
+                    WHERE "hallId" = H.id
+                    AND "bookingId" NOT IN (
+                        SELECT "id"
+                        FROM public."Booking"
+                        WHERE "status" IN (30, 50)
+                    )
+                    )
+                GROUP BY
+                    ds."bookingDate", slot
+                ORDER BY
+                    ds."bookingDate", "totalCapacity" DESC;
+                `;
+
+        const data = await this.$prisma.$queryRawUnsafe(sqlQuery, startDate, endDate);
+
+        const slots = await this.$prisma.timeSlot.findMany({});
+        const slotsObj = {};
+        slots.forEach(e => {
+            slotsObj[e.id] = e;
+        });
+        const groupByDateObj = {};
+        (data as any[]).forEach(e => {
+            if (!groupByDateObj[e.bookingDate]) {
+                groupByDateObj[e.bookingDate] = {
+                    date: e.bookingDate,
+                    slots: [
+                        {
+                            id: e.slot,
+                            isAvailable: noOfCandidates < e.totalCapacity ? true : false,
+                            from: format24TO12(slotsObj[e.slot].from),
+                            to: format24TO12(slotsObj[e.slot].to),
+                            capacity: Number(e.totalCapacity)
+                        }
+                    ]
+                }
+            }
+            else {
+                groupByDateObj[e.bookingDate].slots.push({
+                    id: e.slot,
+                    isAvailable: Number(e.totalCapacity) - noOfCandidates >= 0 ? true : false,
+                    from: format24TO12(slotsObj[e.slot].from),
+                    to: format24TO12(slotsObj[e.slot].to),
+                    capacity: Number(e.totalCapacity)
+                })
+            }
+        });
+
+        return Object.values(groupByDateObj)
+
     }
 }
