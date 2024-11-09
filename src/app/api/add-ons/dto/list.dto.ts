@@ -1,9 +1,9 @@
 import { ResponseDto } from "@app/api/response.dto";
 import { ApiProperty } from "@nestjs/swagger";
 import { Expose, plainToInstance, Transform, Type } from "class-transformer";
-import { IsArray, IsBoolean, IsDate, IsDefined, IsEnum, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, Min, ValidateNested } from "class-validator";
+import { IsArray, IsDate, IsDefined, IsEnum, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, Min, ValidateNested } from "class-validator";
 
-export class ListHallQueryDto {
+export class ListAddOnsQueryDto {
     @ApiProperty({
         type: Number,
         description: 'Page number',
@@ -45,19 +45,6 @@ export class ListHallQueryDto {
     @IsEnum(['asc', 'desc'])
     @IsOptional()
     sort: 'asc' | 'desc';
-
-    @ApiProperty({
-        description: 'boolean value true or false',
-        type: String,
-        enum: ['true', 'false'],
-        required: false,
-    })
-    @IsOptional()
-    @IsBoolean()
-    @Transform(({ obj, key }) => {
-        return obj[key] === 'true' ? true : obj[key] === 'false' ? false : obj[key];
-    })
-    isActive?: string;
 }
 
 export class SlotDto {
@@ -80,7 +67,7 @@ export class SlotDto {
     to!: string;
 }
 
-export class ListHallDto {
+export class ListAddOnsDto {
     @ApiProperty()
     @IsNotEmpty()
     @Expose()
@@ -88,16 +75,16 @@ export class ListHallDto {
     id!: string;
 
     @ApiProperty({
-        example: 'HALL-*****',
+        example: 'ADD-ONS-*****',
     })
     @IsString()
-    @IsNotEmpty()
     @Expose()
+    @IsNotEmpty()
     displayId: string;
 
     @ApiProperty({
         type: String,
-        example: 'HALL_001',
+        example: 'CCTV',
     })
     @IsString()
     @Expose()
@@ -106,45 +93,23 @@ export class ListHallDto {
 
     @ApiProperty({
         type: String,
-        example: 'A',
+        example: 'SECURITY',
     })
     @IsString()
     @Expose()
     @IsDefined()
-    groupName!: string;
+    type!: string;
 
     @ApiProperty({
         type: Number,
-        description: 'Hall capacity',
+        description: 'Add-Ons price',
         example: 200,
     })
     @IsNumber()
     @IsDefined()
     @IsNotEmpty()
     @Expose()
-    capacity!: number;
-
-    @ApiProperty({
-        required: true,
-        isArray: true,
-        type: SlotDto,
-        description: 'Array of slot details',
-    })
-    @IsArray()
-    @IsDefined()
-    @Expose()
-    @ValidateNested({ each: true })
-    @Type(() => SlotDto)
-    slots!: SlotDto[];
-
-    @ApiProperty({
-        required: true,
-        type: Boolean,
-    })
-    @IsBoolean()
-    @IsDefined()
-    @Expose()
-    isActive!: boolean;
+    price!: number;
 
     @ApiProperty({
         type: String,
@@ -166,8 +131,8 @@ export class ListHallDto {
 }
 
 
-export class HallListResultDto {
-    static parse(partial: Partial<HallListResultDto>) {
+export class AddOnsListResultDto {
+    static parse(partial: Partial<AddOnsListResultDto>) {
         return plainToInstance(this, partial, { excludeExtraneousValues: true });
     }
 
@@ -193,25 +158,25 @@ export class HallListResultDto {
     limit: number;
 
     @ApiProperty({
-        type: ListHallDto,
-        description: 'Hall Data',
+        type: ListAddOnsDto,
+        description: 'Add-Ons Data',
         isArray: true,
     })
-    @Type(() => ListHallDto)
+    @Type(() => ListAddOnsDto)
     @IsArray()
     @Expose()
     @ValidateNested({ each: true })
-    data!: ListHallDto[];
+    data!: ListAddOnsDto[];
 }
 
 
-export class HallListResponseDto extends ResponseDto {
+export class AddOnsListResponseDto extends ResponseDto {
     @ApiProperty({
-        type: HallListResultDto,
-        description: 'List of halls',
+        type: AddOnsListResultDto,
+        description: 'List of AddOns',
     })
     @IsObject()
     @ValidateNested({ each: true })
     @Expose()
-    result!: HallListResultDto;
+    result!: AddOnsListResultDto;
 }
