@@ -5,6 +5,8 @@ import { HallAvailabilityQueryDto } from "./dto/availability.dto";
 import { ApiException } from "../api.exception";
 import { CreateHallDto } from "./dto/create.dto";
 import { LoggerService } from "@app/shared/logger";
+import { Prisma } from "@prisma/client";
+import { IHall } from "./interfaces/hall";
 
 @Injectable()
 export class HallService {
@@ -14,7 +16,7 @@ export class HallService {
     ) {
         // this.createDummyHall();
 
-        // this.availableHallsForDate('93a54500-eb70-4ec0-be40-41bb735b9dc7', dateStringToUtc('2024-11-11'))
+        this.availableHallsForDate('93a54500-eb70-4ec0-be40-41bb735b9dc7', dateStringToUtc('2024-11-11'))
     }
 
 
@@ -135,7 +137,7 @@ export class HallService {
             AND H."id" NOT IN (
                 SELECT "hallId"
                 FROM public."BookingHall"
-                WHERE "date" <> $2:date
+                WHERE "date" <> $2
                 AND "bookingId" NOT IN (
                 SELECT "id"
                 FROM public."Booking"
@@ -144,10 +146,8 @@ export class HallService {
             )
                 `;
 
-        const data = await this.$prisma.$queryRawUnsafe(query);
-
-        console.log(data)
-
+        const data = await this.$prisma.$queryRawUnsafe(query, slotId, date);
+        return data as IHall[];
     }
 
 
