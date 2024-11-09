@@ -1,6 +1,8 @@
+import { ResponseDto } from "@app/api/response.dto";
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsArray, IsEAN, IsEnum, IsNumber, IsObject, IsOptional, IsString } from "class-validator";
+import { BookingStatus } from "../booking.constant";
 
 
 export class BookingAddressDto {
@@ -166,4 +168,45 @@ export class CreateBookingPayloadDto {
     @IsObject()
     @Type(() => BookingAddressDto)
     address: BookingAddressDto
+}
+
+
+export class CreateBookingResultDto {
+    @ApiProperty({
+        type: String,
+        example: '3e9e93bd-ff1f-4c89-bd12-f09bb8b7f3d3',
+    })
+    @IsString()
+    id: string;
+
+    @ApiProperty({
+        type: String,
+    })
+    @IsString()
+    displayId: string;
+
+    @ApiProperty({
+        type: String,
+    })
+    @IsString()
+    paymentLink: string;
+
+    @ApiProperty({
+        type: Number,
+        enum: BookingStatus,
+        example: BookingStatus.Draft
+    })
+    @IsNumber()
+    @IsEnum(BookingStatus)
+    status: number;
+}
+
+
+export class CreateBookingResponseDto extends ResponseDto {
+    @ApiProperty({
+        type: CreateBookingResultDto
+    })
+    @IsObject()
+    @Type(() => CreateBookingResultDto)
+    result: CreateBookingResultDto;
 }

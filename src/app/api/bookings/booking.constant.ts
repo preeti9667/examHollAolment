@@ -1,4 +1,4 @@
-enum BookingStatus {
+export enum BookingStatus {
     Draft = 10,
     Pending = 30,
     Booked = 50,

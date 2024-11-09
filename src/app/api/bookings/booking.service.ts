@@ -3,6 +3,7 @@ import { LoggerService } from "@app/shared/logger";
 import { Injectable } from "@nestjs/common";
 import { OpenId } from "src/utils";
 import { CreateBookingPayloadDto } from "./dto/create.dto";
+import { BookingStatus } from "./booking.constant";
 
 @Injectable()
 export class BookingService {
