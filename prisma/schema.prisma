@@ -128,11 +128,12 @@ enum AddOnType {
 }
 
 model TimeSlot {
-  id        String   @id @default(uuid())
-  from      Float
-  to        Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String        @id @default(uuid())
+  from        Float
+  to          Float
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  BookingHall BookingHall[]
 
   @@unique([from, to])
 }
@@ -179,15 +180,18 @@ model Booking {
 }
 
 model BookingHall {
-  id         String   @id @default(uuid())
-  booking    Booking  @relation(fields: [bookingId], references: [id])
+  id         String    @id @default(uuid())
+  booking    Booking   @relation(fields: [bookingId], references: [id])
   bookingId  String
-  hall       Hall     @relation(fields: [hallId], references: [id])
+  hall       Hall      @relation(fields: [hallId], references: [id])
   hallId     String
+  timeSlot   TimeSlot  @relation(fields: [timeSlotId], references: [id])
+  timeSlotId String
   quantity   Int
   totalPrice Float
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  date       DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   @@index([bookingId])
 }

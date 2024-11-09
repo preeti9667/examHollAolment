@@ -187,8 +187,10 @@ export class CreateBookingResultDto {
 
     @ApiProperty({
         type: String,
+        required: false
     })
     @IsString()
+    @IsOptional()
     paymentLink: string;
 
     @ApiProperty({
