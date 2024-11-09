@@ -12,6 +12,9 @@ import { HallService } from "./hall.service";
     ],
     providers: [
         HallService
+    ],
+    exports: [
+        HallService
     ]
 })
 export class HallModule { }

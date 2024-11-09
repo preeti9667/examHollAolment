@@ -5,13 +5,16 @@ import { dateStringToUtc, OpenId } from "src/utils";
 import { BookingDateTimeSlotDto, CreateBookingPayloadDto } from "./dto/create.dto";
 import { BookingStatus } from "./booking.constant";
 import { v4 as uuid } from 'uuid'
+import { HallService } from "../halls/hall.service";
+import { IHall } from "../halls/interfaces/hall";
 
 @Injectable()
 export class BookingService {
 
     constructor(
         private $prisma: PrismaService,
-        private $logger: LoggerService
+        private $logger: LoggerService,
+        private $hall: HallService
     ) { }
 
     private getBookingDisplayId(): string {
@@ -83,8 +86,15 @@ export class BookingService {
         let slots = {};
         const bookingHall = [];
 
-        payload.timeSlots.forEach((slot: BookingDateTimeSlotDto) => {
+        const notAvailableHalls = [];
+        for (const slot of payload.timeSlots) {
             const date = dateStringToUtc(slot.date);
+            const halls = await this.$hall.availableHallsForDate(slot.slotId, date);
+            const totalCapacity = halls.reduce((acc: number, hall: IHall) => acc + hall.capacity, 0);
+            if (totalCapacity < payload.noOfCandidates) {
+                notAvailableHalls.push(slot);
+                break
+            }
             const bookingHallObj = {
                 bookingId: bookingData.id,
                 timeSlotId: slot.slotId,
@@ -94,7 +104,6 @@ export class BookingService {
             }
 
             slots[slot.slotId] = date;
-        })
-
+        }
     }
 }

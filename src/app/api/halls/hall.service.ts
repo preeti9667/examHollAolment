@@ -16,7 +16,7 @@ export class HallService {
     ) {
         // this.createDummyHall();
 
-        this.availableHallsForDate('93a54500-eb70-4ec0-be40-41bb735b9dc7', dateStringToUtc('2024-11-11'))
+        // this.availableHallsForDate('93a54500-eb70-4ec0-be40-41bb735b9dc7', dateStringToUtc('2024-11-11'))
     }
 
 
@@ -124,7 +124,7 @@ export class HallService {
     }
 
 
-    async availableHallsForDate(slotId: string, date: Date) {
+    async availableHallsForDate(slotId: string, date: Date): Promise<IHall[]> {
         const query = `
         SELECT
             *
@@ -144,8 +144,7 @@ export class HallService {
                 WHERE "status" NOT IN (30, 50)
                 )
             )
-                `;
-
+            `;
         const data = await this.$prisma.$queryRawUnsafe(query, slotId, date);
         return data as IHall[];
     }
