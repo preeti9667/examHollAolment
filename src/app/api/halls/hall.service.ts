@@ -1,6 +1,6 @@
 import { PrismaService } from "@app/databases/prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
-import { dateStringToUtc, format24TO12, OpenId } from "src/utils";
+import { dateStringToUtc, format24TO12, OpenId, utcToDateString } from "src/utils";
 import { HallAvailabilityQueryDto } from "./dto/availability.dto";
 import { ApiException } from "../api.exception";
 import { CreateHallDto } from "./dto/create.dto";
@@ -26,7 +26,7 @@ export class HallService {
             const name = `Hall ${i + 1}`;
             const groupName = `Group ${i < 5 ? 'A' : i > 5 && i > 11 ? 'B' : 'c'}`;
             const capacity = Math.floor(Math.random() * ((500 - 60) / 10 + 1)) * 10 + 60;
-            const slots = i % 2 == 0 ? ['93a54500-eb70-4ec0-be40-41bb735b9dc7'] : ['9a4523db-3a4e-4435-b8e4-5dc3e28613b0', '9a4523db-3a4e-4435-b8e4-5dc3e28613b0'];
+            const slots = i % 2 == 0 ? ['1b53c972-bdc7-4cfb-bf86-90a55e8b95ae'] : ['1b53c972-bdc7-4cfb-bf86-90a55e8b95ae', '7fec2a37-d6ff-4d6f-bee8-b97df8b843d2'];
 
             await this.$prisma.hall.create({
                 data: {
@@ -37,6 +37,9 @@ export class HallService {
                     slots
                 }
             })
+
+
+            console.log("Hall created")
         }
     }
 
@@ -92,11 +95,12 @@ export class HallService {
         slots.forEach(e => {
             slotsObj[e.id] = e;
         });
+
         const groupByDateObj = {};
         (data as any[]).forEach(e => {
             if (!groupByDateObj[e.bookingDate]) {
                 groupByDateObj[e.bookingDate] = {
-                    date: e.bookingDate,
+                    date: utcToDateString(e.bookingDate),
                     slots: [
                         {
                             id: e.slot,
