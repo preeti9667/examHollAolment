@@ -1,8 +1,8 @@
 enum BookingStatus {
-    DRAFT = 10,
-    PENDING = 30,
-    BOOKED = 50,
-    FAILED = 70,
-    CANCELLED = 90,
-    COMPLETED = 110
+    Draft = 10,
+    Pending = 30,
+    Booked = 50,
+    Failed = 70,
+    Cancelled = 90,
+    Completed = 110
 }

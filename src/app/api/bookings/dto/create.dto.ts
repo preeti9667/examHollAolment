@@ -1,7 +1,70 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsEAN, IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import { IsArray, IsEAN, IsEnum, IsNumber, IsObject, IsOptional, IsString } from "class-validator";
 
+
+export class BookingAddressDto {
+    @ApiProperty({
+        type: String,
+        example: '25',
+        required: false
+    })
+    @IsOptional()
+    @IsString()
+    houseNo?: string
+
+    @ApiProperty({
+        type: String,
+        example: 'gali no 10',
+        required: false
+    })
+    @IsOptional()
+    @IsString()
+    street?: string;
+
+    @ApiProperty({
+        type: String,
+        example: '232, F block, sector',
+        required: true
+    })
+    @IsOptional()
+    @IsString()
+    addressLine?: string;
+
+    @ApiProperty({
+        type: String,
+        example: '342900',
+        required: true
+    })
+    @IsString()
+    pincode: string;
+
+    @ApiProperty({
+        type: String,
+        example: 'Noida',
+        required: true
+    })
+    @IsString()
+    city: string;
+
+    @ApiProperty({
+        type: String,
+        example: 'Uttar Pradesh',
+        required: true
+    })
+    @IsString()
+    state: string
+}
 export class CreateBookingPayloadDto {
+    @ApiProperty({
+        type: String,
+        example: '3e9e93bd-ff1f-4c89-bd12-f09bb8b7f3d3',
+        description: "send if going to booking a draft booking"
+    })
+    @IsOptional()
+    @IsString()
+    id?: string;
+
     @ApiProperty({
         type: String,
         example: 'The new School'
@@ -82,17 +145,25 @@ export class CreateBookingPayloadDto {
         description: "Time  Slots Ids"
     })
     @IsOptional()
-    @IsArray()
     @IsString()
-    timeSlotIds: string[]
+    timeSlotId: string
 
 
     @ApiProperty({
         type: Number,
         enum: BookingStatus,
-        example: BookingStatus.BOOKED
+        example: BookingStatus.Booked
     })
     @IsNumber()
     @IsEnum(BookingStatus)
     status: number;
+
+
+    @ApiProperty({
+        type: BookingAddressDto,
+        required: true,
+    })
+    @IsObject()
+    @Type(() => BookingAddressDto)
+    address: BookingAddressDto
 }
