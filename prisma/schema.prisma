@@ -168,8 +168,8 @@ model Booking {
   timeSlotIds      String[]       @default([])
   address          Json?
   contact          Json?
-  paymentMethod    PaymentMethod?
-  status           BookingStatus  @default(DRAFT)
+  paymentMethod    String?
+  status           Int            @default(0)
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   bookingAddOn     BookingAddOn[]
@@ -204,20 +204,6 @@ model BookingAddOn {
   updatedAt  DateTime @updatedAt
 
   @@index([bookingId])
-}
-
-enum BookingStatus {
-  APPROVED
-  CANCELLED
-  FAILED
-  DRAFT
-}
-
-enum PaymentMethod {
-  CASH
-  GATEWAY
-  UPI
-  CARD
 }
 
 model Role {

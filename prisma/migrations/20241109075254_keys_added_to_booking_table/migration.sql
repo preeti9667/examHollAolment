@@ -3,6 +3,8 @@
 
   - You are about to drop the column `from` on the `Booking` table. All the data in the column will be lost.
   - You are about to drop the column `to` on the `Booking` table. All the data in the column will be lost.
+  - The `paymentMethod` column on the `Booking` table would be dropped and recreated. This will lead to data loss if there is data in the column.
+  - The `status` column on the `Booking` table would be dropped and recreated. This will lead to data loss if there is data in the column.
 
 */
 -- AlterTable
@@ -19,4 +21,13 @@ ALTER COLUMN "hallIds" SET DEFAULT ARRAY[]::TEXT[],
 ALTER COLUMN "examName" DROP NOT NULL,
 ALTER COLUMN "totalCost" SET DEFAULT 0,
 ALTER COLUMN "timeSlotIds" SET DEFAULT ARRAY[]::TEXT[],
-ALTER COLUMN "paymentMethod" DROP NOT NULL;
+DROP COLUMN "paymentMethod",
+ADD COLUMN     "paymentMethod" TEXT,
+DROP COLUMN "status",
+ADD COLUMN     "status" INTEGER NOT NULL DEFAULT 0;
+
+-- DropEnum
+DROP TYPE "BookingStatus";
+
+-- DropEnum
+DROP TYPE "PaymentMethod";
