@@ -73,16 +73,15 @@ export class HallService {
                 WHERE
                     H."isActive" = true
                     AND H."isDeleted" = false
-                    AND ds."bookingDate" NOT IN (
-                    SELECT "date"
-                    FROM public."BookingHall"
-                    WHERE "hallId" = H.id
-                    AND "timeSlotId" = slot
-                    AND "bookingId" NOT IN (
+                    AND H."id" NOT IN (
+                        SELECT "hallId"
+                        FROM public."BookingHall"
+                        WHERE "date" <> ds."bookingDate"
+                        AND "bookingId" NOT IN (
                         SELECT "id"
                         FROM public."Booking"
-                        WHERE "status" IN (30, 50)
-                    )
+                        WHERE "status" NOT IN (30, 50)
+                        )
                     )
                 GROUP BY
                     ds."bookingDate", slot
