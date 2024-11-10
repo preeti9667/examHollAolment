@@ -68,7 +68,6 @@ export class BookingService {
         for (const hall of sortedHalls) {
             if (remainingSeats <= 0) break;
             const seatsToAllocate = Math.min(hall.capacity, remainingSeats);
-
             allocation.push({
                 id: hall.id,
                 hallName: hall.name,
@@ -162,7 +161,6 @@ export class BookingService {
         const totalCost = bookingHall.reduce((acc: number, hall: any) => acc + hall.totalPrice, 0);
         const noOfCandidates = bookingHall.reduce((acc: number, hall: any) => acc + hall.seatsAllocated, 0);
         const hallAllocated = bookingHall.length;
-
         const [newBooking] = await this.$prisma.$transaction([
             this.$prisma.booking.upsert({
                 where: { id },
@@ -171,7 +169,6 @@ export class BookingService {
                     ...bookingData,
                     timeSlots,
                     halls: hallsObj,
-                    hallIds,
                     totalCost,
                     noOfCandidates,
                     hallAllocated
@@ -180,7 +177,6 @@ export class BookingService {
                     ...bookingData,
                     timeSlots,
                     halls: hallsObj,
-                    hallIds,
                     totalCost,
                     noOfCandidates,
                     hallAllocated
@@ -195,8 +191,10 @@ export class BookingService {
         return {
             id: newBooking.id,
             displayId: newBooking.displayId,
+            noOfCandidates,
+            hallAllocated,
+            totalCost,
             paymentLink: '',
-            noOfCandidates: payload.noOfCandidates
         }
 
     }
