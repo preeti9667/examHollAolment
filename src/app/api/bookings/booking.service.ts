@@ -1,6 +1,6 @@
 import { PrismaService } from "@app/databases/prisma/prisma.service";
 import { LoggerService } from "@app/shared/logger";
-import { Injectable } from "@nestjs/common";
+import { Injectable, SerializeOptions } from "@nestjs/common";
 import { dateStringToUtc, OpenId, utcToDateString } from "src/utils";
 import { BookingDateTimeSlotDto, CreateBookingPayloadDto } from "./dto/create.dto";
 import { BookingStatus } from "./booking.constant";
@@ -72,9 +72,11 @@ export class BookingService {
             allocation.push({
                 id: hall.id,
                 hallName: hall.name,
+                groupName: hall.groupName,
+                displayId: hall.displayId,
                 seatsAllocated: seatsToAllocate,
                 capacity: hall.capacity,
-                totalPrice: hall.price
+                totalPrice: hall.price,
             });
 
             remainingSeats -= seatsToAllocate;
@@ -116,9 +118,16 @@ export class BookingService {
             startDate: dateStringToUtc(payload.startDate),
             endDate: dateStringToUtc(payload.endDate)
         }
-        let hallsObj: any = {};
-        let timeSlots: any = {};
         const bookingHall = [];
+        const slots = await this.$prisma.timeSlot.findMany();
+        let timeSlots: any = {};
+        slots.forEach(e => {
+            timeSlots[e.id] = {
+                id: e.id,
+                from: e.from,
+                to: e.to,
+            }
+        })
 
         const hallIds = [];
         const notAvailableHalls = [];
@@ -139,18 +148,24 @@ export class BookingService {
             }
 
             allocateHalls.forEach(e => {
-                hallsObj[e.id] = date;
                 hallIds.push(e.id);
                 bookingHall.push(
                     {
                         ...bookingHallObj,
                         hallId: e.id,
                         seatsAllocated: e.seatsAllocated,
-                        totalPrice: e.totalPrice
+                        totalPrice: e.totalPrice,
+                        hallRaw: {
+                            id: e.id,
+                            displayId: e.displayId,
+                            name: e.hallName,
+                            groupName: e.groupName,
+                            capacity: e.capacity
+                        },
+                        slotRaw: timeSlots[slot.slotId]
                     }
                 )
             })
-            timeSlots[utcToDateString(date)] = slot.slotId;
         }
 
         if (notAvailableHalls.length) {
@@ -166,16 +181,12 @@ export class BookingService {
                 create: {
                     id,
                     ...bookingData,
-                    timeSlots,
-                    halls: hallsObj,
                     totalCost,
                     noOfCandidates,
                     hallAllocated
                 },
                 update: {
                     ...bookingData,
-                    timeSlots,
-                    halls: hallsObj,
                     totalCost,
                     noOfCandidates,
                     hallAllocated
