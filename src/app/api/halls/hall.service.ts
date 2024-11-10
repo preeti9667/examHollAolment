@@ -47,6 +47,7 @@ export class HallService {
     async availability(query: HallAvailabilityQueryDto) {
         const startDate = dateStringToUtc(query.startDate);
         const endDate = dateStringToUtc(query.endDate);
+
         if (startDate > endDate || startDate < new Date() || endDate < new Date()) {
             ApiException.badData('HALL.INVALID_DATES')
         }

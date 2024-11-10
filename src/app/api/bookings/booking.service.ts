@@ -155,6 +155,9 @@ export class BookingService {
         if (payload.id)
             delete bookingData.displayId;
 
+        if (notAvailableHalls.length) {
+            ApiException.gone('BOOKING.HALL_NOT_AVAILABLE')
+        }
 
         const [newBooking] = await this.$prisma.$transaction([
             this.$prisma.booking.upsert({
