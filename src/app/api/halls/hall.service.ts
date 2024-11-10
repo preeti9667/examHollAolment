@@ -116,6 +116,7 @@ export class HallService {
                         SELECT "hallId"
                         FROM public."BookingHall"
                         WHERE "date" = ds."bookingDate"
+                        AND "timeSlotId" = slot
                         AND "bookingId" NOT IN (
                         SELECT "id"
                         FROM public."Booking"
