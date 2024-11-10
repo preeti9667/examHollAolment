@@ -27,7 +27,7 @@ export class BookingService {
         }
 
         if (payload.status === BookingStatus.AwaitingForPayment) {
-
+            this.handleAwaitingForPayment(payload, userId)
         }
     }
 
@@ -59,10 +59,32 @@ export class BookingService {
         }
     }
 
-    private async handleAwaitingForPayment(payload: CreateBookingPayloadDto, userId: String) {
+    private allocateHalls(halls: IHall[], capacity: number) {
+        const sortedHalls = halls.sort((a, b) => b.capacity - a.capacity);
+        let remainingSeats = capacity;
+        let allocation = [];
 
-        const bookingData = {
-            id: payload.id || uuid(),
+        for (const hall of sortedHalls) {
+            if (remainingSeats <= 0) break;
+            const seatsToAllocate = Math.min(hall.capacity, remainingSeats);
+
+            allocation.push({
+                id: hall.id,
+                hallName: hall.name,
+                quantity: seatsToAllocate,
+                capacity: hall.capacity
+            });
+
+            remainingSeats -= seatsToAllocate;
+        }
+
+        return allocation;
+    }
+
+    private async handleAwaitingForPayment(payload: CreateBookingPayloadDto, userId: String) {
+        let id = payload.id || uuid();
+        const bookingData: any = {
+            id,
             organizationName: payload.organizationName,
             applicantName: payload.applicantName,
             displayId: this.getBookingDisplayId(),
@@ -82,8 +104,8 @@ export class BookingService {
             startDate: dateStringToUtc(payload.startDate),
             endDate: dateStringToUtc(payload.endDate)
         }
-        let halls = {};
-        let slots = {};
+        let hallsObj: any = {};
+        let slots: any = {};
         const bookingHall = [];
 
         const notAvailableHalls = [];
@@ -95,15 +117,51 @@ export class BookingService {
                 notAvailableHalls.push(slot);
                 break
             }
+            const allocateHalls = this.allocateHalls(halls, bookingData.noOfCandidates);
+
             const bookingHallObj = {
-                bookingId: bookingData.id,
+                bookingId: id,
                 timeSlotId: slot.slotId,
                 quantity: 0,
                 totalPrice: 0,
                 date
             }
 
+            allocateHalls.forEach(e => {
+                hallsObj[e.id] = date;
+                bookingHall.push(
+                    {
+                        ...bookingHallObj,
+                        hallId: e.id,
+                        quantity: e.quantity,
+                    }
+                )
+            })
             slots[slot.slotId] = date;
         }
+
+        if (payload.id)
+            delete bookingData.displayId;
+
+
+        const [newBooking] = await this.$prisma.$transaction([
+            this.$prisma.booking.upsert({
+                where: { id },
+                create: { ...bookingData },
+                update: { ...bookingData }
+            }),
+            this.$prisma.bookingHall.createMany(
+                { data: bookingHall }
+            )
+        ])
+
+
+        return {
+            id: newBooking.id,
+            displayId: newBooking.displayId,
+            paymentLink: '',
+            noOfCandidates: payload.noOfCandidates
+        }
+
     }
 }

@@ -153,7 +153,7 @@ export class CreateBookingPayloadDto {
         type: Number,
         example: 1011
     })
-    @IsString()
+    @IsNumber()
     @IsOptional()
     noOfCandidates: number;
 

@@ -21,7 +21,7 @@ export class HallService {
 
 
     async createDummyHall() {
-        for (let i = 20; i < 40; i++) {
+        for (let i = 0; i < 20; i++) {
             const displayId = OpenId.create(8);
             const name = `Hall ${i + 1}`;
             const groupName = `Group ${i < 5 ? 'A' : i > 5 && i > 11 ? 'B' : 'c'}`;
@@ -76,6 +76,7 @@ export class HallService {
                     SELECT "date"
                     FROM public."BookingHall"
                     WHERE "hallId" = H.id
+                    AND "timeSlotId" = slot
                     AND "bookingId" NOT IN (
                         SELECT "id"
                         FROM public."Booking"
@@ -142,6 +143,7 @@ export class HallService {
                 SELECT "hallId"
                 FROM public."BookingHall"
                 WHERE "date" <> $2
+                AND "timeSlotId" = $3
                 AND "bookingId" NOT IN (
                 SELECT "id"
                 FROM public."Booking"
@@ -149,7 +151,7 @@ export class HallService {
                 )
             )
             `;
-        const data = await this.$prisma.$queryRawUnsafe(query, slotId, date);
+        const data = await this.$prisma.$queryRawUnsafe(query, slotId, date, slotId);
         return data as IHall[];
     }
 
