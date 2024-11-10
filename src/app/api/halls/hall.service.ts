@@ -1,11 +1,13 @@
 import { PrismaService } from "@app/databases/prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
-import { dateStringToUtc, format24TO12, OpenId } from "src/utils";
+import { dateStringToUtc, format24TO12, OpenId, utcToDateString } from "src/utils";
 import { HallAvailabilityQueryDto } from "./dto/availability.dto";
 import { ApiException } from "../api.exception";
 import { CreateHallDto } from "./dto/create.dto";
 import { LoggerService } from "@app/shared/logger";
 import { ListHallQueryDto } from "./dto/list.dto";
+import { Prisma } from "@prisma/client";
+import { IHall } from "./interfaces/hall";
 
 @Injectable()
 export class HallService {
@@ -20,12 +22,13 @@ export class HallService {
 
 
     async createDummyHall() {
-        for (let i = 20; i < 40; i++) {
+        for (let i = 0; i < 44; i++) {
             const displayId = OpenId.create(8);
             const name = `Hall ${i + 1}`;
             const groupName = `Group ${i < 5 ? 'A' : i > 5 && i > 11 ? 'B' : 'c'}`;
-            const capacity = Math.floor(Math.random() * ((500 - 60) / 10 + 1)) * 10 + 60;
-            const slots = i % 2 == 0 ? ['93a54500-eb70-4ec0-be40-41bb735b9dc7'] : ['9a4523db-3a4e-4435-b8e4-5dc3e28613b0', '9a4523db-3a4e-4435-b8e4-5dc3e28613b0'];
+            const capacity = 250;
+            const price = 20000;
+            const slots = i % 2 == 0 ? ['1b53c972-bdc7-4cfb-bf86-90a55e8b95ae'] : ['1b53c972-bdc7-4cfb-bf86-90a55e8b95ae', '7fec2a37-d6ff-4d6f-bee8-b97df8b843d2'];
 
             await this.$prisma.hall.create({
                 data: {
@@ -33,9 +36,13 @@ export class HallService {
                     name,
                     groupName,
                     capacity,
-                    slots
+                    slots,
+                    price
                 }
             })
+
+
+            console.log(i, "Hall created")
         }
     }
 
@@ -43,10 +50,47 @@ export class HallService {
     async availability(query: HallAvailabilityQueryDto) {
         const startDate = dateStringToUtc(query.startDate);
         const endDate = dateStringToUtc(query.endDate);
+
         if (startDate > endDate || startDate < new Date() || endDate < new Date()) {
             ApiException.badData('HALL.INVALID_DATES')
         }
         const noOfCandidates = query.noOfCandidates;
+
+        // const sqlQuery = `
+        //         WITH date_series AS (
+        //             SELECT generate_series(
+        //             $1::date, 
+        //             $2::date, 
+        //             '1 day'::interval
+        //             )::date AS "bookingDate"
+        //         )
+        //         SELECT
+        //             ds."bookingDate",
+        //             slot,
+        //             SUM(H.capacity) AS "totalCapacity"
+        //         FROM
+        //             date_series ds
+        //         CROSS JOIN
+        //             public."Hall" AS H,
+        //             unnest(H."slots") AS slot
+        //         WHERE
+        //             H."isActive" = true
+        //             AND H."isDeleted" = false
+        //             AND H."id" NOT IN (
+        //                 SELECT "hallId"
+        //                 FROM public."BookingHall"
+        //                 WHERE "date" <> ds."bookingDate"
+        //                 AND "bookingId" NOT IN (
+        //                 SELECT "id"
+        //                 FROM public."Booking"
+        //                 WHERE "status" NOT IN (30, 50)
+        //                 )
+        //             )
+        //         GROUP BY
+        //             ds."bookingDate", slot
+        //         ORDER BY
+        //             ds."bookingDate", "totalCapacity" DESC;
+        //         `;
 
         const sqlQuery = `
                 WITH date_series AS (
@@ -59,7 +103,8 @@ export class HallService {
                 SELECT
                     ds."bookingDate",
                     slot,
-                    SUM(H.capacity) AS "totalCapacity"
+                    SUM(H.capacity) AS "totalCapacity",
+                    COUNT(H.id) AS "hallCount"
                 FROM
                     date_series ds
                 CROSS JOIN
@@ -68,15 +113,15 @@ export class HallService {
                 WHERE
                     H."isActive" = true
                     AND H."isDeleted" = false
-                    AND ds."bookingDate" NOT IN (
-                    SELECT "date"
-                    FROM public."BookingHall"
-                    WHERE "hallId" = H.id
-                    AND "bookingId" NOT IN (
+                    AND H."id" NOT IN (
+                        SELECT "hallId"
+                        FROM public."BookingHall"
+                        WHERE "date" = ds."bookingDate"
+                        AND "bookingId" NOT IN (
                         SELECT "id"
                         FROM public."Booking"
-                        WHERE "status" IN (30, 50)
-                    )
+                        WHERE "status" NOT IN (30, 50)
+                        )
                     )
                 GROUP BY
                     ds."bookingDate", slot
@@ -91,18 +136,20 @@ export class HallService {
         slots.forEach(e => {
             slotsObj[e.id] = e;
         });
+
         const groupByDateObj = {};
         (data as any[]).forEach(e => {
             if (!groupByDateObj[e.bookingDate]) {
                 groupByDateObj[e.bookingDate] = {
-                    date: e.bookingDate,
+                    date: utcToDateString(e.bookingDate),
                     slots: [
                         {
                             id: e.slot,
                             isAvailable: noOfCandidates < e.totalCapacity ? true : false,
                             from: format24TO12(slotsObj[e.slot].from),
                             to: format24TO12(slotsObj[e.slot].to),
-                            capacity: Number(e.totalCapacity)
+                            capacity: Number(e.totalCapacity),
+                            hallCount: Number(e.hallCount)
                         }
                     ]
                 }
@@ -113,7 +160,8 @@ export class HallService {
                     isAvailable: Number(e.totalCapacity) - noOfCandidates >= 0 ? true : false,
                     from: format24TO12(slotsObj[e.slot].from),
                     to: format24TO12(slotsObj[e.slot].to),
-                    capacity: Number(e.totalCapacity)
+                    capacity: Number(e.totalCapacity),
+                    hallCount: Number(e.hallCount)
                 })
             }
         });
@@ -123,7 +171,7 @@ export class HallService {
     }
 
 
-    async availableHallsForDate(slotId: string, date: Date) {
+    async availableHallsForDate(slotId: string, date: Date): Promise<IHall[]> {
         const query = `
         SELECT
             *
@@ -136,19 +184,17 @@ export class HallService {
             AND H."id" NOT IN (
                 SELECT "hallId"
                 FROM public."BookingHall"
-                WHERE "date" <> $2:date
+                WHERE "date" <> $2
+                AND "timeSlotId" = $3
                 AND "bookingId" NOT IN (
                 SELECT "id"
                 FROM public."Booking"
                 WHERE "status" NOT IN (30, 50)
                 )
             )
-                `;
-
-        const data = await this.$prisma.$queryRawUnsafe(query);
-
-        console.log(data)
-
+            `;
+        const data = await this.$prisma.$queryRawUnsafe(query, slotId, date, slotId);
+        return data as IHall[];
     }
 
 
@@ -163,7 +209,7 @@ export class HallService {
     }
 
     async list(query: ListHallQueryDto) {
-        let where: Record<string, unknown> = {isDeleted: false};
+        let where: Record<string, unknown> = { isDeleted: false };
         const { page = 1, limit = 10, sortBy = 'createdAt', sort = 'desc' } = query;
 
         const skip = limit * page - limit;
@@ -193,7 +239,7 @@ export class HallService {
             ...hall,
             slots: hall.slots.map(slotId => slotsFormat[slotId]),
         }));
-        
+
         return {
             total,
             page,

@@ -98,6 +98,7 @@ model Hall {
   name         String
   groupName    String
   capacity     Int
+  price        Int           @default(0)
   slots        String[]
   addOns       AddOn[]       @relation("HallAddOns")
   addOnIds     String[]
@@ -158,6 +159,7 @@ model Booking {
   halls            Json?
   hallIds          String[]       @default([])
   noOfCandidates   Int            @default(0)
+  hallAllocated    Int            @default(0)
   examName         String?
   organizationName String?
   institutionType  String?
@@ -166,7 +168,7 @@ model Booking {
   startDate        DateTime?
   endDate          DateTime?
   timeSlots        Json?
-  timeSlotId       String?
+  timeSlotIds      String[]       @default([])
   address          Json?
   contact          Json?
   paymentMethod    String?
@@ -180,20 +182,20 @@ model Booking {
 }
 
 model BookingHall {
-  id         String    @id @default(uuid())
-  booking    Booking   @relation(fields: [bookingId], references: [id])
-  bookingId  String
-  hall       Hall      @relation(fields: [hallId], references: [id])
-  hallId     String
-  timeSlot   TimeSlot  @relation(fields: [timeSlotId], references: [id])
-  timeSlotId String
-  quantity   Int
-  totalPrice Float
-  date       DateTime?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id             String    @id @default(uuid())
+  booking        Booking?  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  bookingId      String
+  hall           Hall?     @relation(fields: [hallId], references: [id])
+  hallId         String
+  timeSlot       TimeSlot? @relation(fields: [timeSlotId], references: [id])
+  timeSlotId     String
+  seatsAllocated Int       @default(0)
+  totalPrice     Float
+  date           DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
-  @@index([bookingId])
+  @@index([bookingId, hallId])
 }
 
 model BookingAddOn {

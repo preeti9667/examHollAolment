@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { BookingController } from "./booking.controller";
 import { LoggerModule } from "@app/shared/logger";
 import { BookingService } from "./booking.service";
+import { HallModule } from "../halls/hall.module";
 
 @Module({
     controllers: [
@@ -11,8 +12,9 @@ import { BookingService } from "./booking.service";
         LoggerModule.register({
             context: BookingModule.name
         }),
+        HallModule
     ],
-    exports: [],
+    exports: [BookingService],
     providers: [BookingService]
 })
 

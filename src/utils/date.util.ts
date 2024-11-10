@@ -70,5 +70,9 @@ export function SecondsToHours() {
 
 
 export function dateStringToUtc(date: string): Date {
-    return moment(date).utc().toDate()
+    return new Date(new Date(date).setUTCHours(0, 0, 0, 0))
+}
+
+export function utcToDateString(date: Date): string {
+    return moment(date).format('YYYY-MM-DD')
 }

@@ -7,18 +7,20 @@ import { TimeSlotModule } from "./time-slots/time-slot.module";
 import { HallModule } from "./halls/hall.module";
 import { BookingModule } from "./bookings/booking.module";
 import { AddOnsModule } from "./add-ons/add-ons.module";
+import { SchedularModule } from "./schedule/schedular.module";
 
 @Module({
-    imports: [
-        UserModule,
-        AuthModule,
-        TimeSlotModule,
-        HallModule,
-        BookingModule,
-        AddOnsModule
-    ],
-    exports: [],
-    controllers: [ApiController],
-    providers: [ApiService]
+        imports: [
+                UserModule,
+                AuthModule,
+                TimeSlotModule,
+                HallModule,
+                BookingModule,
+                AddOnsModule,
+                SchedularModule
+        ],
+        exports: [],
+        controllers: [ApiController],
+        providers: [ApiService]
 })
 export class ApiModule { }
