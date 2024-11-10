@@ -57,6 +57,7 @@ export class BookingService {
         return {
             id: newBooking.id,
             displayId: newBooking.displayId,
+            stats: BookingStatus.Draft
         }
     }
 
@@ -83,8 +84,9 @@ export class BookingService {
     }
 
     private async handleAwaitingForPayment(payload: CreateBookingPayloadDto, userId: String) {
+        let isBooking;
         if (payload.id) {
-            const isBooking = await this.$prisma.booking.findFirst({
+            isBooking = await this.$prisma.booking.findFirst({
                 where: {
                     id: payload.id,
                     status: BookingStatus.Draft
@@ -97,7 +99,7 @@ export class BookingService {
         const bookingData: any = {
             organizationName: payload.organizationName,
             applicantName: payload.applicantName,
-            displayId: this.getBookingDisplayId(),
+            displayId: isBooking?.displayId || this.getBookingDisplayId(),
             institutionType: payload.institutionType,
             examName: payload.examName,
             noOfCandidates: payload.noOfCandidates,
@@ -150,9 +152,6 @@ export class BookingService {
             })
             timeSlots[utcToDateString(date)] = slot.slotId;
         }
-
-        if (payload.id)
-            delete bookingData.displayId;
 
         if (notAvailableHalls.length) {
             ApiException.gone('BOOKING.HALL_NOT_AVAILABLE')
