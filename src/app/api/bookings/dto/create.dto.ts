@@ -1,7 +1,7 @@
 import { ResponseDto } from "@app/api/response.dto";
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsArray, IsDateString, IsEAN, IsEnum, IsNumber, IsObject, IsOptional, IsString, ValidateIf } from "class-validator";
+import { IsArray, IsDateString, IsEAN, IsEnum, IsNumber, IsObject, IsOptional, IsString, IsUUID, ValidateIf } from "class-validator";
 import { BookingStatus } from "../booking.constant";
 import { IsBpDateFormat } from "@app/decorators/date-validator.decorator";
 
@@ -72,7 +72,15 @@ export class BookingDateTimeSlotDto {
         description: 'time slot id'
     })
     @IsString()
+    @IsUUID()
     slotId: string;
+
+    @ApiProperty({
+        type: Number,
+        example: 200
+    })
+    @IsNumber()
+    noOfCandidates: string;
 }
 export class CreateBookingPayloadDto {
     @ApiProperty({
@@ -203,7 +211,7 @@ export class CreateBookingResultDto {
         type: String,
         example: '3e9e93bd-ff1f-4c89-bd12-f09bb8b7f3d3',
     })
-    @IsString()
+    @IsUUID()
     id: string;
 
     @ApiProperty({

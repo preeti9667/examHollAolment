@@ -159,6 +159,7 @@ model Booking {
   halls            Json?
   hallIds          String[]       @default([])
   noOfCandidates   Int            @default(0)
+  hallAllocated    Int            @default(0)
   examName         String?
   organizationName String?
   institutionType  String?

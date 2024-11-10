@@ -14,6 +14,7 @@ DROP INDEX "BookingHall_bookingId_idx";
 
 -- AlterTable
 ALTER TABLE "Booking" DROP COLUMN "timeSlotId",
+ADD COLUMN     "hallAllocated" INTEGER NOT NULL DEFAULT 0,
 ADD COLUMN     "timeSlotIds" TEXT[] DEFAULT ARRAY[]::TEXT[];
 
 -- AlterTable

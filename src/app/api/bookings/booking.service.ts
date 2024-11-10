@@ -72,8 +72,9 @@ export class BookingService {
             allocation.push({
                 id: hall.id,
                 hallName: hall.name,
-                quantity: seatsToAllocate,
-                capacity: hall.capacity
+                seatsAllocated: seatsToAllocate,
+                capacity: hall.capacity,
+                totalPrice: hall.price
             });
 
             remainingSeats -= seatsToAllocate;
@@ -128,13 +129,11 @@ export class BookingService {
                 notAvailableHalls.push(slot);
                 break
             }
-            const allocateHalls = this.allocateHalls(halls, bookingData.noOfCandidates);
+            const allocateHalls = this.allocateHalls(halls, slot.noOfCandidates);
 
             const bookingHallObj = {
                 bookingId: id,
                 timeSlotId: slot.slotId,
-                quantity: 0,
-                totalPrice: 0,
                 date
             }
 
@@ -145,7 +144,8 @@ export class BookingService {
                     {
                         ...bookingHallObj,
                         hallId: e.id,
-                        quantity: e.quantity,
+                        seatsAllocated: e.seatsAllocated,
+                        totalPrice: e.totalPrice
                     }
                 )
             })
@@ -159,11 +159,32 @@ export class BookingService {
             ApiException.gone('BOOKING.HALL_NOT_AVAILABLE')
         }
 
+        const totalCost = bookingHall.reduce((acc: number, hall: any) => acc + hall.totalPrice, 0);
+        const noOfCandidates = bookingHall.reduce((acc: number, hall: any) => acc + hall.seatsAllocated, 0);
+        const hallAllocated = bookingHall.length;
+
         const [newBooking] = await this.$prisma.$transaction([
             this.$prisma.booking.upsert({
                 where: { id },
-                create: { id, ...bookingData, timeSlots, halls: hallsObj, hallIds },
-                update: { ...bookingData, timeSlots, halls: hallsObj, hallIds }
+                create: {
+                    id,
+                    ...bookingData,
+                    timeSlots,
+                    halls: hallsObj,
+                    hallIds,
+                    totalCost,
+                    noOfCandidates,
+                    hallAllocated
+                },
+                update: {
+                    ...bookingData,
+                    timeSlots,
+                    halls: hallsObj,
+                    hallIds,
+                    totalCost,
+                    noOfCandidates,
+                    hallAllocated
+                }
             }),
             this.$prisma.bookingHall.createMany(
                 { data: bookingHall }
