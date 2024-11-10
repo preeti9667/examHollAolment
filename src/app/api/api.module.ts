@@ -6,6 +6,7 @@ import { UserModule } from "./users/user.module";
 import { TimeSlotModule } from "./time-slots/time-slot.module";
 import { HallModule } from "./halls/hall.module";
 import { BookingModule } from "./bookings/booking.module";
+import { ScheduleModule } from "./schedule/schedule.module";
 
 @Module({
     imports: [
@@ -13,7 +14,8 @@ import { BookingModule } from "./bookings/booking.module";
         AuthModule,
         TimeSlotModule,
         HallModule,
-        BookingModule
+        BookingModule,
+        ScheduleModule
     ],
     exports: [],
     controllers: [ApiController],
