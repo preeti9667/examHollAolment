@@ -35,6 +35,16 @@ export class CreateHallDto {
     capacity!: number;
 
     @ApiProperty({
+        type: Number,
+        description: 'Hall Pice',
+        example: 20000,
+    })
+    @IsNumber()
+    @IsDefined()
+    @IsNotEmpty()
+    price!: number;
+
+    @ApiProperty({
         required: true,
         isArray: true,
         type: String,
@@ -65,9 +75,8 @@ export class CreateHallDto {
 
 export class CreateHallResponseDto extends ResponseDto {
     @ApiProperty({
-      type: Boolean,
-      description: 'Status',
+        type: Boolean,
+        description: 'Status',
     })
     result!: boolean;
-  }
-  
+}
