@@ -179,4 +179,21 @@ export class BookingService {
         }
 
     }
+
+
+
+    async handleAwaitingForPaymentBooking() {
+        const bookings = await this.$prisma.$queryRawUnsafe(`
+        SELECT * FROM public."Booking"
+        WHERE "status" = ${BookingStatus.AwaitingForPayment}
+        AND AGE(NOW(), "createdAt") > INTERVAL '25 minutes';
+        `) as any[];
+
+        if (bookings.length) {
+            for (const booking of bookings) {
+                await this.$prisma.booking.update({ where: { id: booking.id }, data: { status: BookingStatus.Cancelled } })
+            }
+        }
+
+    }
 }

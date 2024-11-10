@@ -14,7 +14,7 @@ import { HallModule } from "../halls/hall.module";
         }),
         HallModule
     ],
-    exports: [],
+    exports: [BookingService],
     providers: [BookingService]
 })
 
