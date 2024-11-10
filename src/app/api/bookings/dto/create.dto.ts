@@ -1,8 +1,9 @@
 import { ResponseDto } from "@app/api/response.dto";
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsArray, IsEAN, IsEnum, IsNumber, IsObject, IsOptional, IsString } from "class-validator";
+import { IsArray, IsDateString, IsEAN, IsEnum, IsNumber, IsObject, IsOptional, IsString, ValidateIf } from "class-validator";
 import { BookingStatus } from "../booking.constant";
+import { IsBpDateFormat } from "@app/decorators/date-validator.decorator";
 
 
 export class BookingAddressDto {
@@ -63,7 +64,7 @@ export class BookingDateTimeSlotDto {
         type: String,
         example: '2024-11-09'
     })
-    @IsString()
+    @IsBpDateFormat()
     date: string;
 
     @ApiProperty({
@@ -137,16 +138,16 @@ export class CreateBookingPayloadDto {
         type: String,
         example: "2024-11-09"
     })
-    @IsString()
-    @IsOptional()
+    @ValidateIf((obj) => obj.status === BookingStatus.AwaitingForPayment)
+    @IsBpDateFormat()
     startDate: string;
 
     @ApiProperty({
         type: String,
         example: "2024-11-19"
     })
-    @IsString()
-    @IsOptional()
+    @ValidateIf((obj) => obj.status === BookingStatus.AwaitingForPayment)
+    @IsBpDateFormat()
     endDate: string;
 
     @ApiProperty({
@@ -169,11 +170,11 @@ export class CreateBookingPayloadDto {
 
     @ApiProperty({
         type: Number,
-        enum: BookingStatus,
-        example: BookingStatus.Booked
+        enum: [BookingStatus.Draft, BookingStatus.AwaitingForPayment],
+        example: BookingStatus.Draft
     })
     @IsNumber()
-    @IsEnum(BookingStatus)
+    @IsEnum([BookingStatus.Draft, BookingStatus.AwaitingForPayment])
     status: number;
 
 
@@ -189,8 +190,9 @@ export class CreateBookingPayloadDto {
         type: [BookingDateTimeSlotDto],
         required: false,
     })
+    @ValidateIf((obj) => obj.status === BookingStatus.AwaitingForPayment)
     @IsArray()
-    @IsOptional()
+    // @IsOptional()
     @Type(() => BookingDateTimeSlotDto)
     timeSlots: BookingDateTimeSlotDto[]
 }
@@ -220,11 +222,11 @@ export class CreateBookingResultDto {
 
     @ApiProperty({
         type: Number,
-        enum: [BookingStatus.Draft, BookingStatus.AwaitingForPayment],
+        enum: BookingStatus,
         example: BookingStatus.Draft
     })
     @IsNumber()
-    @IsEnum([BookingStatus.Draft, BookingStatus.AwaitingForPayment])
+    @IsEnum(BookingStatus)
     status: number;
 }
 

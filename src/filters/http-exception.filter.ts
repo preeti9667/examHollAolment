@@ -48,10 +48,7 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
             this.logger.error(exception.message, exception.stack, context);
             if (exception instanceof HttpException) {
                 const status = exception.getStatus();
-                res.status(status).json({
-                    status,
-                    message: message || exception.message,
-                });
+                res.status(status).json(exception.getResponse());
             } else {
                 res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
                     status: HttpStatus.INTERNAL_SERVER_ERROR,

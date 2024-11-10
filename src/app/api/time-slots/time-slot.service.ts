@@ -21,12 +21,12 @@ export class TimeSlotService {
             }
             else {
                 for (const slot of TIME_SLOTS) {
-                    const { from, to } = slot;
-                    const slotExist = await this.$prisma.timeSlot.findFirst({ where: { from, to } });
+                    const { from, to, id } = slot;
+                    const slotExist = await this.$prisma.timeSlot.findFirst({ where: { id, from, to } });
                     if (slotExist) {
                         this.$logger.log(`Slot exists : ${[from, to]}`)
                     } else {
-                        await this.$prisma.timeSlot.create({ data: { from, to } });
+                        await this.$prisma.timeSlot.create({ data: { id, from, to } });
                         this.$logger.log(`Slot created : ${[from, to]}`)
                     }
                 }
