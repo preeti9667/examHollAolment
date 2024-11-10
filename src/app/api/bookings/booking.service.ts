@@ -192,6 +192,7 @@ export class BookingService {
             displayId: newBooking.displayId,
             noOfCandidates,
             hallAllocated,
+            status: BookingStatus.AwaitingForPayment,
             totalCost,
             paymentLink: '',
         }
