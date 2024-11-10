@@ -207,12 +207,21 @@ export class HallService {
 
 
     async create(payload: CreateHallDto) {
-        await this.$prisma.hall.create({
+        const hall = await this.$prisma.hall.create({
             data: {
                 displayId: OpenId.format('HALL'),
                 ...payload
             }
         })
+
+        for (const t of hall.slots) {
+            await this.$prisma.hallTimeSlot.create({
+                data: {
+                    hallId: hall.id,
+                    timeSlotId: t
+                }
+            })
+        }
         return true;
     }
 
