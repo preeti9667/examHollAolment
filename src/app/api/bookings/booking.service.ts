@@ -144,7 +144,8 @@ export class BookingService {
             const bookingHallObj = {
                 bookingId: id,
                 timeSlotId: slot.slotId,
-                date
+                date,
+                status: BookingStatus.AwaitingForPayment
             }
 
             allocateHalls.forEach(e => {

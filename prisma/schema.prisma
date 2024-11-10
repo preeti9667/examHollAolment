@@ -93,22 +93,22 @@ enum AccountType {
 }
 
 model Hall {
-  id           String        @id @default(uuid())
-  displayId    String        @unique()
+  id           String         @id @default(uuid())
+  displayId    String         @unique()
   name         String
   groupName    String
   capacity     Int
-  price        Int           @default(0)
+  price        Int            @default(0)
   slots        String[]
-  addOns       AddOn[]       @relation("HallAddOns")
   addOnIds     String[]
-  isActive     Boolean       @default(true)
-  isDeleted    Boolean       @default(false)
-  bookingCount Int           @default(0)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  isActive     Boolean        @default(true)
+  isDeleted    Boolean        @default(false)
+  bookingCount Int            @default(0)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
   bookingHall  BookingHall[]
-  timeSlots    TimeSlot[]    @relation("HallTimeSlot")
+  HallAddOn    HallAddOn[]
+  HallTimeSlot HallTimeSlot[]
 }
 
 model AddOn {
@@ -120,7 +120,29 @@ model AddOn {
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   bookingAddOn BookingAddOn[]
-  hall         Hall[]         @relation("HallAddOns")
+  HallAddOn    HallAddOn[]
+}
+
+model HallTimeSlot {
+  hall       Hall?     @relation(fields: [hallId], references: [id])
+  hallId     String
+  timeSlot   TimeSlot? @relation(fields: [timeSlotId], references: [id])
+  timeSlotId String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@id([hallId, timeSlotId])
+}
+
+model HallAddOn {
+  hall      Hall?    @relation(fields: [hallId], references: [id])
+  hallId    String
+  addOn     AddOn?   @relation(fields: [addOnId], references: [id])
+  addOnId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([hallId, addOnId])
 }
 
 enum AddOnType {
@@ -130,14 +152,14 @@ enum AddOnType {
 }
 
 model TimeSlot {
-  id          String        @id @default(uuid())
-  from        Float
-  to          Float
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  hall        Hall[]        @relation("HallTimeSlot")
-  BookingHall BookingHall[]
-  hallId      String?
+  id           String         @id @default(uuid())
+  from         Float
+  to           Float
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  BookingHall  BookingHall[]
+  hallId       String?
+  HallTimeSlot HallTimeSlot[]
 
   @@unique([from, to])
 }
@@ -197,6 +219,7 @@ model BookingHall {
   hallRaw        Json?
   slotRaw        Json?
   date           DateTime?
+  status         Int       @default(0)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
