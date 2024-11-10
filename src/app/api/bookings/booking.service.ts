@@ -135,7 +135,7 @@ export class BookingService {
             const date = dateStringToUtc(slot.date);
             const halls = await this.$hall.availableHallsForDate(slot.slotId, date);
             const totalCapacity = halls.reduce((acc: number, hall: IHall) => acc + hall.capacity, 0);
-            if (totalCapacity < payload.noOfCandidates) {
+            if (totalCapacity < slot.noOfCandidates) {
                 notAvailableHalls.push(slot);
                 break
             }
@@ -221,7 +221,8 @@ export class BookingService {
 
         if (bookings.length) {
             for (const booking of bookings) {
-                await this.$prisma.booking.update({ where: { id: booking.id }, data: { status: BookingStatus.Cancelled } })
+                await this.$prisma.booking.update({ where: { id: booking.id }, data: { status: BookingStatus.Cancelled } });
+                this.$logger.log(`Booking : ${booking.displayId} is cancelled automatically`)
             }
         }
 
