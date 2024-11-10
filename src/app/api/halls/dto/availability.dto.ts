@@ -63,6 +63,14 @@ export class HallAvailabilitySlotDto {
     capacity: number;
 
     @ApiProperty({
+        type: Number,
+        example: 191,
+        required: true
+    })
+    @IsNumber()
+    hallCount: number;
+
+    @ApiProperty({
         type: Boolean,
         example: true,
         required: true

@@ -80,7 +80,7 @@ export class BookingDateTimeSlotDto {
         example: 200
     })
     @IsNumber()
-    noOfCandidates: string;
+    noOfCandidates: number;
 }
 export class CreateBookingPayloadDto {
     @ApiProperty({

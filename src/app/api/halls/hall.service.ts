@@ -21,11 +21,12 @@ export class HallService {
 
 
     async createDummyHall() {
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 44; i++) {
             const displayId = OpenId.create(8);
             const name = `Hall ${i + 1}`;
             const groupName = `Group ${i < 5 ? 'A' : i > 5 && i > 11 ? 'B' : 'c'}`;
-            const capacity = Math.floor(Math.random() * ((500 - 60) / 10 + 1)) * 10 + 60;
+            const capacity = 250;
+            const price = 20000;
             const slots = i % 2 == 0 ? ['1b53c972-bdc7-4cfb-bf86-90a55e8b95ae'] : ['1b53c972-bdc7-4cfb-bf86-90a55e8b95ae', '7fec2a37-d6ff-4d6f-bee8-b97df8b843d2'];
 
             await this.$prisma.hall.create({
@@ -34,12 +35,13 @@ export class HallService {
                     name,
                     groupName,
                     capacity,
-                    slots
+                    slots,
+                    price
                 }
             })
 
 
-            console.log("Hall created")
+            console.log(i, "Hall created")
         }
     }
 
@@ -53,6 +55,42 @@ export class HallService {
         }
         const noOfCandidates = query.noOfCandidates;
 
+        // const sqlQuery = `
+        //         WITH date_series AS (
+        //             SELECT generate_series(
+        //             $1::date, 
+        //             $2::date, 
+        //             '1 day'::interval
+        //             )::date AS "bookingDate"
+        //         )
+        //         SELECT
+        //             ds."bookingDate",
+        //             slot,
+        //             SUM(H.capacity) AS "totalCapacity"
+        //         FROM
+        //             date_series ds
+        //         CROSS JOIN
+        //             public."Hall" AS H,
+        //             unnest(H."slots") AS slot
+        //         WHERE
+        //             H."isActive" = true
+        //             AND H."isDeleted" = false
+        //             AND H."id" NOT IN (
+        //                 SELECT "hallId"
+        //                 FROM public."BookingHall"
+        //                 WHERE "date" <> ds."bookingDate"
+        //                 AND "bookingId" NOT IN (
+        //                 SELECT "id"
+        //                 FROM public."Booking"
+        //                 WHERE "status" NOT IN (30, 50)
+        //                 )
+        //             )
+        //         GROUP BY
+        //             ds."bookingDate", slot
+        //         ORDER BY
+        //             ds."bookingDate", "totalCapacity" DESC;
+        //         `;
+
         const sqlQuery = `
                 WITH date_series AS (
                     SELECT generate_series(
@@ -64,7 +102,8 @@ export class HallService {
                 SELECT
                     ds."bookingDate",
                     slot,
-                    SUM(H.capacity) AS "totalCapacity"
+                    SUM(H.capacity) AS "totalCapacity",
+                    COUNT(H.id) AS "hallCount"
                 FROM
                     date_series ds
                 CROSS JOIN
@@ -108,7 +147,8 @@ export class HallService {
                             isAvailable: noOfCandidates < e.totalCapacity ? true : false,
                             from: format24TO12(slotsObj[e.slot].from),
                             to: format24TO12(slotsObj[e.slot].to),
-                            capacity: Number(e.totalCapacity)
+                            capacity: Number(e.totalCapacity),
+                            hallCount: Number(e.hallCount)
                         }
                     ]
                 }
@@ -119,7 +159,8 @@ export class HallService {
                     isAvailable: Number(e.totalCapacity) - noOfCandidates >= 0 ? true : false,
                     from: format24TO12(slotsObj[e.slot].from),
                     to: format24TO12(slotsObj[e.slot].to),
-                    capacity: Number(e.totalCapacity)
+                    capacity: Number(e.totalCapacity),
+                    hallCount: Number(e.hallCount)
                 })
             }
         });
