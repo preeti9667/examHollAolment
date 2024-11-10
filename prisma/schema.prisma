@@ -181,7 +181,7 @@ model Booking {
 
 model BookingHall {
   id         String    @id @default(uuid())
-  booking    Booking?  @relation(fields: [bookingId], references: [id])
+  booking    Booking?  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   bookingId  String
   hall       Hall?     @relation(fields: [hallId], references: [id])
   hallId     String

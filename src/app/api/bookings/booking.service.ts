@@ -1,12 +1,13 @@
 import { PrismaService } from "@app/databases/prisma/prisma.service";
 import { LoggerService } from "@app/shared/logger";
 import { Injectable } from "@nestjs/common";
-import { dateStringToUtc, OpenId } from "src/utils";
+import { dateStringToUtc, OpenId, utcToDateString } from "src/utils";
 import { BookingDateTimeSlotDto, CreateBookingPayloadDto } from "./dto/create.dto";
 import { BookingStatus } from "./booking.constant";
 import { v4 as uuid } from 'uuid'
 import { HallService } from "../halls/hall.service";
 import { IHall } from "../halls/interfaces/hall";
+import { ApiException } from "../api.exception";
 
 @Injectable()
 export class BookingService {
@@ -27,7 +28,7 @@ export class BookingService {
         }
 
         if (payload.status === BookingStatus.AwaitingForPayment) {
-            this.handleAwaitingForPayment(payload, userId)
+            return this.handleAwaitingForPayment(payload, userId)
         }
     }
 
@@ -82,9 +83,18 @@ export class BookingService {
     }
 
     private async handleAwaitingForPayment(payload: CreateBookingPayloadDto, userId: String) {
+        if (payload.id) {
+            const isBooking = await this.$prisma.booking.findFirst({
+                where: {
+                    id: payload.id,
+                    status: BookingStatus.Draft
+                }
+            });
+            if (!isBooking) ApiException.badData('BOOKING.INVALID_ID');
+        }
+
         let id = payload.id || uuid();
         const bookingData: any = {
-            id,
             organizationName: payload.organizationName,
             applicantName: payload.applicantName,
             displayId: this.getBookingDisplayId(),
@@ -105,9 +115,10 @@ export class BookingService {
             endDate: dateStringToUtc(payload.endDate)
         }
         let hallsObj: any = {};
-        let slots: any = {};
+        let timeSlots: any = {};
         const bookingHall = [];
 
+        const hallIds = [];
         const notAvailableHalls = [];
         for (const slot of payload.timeSlots) {
             const date = dateStringToUtc(slot.date);
@@ -129,6 +140,7 @@ export class BookingService {
 
             allocateHalls.forEach(e => {
                 hallsObj[e.id] = date;
+                hallIds.push(e.id);
                 bookingHall.push(
                     {
                         ...bookingHallObj,
@@ -137,7 +149,7 @@ export class BookingService {
                     }
                 )
             })
-            slots[slot.slotId] = date;
+            timeSlots[utcToDateString(date)] = slot.slotId;
         }
 
         if (payload.id)
@@ -147,8 +159,8 @@ export class BookingService {
         const [newBooking] = await this.$prisma.$transaction([
             this.$prisma.booking.upsert({
                 where: { id },
-                create: { ...bookingData },
-                update: { ...bookingData }
+                create: { id, ...bookingData, timeSlots, halls: hallsObj, hallIds },
+                update: { ...bookingData, timeSlots, halls: hallsObj, hallIds }
             }),
             this.$prisma.bookingHall.createMany(
                 { data: bookingHall }

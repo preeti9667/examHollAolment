@@ -220,11 +220,11 @@ export class CreateBookingResultDto {
 
     @ApiProperty({
         type: Number,
-        enum: BookingStatus,
+        enum: [BookingStatus.Draft, BookingStatus.AwaitingForPayment],
         example: BookingStatus.Draft
     })
     @IsNumber()
-    @IsEnum(BookingStatus)
+    @IsEnum([BookingStatus.Draft, BookingStatus.AwaitingForPayment])
     status: number;
 }
 
