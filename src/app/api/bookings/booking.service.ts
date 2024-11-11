@@ -222,7 +222,25 @@ export class BookingService {
 
         if (bookings.length) {
             for (const booking of bookings) {
-                await this.$prisma.booking.update({ where: { id: booking.id }, data: { status: BookingStatus.Cancelled } });
+                await Promise.all(
+                    [
+                        this.$prisma.booking.update(
+                            {
+                                where: { id: booking.id }
+                                , data: { status: BookingStatus.Cancelled }
+                            }
+                        ),
+                        this.$prisma.bookingHall.updateMany({
+                            where: {
+                                bookingId: booking.id
+                            },
+                            data: {
+                                status: BookingStatus.Cancelled
+                            }
+                        })
+                    ]
+                );
+
                 this.$logger.log(`Booking : ${booking.displayId} is cancelled automatically`)
             }
         }
