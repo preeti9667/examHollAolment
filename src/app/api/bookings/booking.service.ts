@@ -226,8 +226,8 @@ export class BookingService {
                     [
                         this.$prisma.booking.update(
                             {
-                                where: { id: booking.id }
-                                , data: { status: BookingStatus.Cancelled }
+                                where: { id: booking.id },
+                                data: { status: BookingStatus.Cancelled }
                             }
                         ),
                         this.$prisma.bookingHall.updateMany({
