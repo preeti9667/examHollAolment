@@ -15,18 +15,20 @@ datasource db {
 }
 
 model User {
-  id              String        @id @default(uuid())
-  name            String?
-  email           String?
-  phoneNumber     String?
-  countryCode     String?
-  institutionType String?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  address         UserAddress[]
-  isActive        Boolean       @default(true)
-  isDeleted       Boolean       @default(false)
-  booking         Booking[]
+  id          String        @id @default(uuid())
+  displayId   String        @default("USR")
+  name        String?
+  email       String?
+  phoneNumber String?
+  countryCode String?
+  bio         String?
+  gstNo       String?
+  isActive    Boolean       @default(true)
+  isDeleted   Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  address     UserAddress[]
+  booking     Booking[]
 
   @@index([email])
   @@index([countryCode, phoneNumber])
