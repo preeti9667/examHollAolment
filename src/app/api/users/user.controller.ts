@@ -27,7 +27,7 @@ export class UserController {
     @Patch('')
     @UseGuards(AuthGuard)
     @ApiBearerAuth('AccessToken')
-    @Message('USER.CREATED')
+    @Message('USER.UPDATED')
     @ApiOkResponse({ type: UpdateProfileResponseDto })
     @ApiOperation({ summary: 'Update profile by customer' })
     async updateProfile(

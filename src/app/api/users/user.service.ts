@@ -62,8 +62,14 @@ export class UserService {
             name: profile.name,
             bio: profile.bio,
             displayId: profile.displayId,
+            phoneNumber: profile.phoneNumber,
+            countryCode: profile.countryCode,
+            email: profile.email,
             gstNo: profile.gstNo,
+            createdAt: profile.createdAt,
+            updatedAt: profile.updatedAt,
             address: {
+                id: address.id,
                 ...payload.address
             }
         }

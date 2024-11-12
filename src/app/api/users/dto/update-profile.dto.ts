@@ -2,6 +2,7 @@ import { ResponseDto } from "@app/api/response.dto";
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsObject, IsOptional, IsString, Length } from "class-validator";
+import { UserProfileDto } from "./profile.dto";
 
 
 export class UpdateProfileAddressDto {
@@ -86,21 +87,7 @@ export class UpdateProfilePayloadDto {
 }
 
 
-export class UpdateProfileResultDto extends UpdateProfilePayloadDto {
-    @ApiProperty({
-        type: String,
-        example: '3e9e93bd-ff1f-4c89-bd12-f09bb8b7f3d3',
-        required: true
-    })
-    @IsString()
-    id: string;
-
-
-    @ApiProperty({
-        type: String,
-        example: 'USR-****',
-    })
-    displayId: string
+export class UpdateProfileResultDto extends UserProfileDto {
 }
 
 
