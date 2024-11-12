@@ -42,9 +42,8 @@ export class UserController {
     @ApiOkResponse({ type: ProfileDetailsResponseDto })
     @ApiOperation({ summary: 'Profile details by customer' })
     async details(
-        @Body() payload: UpdateProfilePayloadDto,
         @AuthUser() user: IAuthUser
     ) {
-        return this.$user.updateProfile(payload, user.id);
+        return this.$user.details(user.id);
     }
 }

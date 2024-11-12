@@ -75,4 +75,39 @@ export class UserService {
         }
     }
 
+
+    async details(userId: string) {
+        const profile = await this.$prisma.user.findFirst({
+            where: {
+                id: userId
+            },
+            include: {
+                address: {
+                    select: {
+                        id: true,
+                        street: true,
+                        addressLine: true,
+                        pincode: true,
+                        city: true,
+                        state: true,
+                    }
+                }
+            }
+        })
+
+        return {
+            id: profile.id,
+            name: profile.name,
+            bio: profile.bio,
+            displayId: profile.displayId,
+            phoneNumber: profile.phoneNumber,
+            countryCode: profile.countryCode,
+            email: profile.email,
+            gstNo: profile.gstNo,
+            createdAt: profile.createdAt,
+            updatedAt: profile.updatedAt,
+            address: profile.address[0]
+        }
+    }
+
 }
