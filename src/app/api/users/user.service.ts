@@ -3,6 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { UpdateProfilePayloadDto, UpdateProfileResultDto } from "./dto/update-profile.dto";
 import { PrismaService } from "@app/databases/prisma/prisma.service";
 import { OpenId } from "src/utils";
+import { add } from "winston";
 
 @Injectable()
 export class UserService {
@@ -10,24 +11,6 @@ export class UserService {
         private $logger: LoggerService,
         private $prisma: PrismaService,
     ) {
-
-    }
-
-    async addUserDisplayIdScript() {
-        const users = await this.$prisma.user.findMany({});
-
-        for (const user of users) {
-            await this.$prisma.user.update({
-                where: {
-                    id: user.id
-                },
-                data: {
-                    displayId: OpenId.format('USR', 6)
-                }
-            });
-
-            console.log("added")
-        }
 
     }
 
@@ -51,7 +34,7 @@ export class UserService {
         });
 
         if (address) {
-            await this.$prisma.userAddress.update({
+            address = await this.$prisma.userAddress.update({
                 where: {
                     id: address.id
                 },
@@ -61,7 +44,7 @@ export class UserService {
             })
         }
         else {
-            await this.$prisma.userAddress.create({
+            address = await this.$prisma.userAddress.create({
                 data: {
                     ...payload.address,
                     userId
