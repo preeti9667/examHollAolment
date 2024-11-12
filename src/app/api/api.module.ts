@@ -8,6 +8,7 @@ import { HallModule } from "./halls/hall.module";
 import { BookingModule } from "./bookings/booking.module";
 import { AddOnsModule } from "./add-ons/add-ons.module";
 import { SchedularModule } from "./schedule/schedular.module";
+import { RoleModule } from "./role/role.module";
 
 @Module({
         imports: [
@@ -17,7 +18,8 @@ import { SchedularModule } from "./schedule/schedular.module";
                 HallModule,
                 BookingModule,
                 AddOnsModule,
-                SchedularModule
+                SchedularModule,
+                RoleModule
         ],
         exports: [],
         controllers: [ApiController],
