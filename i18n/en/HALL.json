@@ -1,5 +1,5 @@
 {
-  "CREATE": "Hall created successfully",
-  "LIST": "Hall List",
-  "AVAILABILITY": "Hall Availability"
+  "CREATE": "Hall created successfully.",
+  "LIST": "Hall list retrieved successfully.",
+  "AVAILABILITY": "Hall availability retrieved successfully."
 }

@@ -6,6 +6,7 @@ import { CreateBookingPayloadDto, CreateBookingResponseDto } from "./dto/create.
 import { AuthUser, Message } from "@app/decorators";
 import { AuthGuard } from "@app/gaurds/auth.guard";
 import { IAuthUser } from "../auth/interfaces/auth-user";
+import { BookingStatus } from "./booking.constant";
 
 @Controller({
     path: 'booking',
@@ -21,7 +22,10 @@ export class BookingController {
     @Post('/')
     @UseGuards(AuthGuard)
     @ApiBearerAuth('AccessToken')
-    @Message('BOOKING.CREATED')
+    @Message((req) => {
+        if (req.body.status === BookingStatus.Draft) return 'BOOKING.DRAFT_CREATED';
+        return 'BOOKING.AWAITING_FOR_PAYMENT';
+    })
     @ApiOkResponse({ type: CreateBookingResponseDto })
     @ApiOperation({ summary: 'create or draft  booking by customer' })
     async create(
