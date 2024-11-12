@@ -2,6 +2,7 @@ import { LoggerService } from "@app/shared/logger";
 import { Injectable } from "@nestjs/common";
 import { UpdateProfilePayloadDto, UpdateProfileResultDto } from "./dto/update-profile.dto";
 import { PrismaService } from "@app/databases/prisma/prisma.service";
+import { OpenId } from "src/utils";
 
 @Injectable()
 export class UserService {
@@ -10,12 +11,24 @@ export class UserService {
         private $prisma: PrismaService,
     ) {
 
-
     }
 
-    list() {
-        this.$logger.log("checking");
-        return [{ name: 'user' }];
+    async addUserDisplayIdScript() {
+        const users = await this.$prisma.user.findMany({});
+
+        for (const user of users) {
+            await this.$prisma.user.update({
+                where: {
+                    id: user.id
+                },
+                data: {
+                    displayId: OpenId.format('USR', 6)
+                }
+            });
+
+            console.log("added")
+        }
+
     }
 
 
