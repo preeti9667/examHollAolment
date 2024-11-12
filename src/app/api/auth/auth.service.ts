@@ -8,6 +8,7 @@ import { ApiException } from "../api.exception";
 import * as moment from 'moment';
 import { TokenService } from "../token/token.service";
 import { TokenDecoded } from "../token/interfaces/token-decoded";
+import { OpenId } from "src/utils";
 
 @Injectable()
 export class AuthService {
@@ -104,6 +105,7 @@ export class AuthService {
                 create: {
                     id: authUser.id,
                     email: authUser.email,
+                    displayId: OpenId.format('USR', 6),
                     phoneNumber: authUser.phoneNumber,
                     countryCode: authUser.countryCode,
                     isActive: authUser.isActive,
