@@ -2,6 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsString, IsOptional, IsObject } from "class-validator";
 import { UserAddressDto } from "./address.dto";
 import { Type } from "class-transformer";
+import { ResponseDto } from "@app/api/response.dto";
 
 export class UserProfileDto {
     @ApiProperty({
@@ -91,4 +92,14 @@ export class UserProfileDto {
     @IsObject()
     @Type(() => UserAddressDto)
     address: UserAddressDto;
+}
+
+
+export class ProfileDetailsResponseDto extends ResponseDto {
+    @ApiProperty({
+        type: UserProfileDto
+    })
+    @IsObject()
+    @Type(() => UserProfileDto)
+    result: UserProfileDto
 }
