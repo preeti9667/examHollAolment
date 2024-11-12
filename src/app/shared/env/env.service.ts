@@ -17,6 +17,12 @@ export class EnvService {
     readonly REDIS_PASSWORD = this.get('REDIS_PASSWORD');
     readonly REDIS_DB = this.get('REDIS_DB');
 
+    readonly ADMIN_NAME = this.get('ADMIN_NAME');
+    readonly ADMIN_EMAIL = this.get('ADMIN_EMAIL');
+    readonly ADMIN_PHONE_NUMBER = this.get('ADMIN_PHONE_NUMBER');
+    readonly ADMIN_COUNTRY_CODE = this.get('ADMIN_COUNTRY_CODE');
+    readonly ADMIN_PASSWORD = this.get('ADMIN_PASSWORD');
+
     // readonly ADMIN = this.get('ADMIN');
     // readonly MONGO = this.get('MONGO');
     // readonly REDIS = this.get('REDIS');

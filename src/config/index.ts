@@ -63,4 +63,28 @@ export class EnvConfig {
 
     @IsOptional()
     BYPASS_OTP: string;
+
+
+
+    @IsDefined()
+    @IsString()
+    readonly ADMIN_NAME: string;
+
+
+    @IsDefined()
+    @IsString()
+    readonly ADMIN_EMAIL: string;
+
+    @IsDefined()
+    @IsString()
+    readonly ADMIN_PHONE_NUMBER: string;
+
+
+    @IsDefined()
+    @IsString()
+    readonly ADMIN_COUNTRY_CODE: string;
+
+    @IsDefined()
+    @IsString()
+    readonly ADMIN_PASSWORD: string;
 }
