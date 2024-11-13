@@ -125,6 +125,14 @@ export class ListAddOnsDto {
     price!: number;
 
     @ApiProperty({
+        type: Boolean,
+        example: true,
+    })
+    @IsBoolean()
+    @Expose()
+    isActive!: boolean;
+
+    @ApiProperty({
         type: String,
         example: '2024-08-21T11:24:09.857Z',
     })
