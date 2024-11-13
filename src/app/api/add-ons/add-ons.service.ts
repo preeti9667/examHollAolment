@@ -11,7 +11,7 @@ export class AddOnsService {
     constructor(
         private $prisma: PrismaService,
         private $logger: LoggerService
-    ) {}
+    ) { }
 
     async create(payload: CreateAddOnsDto) {
         await this.$prisma.addOn.create({
@@ -30,6 +30,8 @@ export class AddOnsService {
         const skip = limit * page - limit;
         const take = limit;
 
+        if (query.isActive !== undefined) where['isActive'] = query.isActive;
+
         const [data, total] = await Promise.all([
             this.$prisma.addOn.findMany({
                 where,
@@ -39,7 +41,7 @@ export class AddOnsService {
             }),
             this.$prisma.addOn.count({ where }),
         ]);
- 
+
         return {
             total,
             page,
