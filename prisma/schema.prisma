@@ -117,8 +117,10 @@ model AddOn {
   id           String         @id @default(uuid())
   displayId    String
   name         String
-  type         AddOnType      @default(SECURITY)
+  type         String         @default("SECURITY")
   price        Int
+  isActive     Boolean        @default(true)
+  isDeleted    Boolean        @default(false)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   bookingAddOn BookingAddOn[]
@@ -145,12 +147,6 @@ model HallAddOn {
   updatedAt DateTime @updatedAt
 
   @@id([hallId, addOnId])
-}
-
-enum AddOnType {
-  SURVEILLANCE
-  SECURITY
-  FACE_RECOGNITION
 }
 
 model TimeSlot {

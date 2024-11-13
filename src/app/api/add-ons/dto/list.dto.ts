@@ -1,7 +1,7 @@
 import { ResponseDto } from "@app/api/response.dto";
 import { ApiProperty } from "@nestjs/swagger";
 import { Expose, plainToInstance, Transform, Type } from "class-transformer";
-import { IsArray, IsDate, IsDefined, IsEnum, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, Min, ValidateNested } from "class-validator";
+import { IsArray, IsBoolean, IsDate, IsDefined, IsEnum, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, Min, ValidateNested } from "class-validator";
 
 export class ListAddOnsQueryDto {
     @ApiProperty({
@@ -45,6 +45,19 @@ export class ListAddOnsQueryDto {
     @IsEnum(['asc', 'desc'])
     @IsOptional()
     sort: 'asc' | 'desc';
+
+    @ApiProperty({
+        description: 'boolean value true or false',
+        type: String,
+        enum: ['true', 'false'],
+        required: false,
+    })
+    @IsOptional()
+    @IsBoolean()
+    @Transform(({ obj, key }) => {
+        return obj[key] === 'true' ? true : obj[key] === 'false' ? false : obj[key];
+    })
+    isActive?: string;
 }
 
 export class SlotDto {
@@ -110,6 +123,14 @@ export class ListAddOnsDto {
     @IsNotEmpty()
     @Expose()
     price!: number;
+
+    @ApiProperty({
+        type: Boolean,
+        example: true,
+    })
+    @IsBoolean()
+    @Expose()
+    isActive!: boolean;
 
     @ApiProperty({
         type: String,
