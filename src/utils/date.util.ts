@@ -76,3 +76,10 @@ export function dateStringToUtc(date: string): Date {
 export function utcToDateString(date: Date): string {
     return moment(date).format('YYYY-MM-DD')
 }
+
+
+export function UtcToDateString() {
+    return Transform((obj) => {
+        return utcToDateString(obj.value);
+    });
+}

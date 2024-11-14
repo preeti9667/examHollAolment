@@ -246,4 +246,41 @@ export class BookingService {
         }
 
     }
+
+
+    async bookingDetails(id: string, userId: string) {
+        const booking = await this.$prisma.booking.findFirst({
+            where: { id, userId },
+            select: {
+                id: true,
+                displayId: true,
+                noOfCandidates: true,
+                hallAllocated: true,
+                totalCost: true,
+                status: true,
+                startDate: true,
+                endDate: true,
+                createdAt: true,
+                updatedAt: true,
+                contact: true,
+                address: true,
+                bookingHall: {
+                    select: {
+                        id: true,
+                        date: true,
+                        seatsAllocated: true,
+                        totalPrice: true,
+                        hallRaw: true,
+                        slotRaw: true
+                    }
+                }
+            }
+        });
+
+        if (!booking) {
+            ApiException.notFound('BOOKING.NOT_FOUND')
+        }
+
+        return booking;
+    }
 }
