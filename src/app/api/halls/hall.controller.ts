@@ -38,20 +38,21 @@ export class HallController {
 
 
 
-    // @Post('')
-    // @Message('HALL.CREATE')
-    // @ApiOkResponse({ type: CreateHallResponseDto })
-    // @ApiOperation({ summary: 'Create hall' })
-    // async create(@Body() createDto: CreateHallDto) {
-    //     return await this.$hall.create(
-    //         createDto
-    //     );
-    // }
+    @Post('')
+    @Message('HALL.CREATE')
+    @ApiOkResponse({ type: CreateHallResponseDto })
+    @ApiOperation({ summary: 'Create Hall by admin' })
+    async create(@Body() createDto: CreateHallDto) {
+        return await this.$hall.create(
+            createDto
+        );
+    }
+
 
     @Get('')
     @Message('HALL.LIST')
     @ApiOkResponse({ type: HallListResponseDto })
-    @ApiOperation({ summary: 'Hall Listing' })
+    @ApiOperation({ summary: 'Hall Listing By admin' })
     async list(
         @Query() query: ListHallQueryDto
     ) {

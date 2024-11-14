@@ -8,6 +8,7 @@ import { LoggerService } from "@app/shared/logger";
 import { ListHallQueryDto } from "./dto/list.dto";
 import { Prisma } from "@prisma/client";
 import { IHall } from "./interfaces/hall";
+import { BookingStatus } from "../bookings/booking.constant";
 
 @Injectable()
 export class HallService {
@@ -30,16 +31,25 @@ export class HallService {
             const price = 20000;
             const slots = i % 2 == 0 ? ['1b53c972-bdc7-4cfb-bf86-90a55e8b95ae'] : ['1b53c972-bdc7-4cfb-bf86-90a55e8b95ae', '7fec2a37-d6ff-4d6f-bee8-b97df8b843d2'];
 
-            await this.$prisma.hall.create({
+            const hall = await this.$prisma.hall.create({
                 data: {
                     displayId,
                     name,
                     groupName,
                     capacity,
                     slots,
-                    price
+                    price,
                 }
             })
+
+            for (const t of slots) {
+                await this.$prisma.hallTimeSlot.create({
+                    data: {
+                        hallId: hall.id,
+                        timeSlotId: t
+                    }
+                })
+            }
 
 
             console.log(i, "Hall created")
@@ -117,11 +127,8 @@ export class HallService {
                         SELECT "hallId"
                         FROM public."BookingHall"
                         WHERE "date" = ds."bookingDate"
-                        AND "bookingId" NOT IN (
-                        SELECT "id"
-                        FROM public."Booking"
-                        WHERE "status" NOT IN (30, 50)
-                        )
+                        AND "timeSlotId" = slot
+                        AND "status" IN (30, 50)
                     )
                 GROUP BY
                     ds."bookingDate", slot
@@ -172,39 +179,49 @@ export class HallService {
 
 
     async availableHallsForDate(slotId: string, date: Date): Promise<IHall[]> {
-        const query = `
-        SELECT
-            *
-            FROM
-            public."Hall" AS H
-            WHERE
-            H."isActive" = true
-            AND H."isDeleted" = false
-            AND $1 = ANY(H."slots")
-            AND H."id" NOT IN (
-                SELECT "hallId"
-                FROM public."BookingHall"
-                WHERE "date" <> $2
-                AND "timeSlotId" = $3
-                AND "bookingId" NOT IN (
-                SELECT "id"
-                FROM public."Booking"
-                WHERE "status" NOT IN (30, 50)
-                )
-            )
-            `;
-        const data = await this.$prisma.$queryRawUnsafe(query, slotId, date, slotId);
-        return data as IHall[];
+
+
+        const query = Prisma.sql`
+         SELECT
+             *
+             FROM
+             public."Hall" AS H
+             WHERE
+             H."isActive" = true
+             AND H."isDeleted" = false
+             AND H.id IN (
+                 SELECT "hallId" FROM public."HallTimeSlot"
+                 WHERE "timeSlotId" = ${slotId}
+             )
+             AND H."id" NOT IN (
+                 SELECT "hallId"
+                 FROM public."BookingHall"
+                 WHERE "date" = ${date}::date
+                 AND "timeSlotId" = ${slotId}
+                 AND "status" IN (30, 50)
+             )
+             `;
+        const data = await this.$prisma.$queryRaw(query);
+        return data as any[];
     }
 
 
     async create(payload: CreateHallDto) {
-        await this.$prisma.hall.create({
+        const hall = await this.$prisma.hall.create({
             data: {
                 displayId: OpenId.format('HALL'),
                 ...payload
             }
         })
+
+        for (const t of hall.slots) {
+            await this.$prisma.hallTimeSlot.create({
+                data: {
+                    hallId: hall.id,
+                    timeSlotId: t
+                }
+            })
+        }
         return true;
     }
 

@@ -1,0 +1,6 @@
+{
+  "DRAFT_CREATED": "Booking saved as draft successfully.",
+  "AWAITING_FOR_PAYMENT": "Booking created successfully. Awaiting payment.",
+  "INVALID_ID": "Invalid booking ID.",
+  "HALL_NOT_AVAILABLE": "The hall is not available."
+}

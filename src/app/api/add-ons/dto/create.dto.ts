@@ -1,7 +1,7 @@
 import { ResponseDto } from '@app/api/response.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { AddOnType } from '@prisma/client';
-import { IsString, IsDefined, IsNotEmpty, IsNumber, IsEnum } from 'class-validator';
+import { IsString, IsDefined, IsNotEmpty, IsNumber, IsEnum, IsBoolean } from 'class-validator';
+import { AddOnType } from '../add-on.constant';
 
 export class CreateAddOnsDto {
 
@@ -18,7 +18,7 @@ export class CreateAddOnsDto {
     @ApiProperty({
         required: true,
         description: 'Add-Ons',
-        example: AddOnType.SECURITY,
+        example: AddOnType.Security,
         enum: AddOnType,
     })
     @IsDefined()
@@ -35,13 +35,21 @@ export class CreateAddOnsDto {
     @IsDefined()
     @IsNotEmpty()
     price!: number;
+
+
+    @ApiProperty({
+        type: Boolean,
+        example: true
+    })
+    @IsBoolean()
+    @IsNotEmpty()
+    isActive: boolean
 }
 
 export class CreateAddOnsResponseDto extends ResponseDto {
     @ApiProperty({
-      type: Boolean,
-      description: 'Status',
+        type: Boolean,
+        description: 'Status',
     })
     result!: boolean;
-  }
-  
+}

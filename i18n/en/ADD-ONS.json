@@ -1,4 +1,4 @@
 {
-    "CREATE": "Add-Ons created successfully",
-    "LIST": "Add-Ons List"
+  "CREATE": "Add-On created successfully.",
+  "LIST": "Add-On list retrieved successfully."
 }
