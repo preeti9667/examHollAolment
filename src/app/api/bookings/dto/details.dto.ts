@@ -1,9 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsUUID, IsString, IsOptional, IsNumber, IsEnum, IsDate, IsObject, IsInt, ValidateNested } from "class-validator";
+import { IsUUID, IsString, IsOptional, IsNumber, IsEnum, IsDate, IsObject, IsInt, ValidateNested, Length } from "class-validator";
 import { BookingStatus } from "../booking.constant";
 import { Format24TO12, UtcToDateString } from "src/utils";
 import { Type } from "class-transformer";
-import { UserAddressDto } from "@app/api/users/dto/address.dto";
 import { ResponseDto } from "@app/api/response.dto";
 
 
@@ -77,6 +76,50 @@ export class BookingDetailsSlotDto {
     @Format24TO12()
     @IsString()
     to: number;
+}
+
+
+export class BookingDetailsAddressDto {
+    @ApiProperty({
+        type: String,
+        example: 'gali no 10',
+        required: false
+    })
+    street?: string;
+
+    @ApiProperty({
+        type: String,
+        example: '232, F block, sector 51',
+        required: false
+    })
+    @IsString()
+    @IsOptional()
+    addressLine?: string;
+
+    @ApiProperty({
+        type: String,
+        example: '301203',
+        required: true
+    })
+    @IsString()
+    @Length(6, 6)
+    pincode: string;
+
+    @ApiProperty({
+        type: String,
+        example: 'Delhi',
+        required: true
+    })
+    @IsString()
+    city: string;
+
+    @ApiProperty({
+        type: String,
+        example: 'Delhi',
+        required: true
+    })
+    @IsString()
+    state: string
 }
 
 
@@ -239,12 +282,12 @@ export class BookingDetailsDto {
     contact: BookingDetailsContactDto;
 
     @ApiProperty({
-        type: UserAddressDto,
+        type: BookingDetailsAddressDto,
         required: true
     })
     @IsObject()
-    @Type(() => UserAddressDto)
-    address: UserAddressDto;
+    @Type(() => BookingDetailsAddressDto)
+    address: BookingDetailsAddressDto;
 
     @ApiProperty({
         type: [BookingDetailsBookingHallDto],
