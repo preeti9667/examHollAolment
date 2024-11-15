@@ -84,8 +84,15 @@ export class SubPaisaService {
         logger.log("stringForRequest :: " + stringForRequest);
         const encryptedStringForRequest = this.encrypt(stringForRequest);
         logger.log("encryptedStringForRequest :: " + encryptedStringForRequest);
-        const paymentRequestUrl = `${this.spUrl}&encData=${encodeURIComponent(encryptedStringForRequest)}&clientCode=${encodeURIComponent(this.clientCode)}`;
-        return paymentRequestUrl;
+        const formData = {
+            spURL: this.spUrl,
+            encData: encryptedStringForRequest,
+            clientCode: this.clientCode,
+        };
+
+        // Return the payment URL
+        const paymentUrl = `${formData.spURL}?encData=${formData.encData}&clientCode=${formData.clientCode}`;
+        return paymentUrl;
 
     }
 
