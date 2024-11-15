@@ -19,8 +19,8 @@ export class PaymentController {
         private $payment: PaymentService
     ) { }
     @Post('/init')
-    @UseGuards(AuthGuard)
-    @ApiBearerAuth('AccessToken')
+    // @UseGuards(AuthGuard)
+    // @ApiBearerAuth('AccessToken')
     @Message('PAYMENT.INITIATED')
     @ApiOkResponse({ type: InitPaymentResponseDto })
     @ApiOperation({ summary: 'Initiate booking payment' })

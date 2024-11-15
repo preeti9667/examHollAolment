@@ -3,6 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { createCipheriv, createDecipheriv } from 'node:crypto'
 import { InitPaymentRequest } from "./interfaces/init-payment";
 import { EnvService } from "@app/shared/env";
+import { ApiException } from "../api.exception";
 
 @Injectable()
 export class SubPaisaService {
@@ -59,6 +60,42 @@ export class SubPaisaService {
         return formData;
 
     }
+
+
+    // async paymentHandler(body: any) {
+    //     // if (req.method !== "POST") {
+    //     //     return res.status(405).json({ message: "Method not allowed" });
+    //     // }
+
+    //     console.log("Full Request Body:", body); 
+
+    //     const authKey = this.$env.SABPAISA_AUTH_KEY;
+    //     const authIV = this.$env.SABPAISA_AUTH_IV;
+    //     const encData = body.encData || body?.data?.encData;
+
+    //     if (!encData) {
+    //         ApiException.badData('PAYMENT.ENC_DATA_MISSING')
+    //         return res.status(400).json({ message: "" });
+    //     }
+
+    //     try {
+    //         const decipher = crypto.createDecipheriv(
+    //             "aes-128-cbc",
+    //             Buffer.from(authKey, "utf-8"),
+    //             authIV
+    //         );
+    //         let decrypted = decipher.update(encData, "base64", "utf8");
+    //         decrypted += decipher.final("utf8");
+
+    //         res.json({
+    //             success: true,
+    //             decryptedResponse: decrypted,
+    //         });
+    //     } catch (error) {
+    //         console.error("Error decrypting data:", error);
+    //         res.status(500).json({ message: "Error decrypting data" });
+    //     }
+    // }
 
 
 }

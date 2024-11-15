@@ -1,0 +1,4 @@
+{
+  "ENC_DATA_MISSING": "Missing encData in request body",
+  "INVALID_BOOKING_ID": "Invalid booking id"
+}
