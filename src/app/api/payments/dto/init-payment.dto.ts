@@ -71,8 +71,8 @@ export class InitPaymentResultDto {
 
 export class InitPaymentResponseDto extends ResponseDto {
     @ApiProperty({
-        type: InitPaymentResultDto
+        type: InitPaymentTransactionDto
     })
-    @Type(() => InitPaymentResultDto)
-    result: InitPaymentResultDto;
+    @Type(() => InitPaymentTransactionDto)
+    result: InitPaymentTransactionDto;
 }

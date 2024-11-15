@@ -5,6 +5,7 @@ import { InitPaymentBodyDto } from "./dto/init-payment.dto";
 import { BookingStatus } from "../bookings/booking.constant";
 import { ApiException } from "../api.exception";
 import { SubPaisaService } from "../subpaisa/subpaisa.service";
+import { PaymentStatus } from "./payment.constant";
 
 @Injectable()
 export class PaymentService {
@@ -19,12 +20,24 @@ export class PaymentService {
         const { bookingId } = payload;
 
         const booking = await this.$prisma.booking.findFirst({
-            where: { id: bookingId, status: BookingStatus.AwaitingForPayment }
+            where: {
+                id: bookingId,
+                status: BookingStatus.AwaitingForPayment
+            }
         });
 
         if (!booking) ApiException.badData('PAYMENT.INVALID_BOOKING_ID');
 
-        const transactionId = this.$subPaisa.randomStr(20, "12345abcdefghijkl");
+        const transactionId = `tx_${this.$subPaisa.randomStr(20, "12345abcdefghijkl1234567")}`;
+
+        await this.$prisma.payment.create({
+            data: {
+                bookingId,
+                transactionId,
+                status: PaymentStatus.Pending,
+                amount: booking.totalCost
+            }
+        });
 
         const res = this.$subPaisa.initPaymentRequest({
             orderId: booking.id,
