@@ -196,15 +196,8 @@ export class BookingService {
             this.$prisma.bookingHall.createMany(
                 { data: bookingHall }
             )
-        ])
+        ]);
 
-        // const paymentLink = await this.$subPaisa.initPaymentRequest({
-        //     orderId: newBooking.id,
-        //     payerName: newBooking.applicantName,
-        //     payerEmail: newBooking.contact['email'],
-        //     payerMobile: newBooking.contact['phoneNumber'],
-        //     amount: newBooking.totalCost
-        // });
         return {
             id: newBooking.id,
             displayId: newBooking.displayId,

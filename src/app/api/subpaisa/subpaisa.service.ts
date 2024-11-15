@@ -29,7 +29,7 @@ export class SubPaisaService {
     }
 
 
-    private randomStr(len: number, arr: string) {
+    randomStr(len: number, arr: string) {
         let ans = "";
         for (let i = len; i > 0; i--) {
             ans += arr[Math.floor(Math.random() * arr.length)];
@@ -41,7 +41,7 @@ export class SubPaisaService {
         const payerName = data.payerName;
         const payerEmail = data.payerEmail;
         const payerMobile = data.payerMobile;
-        const clientTxnId = this.randomStr(20, "12345abcde");
+        const clientTxnId = data.transactionId;
         const amount = data.amount;
         const channelId = "W";
         const transData = data.orderId;

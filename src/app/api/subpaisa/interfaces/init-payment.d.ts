@@ -4,4 +4,5 @@ export interface InitPaymentRequest {
     payerEmail: string;
     payerMobile: string;
     amount: number;
+    transactionId: string;
 }
