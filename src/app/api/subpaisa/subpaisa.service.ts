@@ -46,7 +46,7 @@ export class SubPaisaService {
         const amount = data.amount;
         const channelId = "W";
         const transData = data.orderId;
-        const stringForRequest = `payerName=${payerName}&payerEmail=${payerEmail}&payerMobile=${payerMobile}&clientTxnId=${clientTxnId}&amount=${amount}&clientCode=${this.$env.SABPAISA_CLIENT_CODE}&transUserName=${this.$env.SABPAISA_TRANS_USER_NAME}&transUserPassword=${this.$env.SABPAISA_TRANS_USER_PASSWORD}&callbackUrl=${this.$env.NEXT_PUBLIC_CALLBACK_URL}&channelId=${channelId}&mcc=${this.$env.SABPAISA_MCC}&transData=${transData}`;
+        const stringForRequest = `payerName=${payerName}&payerEmail=${payerEmail}&payerMobile=${payerMobile}&clientTxnId=${clientTxnId}&amount=${amount}&clientCode=${this.$env.SABPAISA_CLIENT_CODE}&transUserName=${this.$env.SABPAISA_TRANS_USER_NAME}&transUserPassword=${this.$env.SABPAISA_TRANS_USER_PASSWORD}&callbackUrl=${this.$env.SUBPAISA_CALLBACK_URL}&channelId=${channelId}&mcc=${this.$env.SABPAISA_MCC}&transData=${transData}`;
         this.$logger.log("stringForRequest :: " + stringForRequest);
         const encryptedStringForRequest = this.encrypt(stringForRequest);
         this.$logger.log("encryptedStringForRequest :: " + encryptedStringForRequest);

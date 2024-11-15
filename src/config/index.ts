@@ -89,7 +89,7 @@ export class EnvConfig {
     SABPAISA_URL: string;
     @IsString()
     @IsDefined()
-    NEXT_PUBLIC_CALLBACK_URL: string;
+    SUBPAISA_CALLBACK_URL: string;
 
 
 
