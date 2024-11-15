@@ -1,27 +1,20 @@
 import { LoggerService } from "@app/shared/logger";
 import { Injectable } from "@nestjs/common";
-import { logger } from "nestjs-i18n";
 import { createCipheriv, createDecipheriv } from 'node:crypto'
 import { InitPaymentRequest } from "./interfaces/init-payment";
+import { EnvService } from "@app/shared/env";
 
 @Injectable()
 export class SubPaisaService {
 
     private algorithm = 'aes-128-cbc';
-    private authKey = 'kaY9AIhuJZNvKGp2';
-    private authIV = 'YN2v8qQcU3rGfA1y';
-    private subPaisaApiKey = '';
-    private subPaisaSecretKey = '';
-    private clientCode = 'TM001';
-    private transUserName = 'spuser_2013';
-    private transUserPassword = 'RIADA_SP336';
-    private spUrl = 'https://stage-securepay.sabpaisa.in/SabPaisa/sabPaisaInit?v=1';
-
-
-    constructor(private $logger: LoggerService) { }
+    constructor(
+        private $logger: LoggerService,
+        private $env: EnvService
+    ) { }
 
     private encrypt(text: string) {
-        let cipher = createCipheriv(this.algorithm, Buffer.from(this.authKey), this.authIV);
+        let cipher = createCipheriv(this.algorithm, Buffer.from(this.$env.SABPAISA_AUTH_KEY), this.$env.SABPAISA_AUTH_IV);
         let encrypted = cipher.update(text);
         encrypted = Buffer.concat([encrypted, cipher.final()]);
         return encrypted.toString('base64');
@@ -29,7 +22,7 @@ export class SubPaisaService {
 
 
     private decrypt(text: string) {
-        let decipher = createDecipheriv(this.algorithm, Buffer.from(this.authKey), this.authIV);
+        let decipher = createDecipheriv(this.algorithm, Buffer.from(this.$env.SABPAISA_AUTH_KEY), this.$env.SABPAISA_AUTH_IV);
         let decrypted = decipher.update(Buffer.from(text, 'base64'));
         decrypted = Buffer.concat([decrypted, decipher.final()]);
         return decrypted.toString();
@@ -50,48 +43,19 @@ export class SubPaisaService {
         const payerMobile = data.payerMobile;
         const clientTxnId = this.randomStr(20, "12345abcde");
         const amount = data.amount;
-        const callbackUrl = "http://127.0.0.1:3000/getPgRes";
         const channelId = "W";
-        const mcc = "5666";
-        const transData = new Date();
-
-        const stringForRequest =
-            "payerName=" +
-            payerName +
-            "&payerEmail=" +
-            payerEmail +
-            "&payerMobile=" +
-            payerMobile +
-            "&clientTxnId=" +
-            clientTxnId +
-            "&amount=" +
-            amount +
-            "&clientCode=" +
-            this.clientCode +
-            "&transUserName=" +
-            this.transUserName +
-            "&transUserPassword=" +
-            this.transUserPassword +
-            "&callbackUrl=" +
-            callbackUrl +
-            "&channelId=" +
-            channelId +
-            "&mcc=" +
-            mcc +
-            "&transData=" +
-            transData;
-
-        logger.log("stringForRequest :: " + stringForRequest);
+        const transData = data.orderId;
+        const stringForRequest = `payerName=${payerName}&payerEmail=${payerEmail}&payerMobile=${payerMobile}&clientTxnId=${clientTxnId}&amount=${amount}&clientCode=${this.$env.SABPAISA_CLIENT_CODE}&transUserName=${this.$env.SABPAISA_TRANS_USER_NAME}&transUserPassword=${this.$env.SABPAISA_TRANS_USER_PASSWORD}&callbackUrl=${this.$env.NEXT_PUBLIC_CALLBACK_URL}&channelId=${channelId}&mcc=${this.$env.SABPAISA_MCC}&transData=${transData}`;
+        this.$logger.log("stringForRequest :: " + stringForRequest);
         const encryptedStringForRequest = this.encrypt(stringForRequest);
-        logger.log("encryptedStringForRequest :: " + encryptedStringForRequest);
+        this.$logger.log("encryptedStringForRequest :: " + encryptedStringForRequest);
         const formData = {
-            spURL: this.spUrl,
+            spURL: this.$env.SABPAISA_URL,
             encData: encryptedStringForRequest,
-            clientCode: this.clientCode,
+            clientCode: this.$env.SABPAISA_CLIENT_CODE,
         };
-
-        // Return the payment URL
         const paymentUrl = `${formData.spURL}?encData=${formData.encData}&clientCode=${formData.clientCode}`;
+        this.$logger.log("paymentUrl :: " + paymentUrl);
         return paymentUrl;
 
     }
