@@ -54,9 +54,9 @@ export class SubPaisaService {
             encData: encryptedStringForRequest,
             clientCode: this.$env.SABPAISA_CLIENT_CODE,
         };
-        const paymentUrl = `${formData.spURL}?encData=${formData.encData}&clientCode=${formData.clientCode}`;
-        this.$logger.log("paymentUrl :: " + paymentUrl);
-        return paymentUrl;
+        // const paymentUrl = `${formData.spURL}?encData=${formData.encData}&clientCode=${formData.clientCode}`;
+        // this.$logger.log("paymentUrl :: " + paymentUrl);
+        return formData;
 
     }
 
