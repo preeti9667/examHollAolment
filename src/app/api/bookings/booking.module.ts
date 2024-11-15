@@ -14,7 +14,6 @@ import { SubPaisaModule } from "../subpaisa/subpaisa.module";
             context: BookingModule.name
         }),
         HallModule,
-        SubPaisaModule
     ],
     exports: [BookingService],
     providers: [BookingService]

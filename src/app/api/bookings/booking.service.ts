@@ -8,7 +8,6 @@ import { v4 as uuid } from 'uuid'
 import { HallService } from "../halls/hall.service";
 import { IHall } from "../halls/interfaces/hall";
 import { ApiException } from "../api.exception";
-import { SubPaisaService } from "../subpaisa/subpaisa.service";
 
 @Injectable()
 export class BookingService {
@@ -17,7 +16,6 @@ export class BookingService {
         private $prisma: PrismaService,
         private $logger: LoggerService,
         private $hall: HallService,
-        private $subPaisa: SubPaisaService
     ) { }
 
     private getBookingDisplayId(): string {
@@ -200,13 +198,13 @@ export class BookingService {
             )
         ])
 
-        const paymentLink = await this.$subPaisa.initPaymentRequest({
-            orderId: newBooking.id,
-            payerName: newBooking.applicantName,
-            payerEmail: newBooking.contact['email'],
-            payerMobile: newBooking.contact['phoneNumber'],
-            amount: newBooking.totalCost
-        });
+        // const paymentLink = await this.$subPaisa.initPaymentRequest({
+        //     orderId: newBooking.id,
+        //     payerName: newBooking.applicantName,
+        //     payerEmail: newBooking.contact['email'],
+        //     payerMobile: newBooking.contact['phoneNumber'],
+        //     amount: newBooking.totalCost
+        // });
         return {
             id: newBooking.id,
             displayId: newBooking.displayId,
@@ -214,7 +212,7 @@ export class BookingService {
             hallAllocated,
             status: BookingStatus.AwaitingForPayment,
             totalCost,
-            paymentLink,
+            paymentLink: null,
         }
 
     }
