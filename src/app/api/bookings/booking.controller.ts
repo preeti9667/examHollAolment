@@ -10,6 +10,7 @@ import { BookingStatus } from "./booking.constant";
 import { BookingDetailParamsDto, BookingDetailsDto, BookingDetailsResponseDto } from "./dto/details.dto";
 import { plainToInstance } from "class-transformer";
 import { BookingListQueryDto, BookingListResultDto } from "./dto/list.dto";
+import { CostEstimatePayloadDto, CostEstimateResponseDto } from "./dto/cost-estimate.dto";
 
 @Controller({
     path: 'booking',
@@ -36,6 +37,18 @@ export class BookingController {
         @AuthUser() user: IAuthUser
     ) {
         return this.$booking.createBooking(payload, user.id);
+    }
+
+    @Post('/cost-estimate')
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('BOOKING.COST_ESTIMATE')
+    @ApiOkResponse({ type: CostEstimateResponseDto })
+    @ApiOperation({ summary: 'Booking Cost Estimate for customer' })
+    async costEstimate(
+        @Body() payload: CostEstimatePayloadDto,
+    ) {
+        return this.$booking.costEstimate(payload);
     }
 
     @Get('/list')

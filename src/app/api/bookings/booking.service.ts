@@ -1,8 +1,8 @@
 import { PrismaService } from "@app/databases/prisma/prisma.service";
 import { LoggerService } from "@app/shared/logger";
-import { Injectable, SerializeOptions } from "@nestjs/common";
-import { dateStringToUtc, OpenId, utcToDateString } from "src/utils";
-import { BookingDateTimeSlotDto, CreateBookingPayloadDto } from "./dto/create.dto";
+import { Injectable } from "@nestjs/common";
+import { dateStringToUtc, OpenId } from "src/utils";
+import { CreateBookingPayloadDto } from "./dto/create.dto";
 import { BookingStatus } from "./booking.constant";
 import { v4 as uuid } from 'uuid'
 import { HallService } from "../halls/hall.service";
@@ -10,6 +10,7 @@ import { IHall } from "../halls/interfaces/hall";
 import { ApiException } from "../api.exception";
 import { PaymentStatus } from "../payments/payment.constant";
 import { BookingListQueryDto } from "./dto/list.dto";
+import { CostEstimatePayloadDto } from "./dto/cost-estimate.dto";
 
 @Injectable()
 export class BookingService {
@@ -133,6 +134,9 @@ export class BookingService {
 
         const hallIds = [];
         const notAvailableHalls = [];
+        let totalCost = 0;
+        let noOfCandidates = 0;
+
         for (const slot of payload.timeSlots) {
             const date = dateStringToUtc(slot.date);
             const halls = await this.$hall.availableHallsForDate(slot.slotId, date);
@@ -141,6 +145,7 @@ export class BookingService {
                 notAvailableHalls.push(slot);
                 break
             }
+            noOfCandidates += slot.noOfCandidates;
             const allocateHalls = this.allocateHalls(halls, slot.noOfCandidates);
 
             const bookingHallObj = {
@@ -151,6 +156,7 @@ export class BookingService {
             }
 
             allocateHalls.forEach(e => {
+                totalCost += e.totalPrice;
                 hallIds.push(e.id);
                 bookingHall.push(
                     {
@@ -175,8 +181,8 @@ export class BookingService {
             ApiException.gone('BOOKING.HALL_NOT_AVAILABLE')
         }
 
-        const totalCost = bookingHall.reduce((acc: number, hall: any) => acc + hall.totalPrice, 0);
-        const noOfCandidates = bookingHall.reduce((acc: number, hall: any) => acc + hall.seatsAllocated, 0);
+        // const totalCost = bookingHall.reduce((acc: number, hall: any) => acc + hall.totalPrice, 0);
+        // const noOfCandidates = bookingHall.reduce((acc: number, hall: any) => acc + hall.seatsAllocated, 0);
         const hallAllocated = bookingHall.length;
         const [newBooking] = await this.$prisma.$transaction([
             this.$prisma.booking.upsert({
@@ -347,6 +353,39 @@ export class BookingService {
             limit,
             total,
             data
+        }
+    }
+
+
+    async costEstimate(payload: CostEstimatePayloadDto) {
+        let totalCost = 0;
+        let totalHalls = 0;
+        let noOfCandidates = 0;
+        const notAvailableHalls = [];
+        for (const slot of payload.timeSlots) {
+            const date = dateStringToUtc(slot.date);
+            const halls = await this.$hall.availableHallsForDate(slot.slotId, date);
+            const totalCapacity = halls.reduce((acc: number, hall: IHall) => acc + hall.capacity, 0);
+            if (totalCapacity < slot.noOfCandidates) {
+                notAvailableHalls.push(slot);
+                break
+            }
+            noOfCandidates += slot.noOfCandidates;
+            const allocateHalls = this.allocateHalls(halls, slot.noOfCandidates);
+            allocateHalls.forEach(e => {
+                totalCost += e.totalPrice;
+                totalHalls += 1
+            })
+        }
+
+        if (notAvailableHalls.length) {
+            ApiException.gone('BOOKING.HALL_NOT_AVAILABLE')
+        }
+
+        return {
+            totalCost,
+            totalHalls,
+            noOfCandidates
         }
     }
 }
