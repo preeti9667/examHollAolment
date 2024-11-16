@@ -42,8 +42,7 @@ export class PaymentController {
         @Body() payload: any,
         @Res() res: Response
     ) {
-        console.log(payload)
-        const data = this.$payment.paymentResponse(payload);
-        return res.redirect(302, `/dashboard?data=${data}`);
+        const data = await this.$payment.paymentResponse(payload);
+        return res.redirect(302, `${data.redirectUrl}?data=${data.dataString}`);
     }
 }

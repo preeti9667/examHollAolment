@@ -9,6 +9,7 @@ import { PaymentStatus } from "./payment.constant";
 import { SubPaisaPaymentStatus } from "../subpaisa/subpaisa.contant";
 import { dateStringToUtc, dsToUTC } from "src/utils";
 import { BookingService } from "../bookings/booking.service";
+import { EnvService } from "@app/shared/env";
 
 @Injectable()
 export class PaymentService {
@@ -17,7 +18,8 @@ export class PaymentService {
         private $logger: LoggerService,
         private $prisma: PrismaService,
         private $subPaisa: SubPaisaService,
-        private $booking: BookingService
+        private $booking: BookingService,
+        private $env: EnvService
     ) { }
 
     async initPayment(payload: InitPaymentBodyDto) {
@@ -62,7 +64,6 @@ export class PaymentService {
         const encData = body.encResponse || body.encData || body?.data?.encData;
         if (!encData) ApiException.badData('PAYMENT.ENC_DATA_MISSING');
         const decrypted = await this.$subPaisa.paymentHandler(encData);
-        this.$logger.log(JSON.stringify(decrypted, undefined, 2));
         const decryptedResponse = decrypted.decryptedResponse.split('&');
         let decryptedResponseObj: any = {};
         decryptedResponse.forEach(e => {
@@ -105,7 +106,7 @@ export class PaymentService {
             decryptedResponseObj.paymentMode
         );
         const dataString = JSON.stringify(decrypted.decryptedResponse);
-        return dataString;
+        return { dataString, redirectUrl: this.$env.REDIRECT_URL_PAYMENT };
     }
 
 

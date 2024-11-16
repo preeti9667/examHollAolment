@@ -91,6 +91,10 @@ export class EnvConfig {
     @IsDefined()
     SUBPAISA_CALLBACK_URL: string;
 
+    @IsString()
+    @IsDefined()
+    REDIRECT_URL_PAYMENT: string;
+
 
 
 }

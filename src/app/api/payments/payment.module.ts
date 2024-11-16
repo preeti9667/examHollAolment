@@ -4,11 +4,13 @@ import { SubPaisaModule } from "../subpaisa/subpaisa.module";
 import { LoggerModule } from "@app/shared/logger";
 import { PaymentService } from "./payment.service";
 import { BookingModule } from "../bookings/booking.module";
+import { EnvModule } from "@app/shared/env/env.module";
 
 @Module({
     imports: [
         SubPaisaModule,
         BookingModule,
+        EnvModule,
         LoggerModule.register({ context: PaymentModule.name }),
     ],
     controllers: [

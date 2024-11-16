@@ -25,6 +25,7 @@ export class EnvService {
     readonly SABPAISA_MCC = this.get('SABPAISA_MCC');
     readonly SABPAISA_URL = this.get('SABPAISA_URL');
     readonly SUBPAISA_CALLBACK_URL = this.get('SUBPAISA_CALLBACK_URL');
+    readonly REDIRECT_URL_PAYMENT = this.get('REDIRECT_URL_PAYMENT');
 
     // readonly ADMIN = this.get('ADMIN');
     // readonly MONGO = this.get('MONGO');
