@@ -47,7 +47,7 @@ export class PaymentController {
         try {
             const data = await this.$payment.paymentResponse(payload);
             this.$logger.log(`Encoded data : ${data.dataString}`);
-            return res.redirect(302, `${data.redirectUrl}?data=${data.dataString}`);
+            return res.redirect(302, `${data.redirectUrl}/dashboard?data=${data.dataString}`);
         } catch (error) {
             return res.redirect(302, `status=ERROR&message=${encodeURIComponent(
                 "Error processing payment response"
