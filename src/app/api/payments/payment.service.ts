@@ -10,6 +10,7 @@ import { SubPaisaPaymentStatus } from "../subpaisa/subpaisa.contant";
 import { dateStringToUtc, dsToUTC } from "src/utils";
 import { BookingService } from "../bookings/booking.service";
 import { EnvService } from "@app/shared/env";
+import { logger } from "nestjs-i18n";
 
 @Injectable()
 export class PaymentService {
@@ -105,7 +106,7 @@ export class PaymentService {
             paymentStatus,
             decryptedResponseObj.paymentMode
         );
-        const encodedData = encodeURIComponent(JSON.stringify(decrypted.decryptedResponse));
+        const encodedData = encodeURIComponent(JSON.stringify(decryptedResponseObj));
         return { dataString: encodedData, redirectUrl: this.$env.REDIRECT_URL_PAYMENT };
     }
 
