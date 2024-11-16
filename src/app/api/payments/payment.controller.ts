@@ -36,12 +36,13 @@ export class PaymentController {
     // @UseGuards(AuthGuard)
     // @ApiBearerAuth('AccessToken')
     @Message('PAYMENT.RESPONSE')
-    @ApiOkResponse({ type: InitPaymentResponseDto })
+    // @ApiOkResponse({ type: InitPaymentResponseDto })
     @ApiOperation({ summary: 'Initiate booking payment' })
     async result(
         @Body() payload: any,
         @Res() res: Response
     ) {
+        console.log(payload)
         const data = this.$payment.paymentResponse(payload);
         return res.redirect(302, `/dashboard?data=${data}`);
     }
