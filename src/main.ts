@@ -20,7 +20,7 @@ class Server {
     // app.use(helmet({
     //   contentSecurityPolicy: false,
     // }));
-    app.setGlobalPrefix(API_BASE_PATH);
+    app.setGlobalPrefix(API_BASE_PATH, { exclude: [''] });
     app.enableVersioning({
       type: VersioningType.URI,
     });
