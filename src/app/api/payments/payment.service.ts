@@ -35,7 +35,7 @@ export class PaymentService {
 
         if (!booking) ApiException.badData('PAYMENT.INVALID_BOOKING_ID');
 
-        const transactionId = `tx_${this.$subPaisa.randomStr(20, "12345abcdefghijkl1234567")}`;
+        const transactionId = `tx_${this.$subPaisa.randomStr(30, "12345abcdefghijkl1234567")}`;
 
         await this.$prisma.payment.create({
             data: {
@@ -101,12 +101,14 @@ export class PaymentService {
                 }
             }
         })
-        await this.$booking.handleBookingPaymentStatus(
+        const bookingDisplayId = await this.$booking.handleBookingPaymentStatus(
             payment.bookingId,
             paymentStatus,
             decryptedResponseObj.paymentMode
         );
-        const encodedData = encodeURIComponent(JSON.stringify(decryptedResponseObj));
+
+        this.$logger.log(`Booking display id : ${bookingDisplayId}`);
+        const encodedData = encodeURIComponent(JSON.stringify({ ...decryptedResponseObj, bookingDisplayId }));
         return { dataString: encodedData, redirectUrl: this.$env.REDIRECT_URL_PAYMENT };
     }
 

@@ -221,7 +221,7 @@ export class BookingService {
         if (paymentStatus !== PaymentStatus.Success)
             bookingStatus = BookingStatus.Failed;
 
-        await Promise.all([
+        const [booking] = await Promise.all([
             this.$prisma.booking.update({
                 where: { id: bookingId },
                 data: {
@@ -236,7 +236,7 @@ export class BookingService {
         ]);
 
         this.$logger.log(`Booking status updated for booking ${bookingId} after payment`);
-        return true;
+        return booking.displayId;
     }
 
 
