@@ -6,6 +6,9 @@ import { BookingStatus } from "../bookings/booking.constant";
 import { ApiException } from "../api.exception";
 import { SubPaisaService } from "../subpaisa/subpaisa.service";
 import { PaymentStatus } from "./payment.constant";
+import { SubPaisaPaymentStatus } from "../subpaisa/subpaisa.contant";
+import { dateStringToUtc, dsToUTC } from "src/utils";
+import { BookingService } from "../bookings/booking.service";
 
 @Injectable()
 export class PaymentService {
@@ -13,7 +16,8 @@ export class PaymentService {
     constructor(
         private $logger: LoggerService,
         private $prisma: PrismaService,
-        private $subPaisa: SubPaisaService
+        private $subPaisa: SubPaisaService,
+        private $booking: BookingService
     ) { }
 
     async initPayment(payload: InitPaymentBodyDto) {
@@ -60,14 +64,80 @@ export class PaymentService {
         const decrypted = await this.$subPaisa.paymentHandler(encData);
         this.$logger.log(JSON.stringify(decrypted, undefined, 2));
         const decryptedResponse = decrypted.decryptedResponse.split('&');
-        let decryptedResponseObj = {};
+        let decryptedResponseObj: any = {};
         decryptedResponse.forEach(e => {
             const [key, value] = e.split('=');
             decryptedResponseObj[key] = value;
-        })
-        console.log(decryptedResponseObj);
+        });
+        const payment = await this.$prisma.payment.findFirst({
+            where: {
+                transactionId: decryptedResponseObj.clientTxnId
+            }
+        });
 
+        const paymentStatus = this.paymentStatus(decryptedResponseObj.statusCode);
+
+        await this.$prisma.payment.update({
+            where: { id: payment.id },
+            data: {
+                sabpaisaTxnId: decryptedResponseObj.sabpaisaTxnId,
+                status: paymentStatus,
+                paidAmount: Number(decryptedResponseObj.paidAmount),
+                paymentMode: decryptedResponseObj.paymentMode,
+                currency: decryptedResponseObj.amountType,
+                transDate: dsToUTC(decryptedResponseObj.transDate),
+                transaction: {
+                    clientCode: decryptedResponseObj.clientCode,
+                    bankName: decryptedResponseObj.bankName,
+                    statusCode: decryptedResponseObj.statusCode,
+                    challanNumber: decryptedResponseObj.challanNumber,
+                    sabpaisaMessage: decryptedResponseObj.sabpaisaMessage,
+                    bankMessage: decryptedResponseObj.bankMessage,
+                    bankErrorCode: decryptedResponseObj.bankErrorCode,
+                    sabpaisaErrorCode: decryptedResponseObj.sabpaisaErrorCode,
+                    bankTxnId: decryptedResponseObj.bankTxnId,
+                }
+            }
+        })
+        await this.$booking.handleBookingPaymentStatus(
+            payment.bookingId,
+            paymentStatus,
+            decryptedResponseObj.paymentMode
+        );
         const dataString = JSON.stringify(decrypted.decryptedResponse);
         return dataString;
+    }
+
+
+    private paymentStatus(statusCode: string): PaymentStatus {
+        let status = PaymentStatus.Success;
+        switch (statusCode) {
+            case SubPaisaPaymentStatus.Success:
+                status = PaymentStatus.Success
+                break;
+            case SubPaisaPaymentStatus.Aborted:
+                status = PaymentStatus.Aborted
+                break;
+            case SubPaisaPaymentStatus.Failed:
+                status = PaymentStatus.Failed
+                break;
+            case SubPaisaPaymentStatus.ChallanSpecific:
+                status = PaymentStatus.ChallanSpecific
+                break;
+            case SubPaisaPaymentStatus.NotFound:
+                status = PaymentStatus.NotFound
+                break;
+            case SubPaisaPaymentStatus.UnKnownResponse:
+                status = PaymentStatus.Pending
+                break;
+            case SubPaisaPaymentStatus.NotCompleted:
+                status = PaymentStatus.NotCompleted
+                break;
+            default:
+                status = PaymentStatus.Failed
+                break;
+        }
+        return status;
+
     }
 }

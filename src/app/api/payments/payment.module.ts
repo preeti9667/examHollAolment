@@ -3,10 +3,12 @@ import { PaymentController } from "./payment.controller";
 import { SubPaisaModule } from "../subpaisa/subpaisa.module";
 import { LoggerModule } from "@app/shared/logger";
 import { PaymentService } from "./payment.service";
+import { BookingModule } from "../bookings/booking.module";
 
 @Module({
     imports: [
         SubPaisaModule,
+        BookingModule,
         LoggerModule.register({ context: PaymentModule.name }),
     ],
     controllers: [

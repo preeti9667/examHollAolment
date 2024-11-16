@@ -8,6 +8,7 @@ import { v4 as uuid } from 'uuid'
 import { HallService } from "../halls/hall.service";
 import { IHall } from "../halls/interfaces/hall";
 import { ApiException } from "../api.exception";
+import { PaymentStatus } from "../payments/payment.constant";
 
 @Injectable()
 export class BookingService {
@@ -208,6 +209,34 @@ export class BookingService {
             paymentLink: null,
         }
 
+    }
+
+
+    async handleBookingPaymentStatus(
+        bookingId: string,
+        paymentStatus: PaymentStatus,
+        paymentMode: string
+    ) {
+        let bookingStatus = BookingStatus.Booked;
+        if (paymentStatus !== PaymentStatus.Success)
+            bookingStatus = BookingStatus.Failed;
+
+        await Promise.all([
+            this.$prisma.booking.update({
+                where: { id: bookingId },
+                data: {
+                    status: bookingStatus,
+                    paymentMethod: paymentMode
+                }
+            }),
+            this.$prisma.bookingHall.updateMany({
+                where: { bookingId },
+                data: { status: bookingStatus }
+            })
+        ]);
+
+        this.$logger.log(`Booking status updated for booking ${bookingId} after payment`);
+        return true;
     }
 
 
