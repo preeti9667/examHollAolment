@@ -55,10 +55,17 @@ export class PaymentService {
 
     async paymentResponse(body: any) {
         this.$logger.log(`Body response : ${JSON.stringify(body)}`);
-        const encData = body.encData || body?.data?.encData;
+        const encData = body.encResponse || body.encData || body?.data?.encData;
         if (!encData) ApiException.badData('PAYMENT.ENC_DATA_MISSING');
         const decrypted = await this.$subPaisa.paymentHandler(encData);
         this.$logger.log(JSON.stringify(decrypted, undefined, 2));
+        const decryptedResponse = decrypted.decryptedResponse.split('&');
+        let decryptedResponseObj = {};
+        decryptedResponse.forEach(e => {
+            const [key, value] = e.split('=');
+            decryptedResponseObj[key] = value;
+        })
+        console.log(decryptedResponseObj);
 
         const dataString = JSON.stringify(decrypted.decryptedResponse);
         return dataString;
