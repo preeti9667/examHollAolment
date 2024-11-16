@@ -9,6 +9,7 @@ import { HallService } from "../halls/hall.service";
 import { IHall } from "../halls/interfaces/hall";
 import { ApiException } from "../api.exception";
 import { PaymentStatus } from "../payments/payment.constant";
+import { BookingListQueryDto } from "./dto/list.dto";
 
 @Injectable()
 export class BookingService {
@@ -310,5 +311,42 @@ export class BookingService {
         }
 
         return booking;
+    }
+
+
+    async list(payload: BookingListQueryDto, userId: string) {
+        const { page = 1, limit = 10, sort = 'desc', sortBy = 'createdAt' } = payload;
+        const skip = (page - 1) * limit;
+        const where = { userId };
+        const [total, data] = await Promise.all([
+            this.$prisma.booking.count({ where }),
+            this.$prisma.booking.findMany({
+                where,
+                select: {
+                    id: true,
+                    displayId: true,
+                    status: true,
+                    noOfCandidates: true,
+                    hallAllocated: true,
+                    examName: true,
+                    startDate: true,
+                    endDate: true,
+                    createdAt: true,
+                    updatedAt: true
+                },
+                orderBy: {
+                    [sortBy]: sort
+                },
+                skip,
+                take: limit
+            })
+        ]);
+
+        return {
+            page,
+            limit,
+            total,
+            data
+        }
     }
 }
