@@ -105,8 +105,8 @@ export class PaymentService {
             paymentStatus,
             decryptedResponseObj.paymentMode
         );
-        const dataString = JSON.stringify(decrypted.decryptedResponse);
-        return { dataString, redirectUrl: this.$env.REDIRECT_URL_PAYMENT };
+        const encodedData = encodeURIComponent(JSON.stringify(decrypted.decryptedResponse));
+        return { dataString: encodedData, redirectUrl: this.$env.REDIRECT_URL_PAYMENT };
     }
 
 
