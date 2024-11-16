@@ -1,5 +1,5 @@
 import { COMMON_HEADERS } from "@app/app.constant";
-import { Body, Controller, Post, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Res, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { InitPaymentBodyDto, InitPaymentResponseDto } from "./dto/init-payment.dto";
 import { Message } from "@app/decorators";
@@ -21,6 +21,8 @@ export class PaymentController {
         private $payment: PaymentService,
         private $logger: LoggerService
     ) { }
+
+
     @Post('/init')
     // @UseGuards(AuthGuard)
     // @ApiBearerAuth('AccessToken')
@@ -31,6 +33,18 @@ export class PaymentController {
         @Body() payload: InitPaymentBodyDto,
     ) {
         return this.$payment.initPayment(payload)
+    }
+
+    @Get('/page/:bookingId')
+    @Message('PAYMENT.PAGE')
+    @ApiOperation({ summary: 'page for booking payment' })
+    async page(
+        @Param() param: InitPaymentBodyDto,
+        @Res() res: Response
+    ) {
+        const html = await this.$payment.page(param);
+        res.send(html);
+
     }
 
 
