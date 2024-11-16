@@ -51,4 +51,16 @@ export class PaymentService {
         this.$logger.log(`payment initiated for booking : ${booking} that transaction id is '${transactionId}'`);
         return res;
     }
+
+
+    async paymentResponse(body: any) {
+        this.$logger.log(`Body response : ${JSON.stringify(body)}`);
+        const encData = body.encData || body?.data?.encData;
+        if (!encData) ApiException.badData('PAYMENT.ENC_DATA_MISSING');
+        const decrypted = await this.$subPaisa.paymentHandler(encData);
+        this.$logger.log(JSON.stringify(decrypted, undefined, 2));
+
+        const dataString = JSON.stringify(decrypted.decryptedResponse);
+        return dataString;
+    }
 }
