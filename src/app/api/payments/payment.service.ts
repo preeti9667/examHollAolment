@@ -7,7 +7,7 @@ import { ApiException } from "../api.exception";
 import { SubPaisaService } from "../subpaisa/subpaisa.service";
 import { PaymentStatus } from "./payment.constant";
 import { SubPaisaPaymentStatus } from "../subpaisa/subpaisa.contant";
-import { dateStringToUtc, dsToUTC } from "src/utils";
+import { dsToUTC } from "src/utils";
 import { BookingService } from "../bookings/booking.service";
 import { EnvService } from "@app/shared/env";
 import { logger } from "nestjs-i18n";

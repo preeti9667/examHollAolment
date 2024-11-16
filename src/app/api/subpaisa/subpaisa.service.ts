@@ -3,7 +3,6 @@ import { Injectable } from "@nestjs/common";
 import { createCipheriv, createDecipheriv } from 'node:crypto'
 import { InitPaymentRequest } from "./interfaces/init-payment";
 import { EnvService } from "@app/shared/env";
-import { ApiException } from "../api.exception";
 
 @Injectable()
 export class SubPaisaService {
