@@ -206,13 +206,13 @@ export class BookingDetailsDto {
     @IsString()
     displayId: string;
 
-    @ApiProperty({
-        type: String,
-        required: false
-    })
-    @IsString()
-    @IsOptional()
-    paymentLink: string;
+    // @ApiProperty({
+    //     type: String,
+    //     required: false
+    // })
+    // @IsString()
+    // @IsOptional()
+    // paymentLink: string;
 
     @ApiProperty({
         type: Number,
