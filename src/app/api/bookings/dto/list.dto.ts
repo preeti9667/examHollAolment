@@ -23,6 +23,7 @@ export class BookingListQueryDto {
         type: Number,
         description: 'Records per page',
         required: false,
+        default: 10,
     })
     @IsOptional()
     @Type(() => Number)
@@ -31,12 +32,12 @@ export class BookingListQueryDto {
 
     @ApiProperty({
         required: false,
-        enum: ['createdAt'],
+        enum: ['createdAt', 'startDate', 'endDate'],
         default: 'createdAt',
     })
     @IsOptional()
-    @IsEnum(['createdAt'])
-    sortBy?: 'createdAt';
+    @IsEnum(['createdAt', 'startDate', 'endDate'])
+    sortBy: string;
 
     @ApiProperty({
         type: String,
@@ -48,6 +49,19 @@ export class BookingListQueryDto {
     @IsEnum(['asc', 'desc'])
     @IsOptional()
     sort: 'asc' | 'desc';
+
+
+    @ApiProperty({
+        type: Number,
+        example: 50,
+        required: false,
+        description: "If you want to filter record according to status then send "
+    })
+    @IsOptional()
+    @Type(() => Number)
+    @IsNumber()
+    @IsEnum(BookingStatus)
+    status: number
 }
 export class BookingListBookingDetailDto {
     @ApiProperty({
@@ -88,6 +102,7 @@ export class BookingListBookingDetailDto {
         type: String,
         example: '2024-11-10'
     })
+    @IsOptional()
     @UtcToDateString()
     @IsString()
     startDate: string;
@@ -96,6 +111,7 @@ export class BookingListBookingDetailDto {
         type: String,
         example: '2024-11-25'
     })
+    @IsOptional()
     @UtcToDateString()
     @IsString()
     endDate: string;
