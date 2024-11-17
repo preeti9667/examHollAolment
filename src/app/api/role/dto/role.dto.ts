@@ -1,11 +1,12 @@
 import { AppModuleNames } from "@app/api/api.constant";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsEnum } from "class-validator";
+import { IsArray, IsBoolean, IsEnum } from "class-validator";
 
 export class PermissionDto {
     @ApiProperty({
         type: String,
         description: 'name of module',
+        example: AppModuleNames.Booking
     })
     @IsEnum(AppModuleNames)
     module: AppModuleNames;
@@ -43,6 +44,7 @@ export class RoleDto {
         type: [PermissionDto],
         description: 'list of permissions',
     })
+    @IsArray()
     permissions: PermissionDto[]
 
 }
