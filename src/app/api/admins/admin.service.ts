@@ -81,4 +81,10 @@ export class AdminService {
 
         this.$logger.log("Admin created");
     }
+
+
+
+    async permissions(roleId: string) {
+
+    }
 }

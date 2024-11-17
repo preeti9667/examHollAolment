@@ -7,3 +7,20 @@ export interface IAuthUser {
     email: string;
     type: AccountType
 }
+
+export interface IPermission {
+    module: string;
+    permissions: string[]
+}
+
+export interface IRole {
+    id: string;
+    name: string;
+    isSuper: boolean;
+    permissions: IPermission[];
+    isActive: boolean;
+}
+
+export interface IAuthAdmin extends IAuthUser {
+    role: IRole;
+}
