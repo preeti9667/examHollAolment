@@ -61,7 +61,8 @@ export class AdminService {
                 email: this.$env.ADMIN_EMAIL,
                 countryCode: this.$env.ADMIN_COUNTRY_CODE,
                 phoneNumber: this.$env.ADMIN_PHONE_NUMBER,
-                type: "ADMIN"
+                type: "ADMIN",
+                roleId: role.id
             }
         })
 
