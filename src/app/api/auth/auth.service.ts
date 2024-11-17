@@ -8,6 +8,7 @@ import { ApiException } from "../api.exception";
 import * as moment from 'moment';
 import { TokenService } from "../token/token.service";
 import { OpenId } from "src/utils";
+import { SMS_TEMPLATE } from "../sms/sms.constant";
 import { SmsService } from "../sms/sms.service";
 
 @Injectable()
@@ -46,7 +47,8 @@ export class AuthService {
             otp = OpenId.otp();
             await this.$sms.sendSms(
                 phoneNumber,
-                otp
+                SMS_TEMPLATE.loginOtp,
+                [{ otp }],
             );
         }
 

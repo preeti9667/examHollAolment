@@ -97,17 +97,17 @@ export class EnvConfig {
 
     @IsString()
     @IsDefined()
-    MSG91_USERNAME: string;
+    MSD_USERNAME: string;
 
     @IsString()
     @IsDefined()
-    MAS91_PASSWORD: string;
+    MSD_PASSWORD: string;
 
     @IsString()
     @IsDefined()
-    MSG91_SENDER_ID: string;
+    MSD_SENDER_ID: string;
 
     @IsString()
     @IsDefined()
-    MSG91_SECURE_KEY: string;
+    MSD_SECURE_KEY: string;
 }

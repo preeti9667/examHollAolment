@@ -28,10 +28,10 @@ export class EnvService {
     readonly REDIRECT_URL_PAYMENT = this.get('REDIRECT_URL_PAYMENT');
 
 
-    readonly MSG91_USERNAME = this.get('MSG91_USERNAME');
-    readonly MAS91_PASSWORD = this.get('MAS91_PASSWORD');
-    readonly MSG91_SENDER_ID = this.get('MSG91_SENDER_ID');
-    readonly MSG91_SECURE_KEY = this.get('MSG91_SECURE_KEY');
+    readonly MSD_USERNAME = this.get('MSD_USERNAME');
+    readonly MSD_PASSWORD = this.get('MSD_PASSWORD');
+    readonly MSD_SENDER_ID = this.get('MSD_SENDER_ID');
+    readonly MSD_SECURE_KEY = this.get('MSD_SECURE_KEY');
 
     // readonly ADMIN = this.get('ADMIN');
     // readonly MONGO = this.get('MONGO');

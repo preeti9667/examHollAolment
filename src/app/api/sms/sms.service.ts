@@ -27,28 +27,36 @@ export class SmsService {
 
     async sendSms(
         mobileNumber: string,
-        otp: string,
-        schoolCode?: string,
-        templateId?: string
+        template: {
+            id: string,
+            name: string,
+            message: string
+        },
+        variables: { [key: string]: string }[]
     ): Promise<any> {
-        const messageWithVars = `Your OTP is : ${otp} for school code ${schoolCode} this will be used as your password to login in Bihar school examination board mobile application - BSEB - Bihar Government.`;
-        const hashedPassword = this.hashPassword(this.$env.MAS91_PASSWORD);
+        let messageWithVars = template.message;
+        variables.forEach((variable) => {
+            Object.keys(variable).forEach((key) => {
+                messageWithVars = messageWithVars.replace(`$${key}`, variable[key]);
+            })
+        });
+        const hashedPassword = this.hashPassword(this.$env.MSD_PASSWORD);
         const hashKey = this.generateHashKey(
-            this.$env.MSG91_USERNAME,
-            this.$env.MSG91_SENDER_ID,
+            this.$env.MSD_USERNAME,
+            this.$env.MSD_SENDER_ID,
             messageWithVars,
-            this.$env.MSG91_SECURE_KEY,
+            this.$env.MSD_SECURE_KEY,
         );
 
         const payload = new URLSearchParams({
-            username: this.$env.MSG91_USERNAME,
+            username: this.$env.MSD_USERNAME,
             password: hashedPassword,
-            senderid: this.$env.MSG91_SENDER_ID,
+            senderid: this.$env.MSD_SENDER_ID,
             content: messageWithVars,
             smsservicetype: 'singlemsg',
             mobileno: mobileNumber,
             key: hashKey,
-            templateid: templateId,
+            templateid: template.id,
         });
 
         try {
