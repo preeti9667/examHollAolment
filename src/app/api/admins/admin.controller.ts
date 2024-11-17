@@ -1,7 +1,10 @@
 import { COMMON_HEADERS } from "@app/app.constant";
-import { Controller } from "@nestjs/common";
-import { ApiHeaders, ApiTags } from "@nestjs/swagger";
+import { Controller, Get, UseGuards } from "@nestjs/common";
+import { ApiBearerAuth, ApiHeaders, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AdminService } from "./admin.service";
+import { AuthUser, Message } from "@app/decorators";
+import { IAuthAdmin } from "../auth/interfaces/auth-user";
+import { AuthGuard } from "@app/gaurds/auth.guard";
 
 @Controller({
     path: 'admins',
@@ -15,5 +18,17 @@ export class AdminController {
         private $admin: AdminService
     ) {
 
+    }
+
+    @Get('profile')
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('ADMIN.PROFILE')
+    // @ApiOkResponse({ type: CostEstimateResponseDto })
+    @ApiOperation({ summary: 'Admin profile details' })
+    async profile(
+        @AuthUser() user: IAuthAdmin
+    ) {
+        return this.$admin.profile(user);
     }
 }

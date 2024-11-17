@@ -4,6 +4,7 @@ import { LoggerService } from "@app/shared/logger";
 import { Injectable } from "@nestjs/common";
 import { OpenId } from "src/utils";
 import { RoleService } from "../role/role.service";
+import { IAuthAdmin } from "../auth/interfaces/auth-user";
 
 @Injectable()
 export class AdminService {
@@ -84,7 +85,24 @@ export class AdminService {
 
 
 
-    async permissions(roleId: string) {
+    async profile(admin: IAuthAdmin) {
+        const adminDetails = await this.$prisma.admin.findFirst({
+            where: {
+                id: admin.id
+            },
+            select: {
+                id: true,
+                displayId: true,
+                name: true,
+                email: true,
+                countryCode: true,
+                phoneNumber: true
+            }
+        });
 
+        return {
+            ...adminDetails,
+            role: admin.role
+        }
     }
 }

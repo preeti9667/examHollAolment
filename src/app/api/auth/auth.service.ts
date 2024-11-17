@@ -155,7 +155,7 @@ export class AuthService {
         })
 
         if (!user) ApiException.unAuthorized();
-        const { id, isActive, phoneNumber, countryCode, email, type, } = user.authUser;
+        const { id, isActive, phoneNumber, countryCode, email, type, roleId } = user.authUser;
         if (decoded.type !== type) ApiException.unAuthorized();
         if (!isActive) ApiException.unAuthorized("AUTH.ACCOUNT_DEACTIVATED");
 
@@ -163,7 +163,7 @@ export class AuthService {
         if (type === AccountType.ADMIN) {
             role = await this.$prisma.role.findFirst({
                 where: {
-                    id,
+                    id: roleId,
                     isActive: true
                 },
                 select: {
