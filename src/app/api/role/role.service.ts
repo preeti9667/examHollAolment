@@ -10,7 +10,7 @@ export class RoleService {
         private $logger: LoggerService,
         private $prisma: PrismaService
     ) {
-        this.create();
+
     }
 
     async create() {
