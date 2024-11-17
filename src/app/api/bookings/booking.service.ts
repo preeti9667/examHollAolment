@@ -338,9 +338,10 @@ export class BookingService {
 
 
     async list(payload: BookingListQueryDto, userId: string) {
-        const { page = 1, limit = 10, sort = 'desc', sortBy = 'createdAt' } = payload;
+        const { page = 1, limit = 10, sort = 'desc', sortBy = 'createdAt', status } = payload;
         const skip = (page - 1) * limit;
-        const where = { userId };
+        const where: any = { userId };
+        if (status) where.status = status;
         const [total, data] = await Promise.all([
             this.$prisma.booking.count({ where }),
             this.$prisma.booking.findMany({
