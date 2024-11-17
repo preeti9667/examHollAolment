@@ -7,7 +7,7 @@ import { LoggerService } from "@app/shared/logger";
 @Injectable()
 export class SmsService {
 
-    private msg91Url = 'https://control.msg91.com/api/sendhttp.php';
+    private msg91Url = 'https://msdgweb.mgov.gov.in/esms/sendsmsrequestDLT';
     constructor(
         private $env: EnvService,
         private $logger: LoggerService
@@ -62,7 +62,7 @@ export class SmsService {
                 },
             );
             const data = response.data;
-            this.$logger.log(`Response from msg91 :: ${JSON.stringify(data)}`);
+            this.$logger.log(`Response from MSD :: ${JSON.stringify(data)}`);
             return data;
         } catch (error) {
             this.$logger.error(error.message, error.stack);
