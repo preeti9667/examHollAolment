@@ -1,3 +1,4 @@
+
 export const PERMISSIONS = {
     SUB_ADMIN: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
     USER: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],

@@ -8,6 +8,7 @@ import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from 
 import { HallService } from "./hall.service";
 import { CreateHallDto, CreateHallResponseDto } from "./dto/create.dto";
 import { HallListResponseDto, HallListResultDto, ListHallDto, ListHallQueryDto } from "./dto/list.dto";
+import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
 
 @Controller({
     path: 'hall',
@@ -50,6 +51,8 @@ export class HallController {
 
 
     @Get('')
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
     @Message('HALL.LIST')
     @ApiOkResponse({ type: HallListResponseDto })
     @ApiOperation({ summary: 'Hall Listing By admin' })
