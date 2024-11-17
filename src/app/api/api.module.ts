@@ -10,6 +10,7 @@ import { AddOnsModule } from "./add-ons/add-ons.module";
 import { SchedularModule } from "./schedule/schedular.module";
 import { RoleModule } from "./role/role.module";
 import { PaymentModule } from "./payments/payment.module";
+import { AdminModule } from "./admins/admin.module";
 
 @Module({
         imports: [
@@ -21,7 +22,8 @@ import { PaymentModule } from "./payments/payment.module";
                 AddOnsModule,
                 SchedularModule,
                 PaymentModule,
-                RoleModule
+                RoleModule,
+                AdminModule
         ],
         exports: [],
         controllers: [ApiController],

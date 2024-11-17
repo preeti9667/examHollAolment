@@ -22,6 +22,7 @@ export class EnvService {
     readonly ADMIN_PHONE_NUMBER = this.get('ADMIN_PHONE_NUMBER');
     readonly ADMIN_COUNTRY_CODE = this.get('ADMIN_COUNTRY_CODE');
     readonly ADMIN_PASSWORD = this.get('ADMIN_PASSWORD');
+
     readonly SABPAISA_CLIENT_CODE = this.get('SABPAISA_CLIENT_CODE');
     readonly SABPAISA_TRANS_USER_NAME = this.get('SABPAISA_TRANS_USER_NAME');
     readonly SABPAISA_TRANS_USER_PASSWORD = this.get('SABPAISA_TRANS_USER_PASSWORD');
