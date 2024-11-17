@@ -73,6 +73,17 @@ export function dateStringToUtc(date: string): Date {
     return new Date(new Date(date).setUTCHours(0, 0, 0, 0))
 }
 
+export function dsToUTC(date: string) {
+    return moment(date, 'ddd MMM DD HH:mm:ss Z YYYY').utc().toDate()
+}
+
 export function utcToDateString(date: Date): string {
     return moment(date).format('YYYY-MM-DD')
+}
+
+
+export function UtcToDateString() {
+    return Transform((obj) => {
+        return utcToDateString(obj.value);
+    });
 }

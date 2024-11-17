@@ -87,4 +87,35 @@ export class EnvConfig {
     @IsDefined()
     @IsString()
     readonly ADMIN_PASSWORD: string;
+    @IsString()
+    @IsDefined()
+    SABPAISA_CLIENT_CODE: string;
+    @IsString()
+    @IsDefined()
+    SABPAISA_TRANS_USER_NAME: string;
+    @IsString()
+    @IsDefined()
+    SABPAISA_TRANS_USER_PASSWORD: string;
+    @IsString()
+    @IsDefined()
+    SABPAISA_AUTH_KEY: string;
+    @IsString()
+    @IsDefined()
+    SABPAISA_AUTH_IV: string;
+    @IsString()
+    @IsDefined()
+    SABPAISA_MCC: string;
+    @IsString()
+    @IsDefined()
+    SABPAISA_URL: string;
+    @IsString()
+    @IsDefined()
+    SUBPAISA_CALLBACK_URL: string;
+
+    @IsString()
+    @IsDefined()
+    REDIRECT_URL_PAYMENT: string;
+
+
+
 }

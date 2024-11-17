@@ -9,6 +9,7 @@ import { BookingModule } from "./bookings/booking.module";
 import { AddOnsModule } from "./add-ons/add-ons.module";
 import { SchedularModule } from "./schedule/schedular.module";
 import { RoleModule } from "./role/role.module";
+import { PaymentModule } from "./payments/payment.module";
 
 @Module({
         imports: [
@@ -19,6 +20,7 @@ import { RoleModule } from "./role/role.module";
                 BookingModule,
                 AddOnsModule,
                 SchedularModule,
+                PaymentModule,
                 RoleModule
         ],
         exports: [],

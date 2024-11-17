@@ -22,6 +22,15 @@ export class EnvService {
     readonly ADMIN_PHONE_NUMBER = this.get('ADMIN_PHONE_NUMBER');
     readonly ADMIN_COUNTRY_CODE = this.get('ADMIN_COUNTRY_CODE');
     readonly ADMIN_PASSWORD = this.get('ADMIN_PASSWORD');
+    readonly SABPAISA_CLIENT_CODE = this.get('SABPAISA_CLIENT_CODE');
+    readonly SABPAISA_TRANS_USER_NAME = this.get('SABPAISA_TRANS_USER_NAME');
+    readonly SABPAISA_TRANS_USER_PASSWORD = this.get('SABPAISA_TRANS_USER_PASSWORD');
+    readonly SABPAISA_AUTH_IV = this.get('SABPAISA_AUTH_IV');
+    readonly SABPAISA_AUTH_KEY = this.get('SABPAISA_AUTH_KEY');
+    readonly SABPAISA_MCC = this.get('SABPAISA_MCC');
+    readonly SABPAISA_URL = this.get('SABPAISA_URL');
+    readonly SUBPAISA_CALLBACK_URL = this.get('SUBPAISA_CALLBACK_URL');
+    readonly REDIRECT_URL_PAYMENT = this.get('REDIRECT_URL_PAYMENT');
 
     // readonly ADMIN = this.get('ADMIN');
     // readonly MONGO = this.get('MONGO');

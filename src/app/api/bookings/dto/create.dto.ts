@@ -69,7 +69,8 @@ export class BookingDateTimeSlotDto {
 
     @ApiProperty({
         type: String,
-        description: 'time slot id'
+        description: 'time slot id',
+        example: '1b53c972-bdc7-4cfb-bf86-90a55e8b95ae'
     })
     @IsString()
     @IsUUID()
@@ -77,7 +78,7 @@ export class BookingDateTimeSlotDto {
 
     @ApiProperty({
         type: Number,
-        example: 200
+        example: 1000
     })
     @IsNumber()
     noOfCandidates: number;

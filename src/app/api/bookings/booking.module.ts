@@ -3,6 +3,7 @@ import { BookingController } from "./booking.controller";
 import { LoggerModule } from "@app/shared/logger";
 import { BookingService } from "./booking.service";
 import { HallModule } from "../halls/hall.module";
+import { SubPaisaModule } from "../subpaisa/subpaisa.module";
 
 @Module({
     controllers: [
@@ -12,7 +13,7 @@ import { HallModule } from "../halls/hall.module";
         LoggerModule.register({
             context: BookingModule.name
         }),
-        HallModule
+        HallModule,
     ],
     exports: [BookingService],
     providers: [BookingService]

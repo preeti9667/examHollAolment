@@ -1,13 +1,16 @@
 import { PrismaService } from "@app/databases/prisma/prisma.service";
 import { LoggerService } from "@app/shared/logger";
-import { Injectable, SerializeOptions } from "@nestjs/common";
-import { dateStringToUtc, OpenId, utcToDateString } from "src/utils";
-import { BookingDateTimeSlotDto, CreateBookingPayloadDto } from "./dto/create.dto";
+import { Injectable } from "@nestjs/common";
+import { dateStringToUtc, OpenId } from "src/utils";
+import { CreateBookingPayloadDto } from "./dto/create.dto";
 import { BookingStatus } from "./booking.constant";
 import { v4 as uuid } from 'uuid'
 import { HallService } from "../halls/hall.service";
 import { IHall } from "../halls/interfaces/hall";
 import { ApiException } from "../api.exception";
+import { PaymentStatus } from "../payments/payment.constant";
+import { BookingListQueryDto } from "./dto/list.dto";
+import { CostEstimatePayloadDto } from "./dto/cost-estimate.dto";
 
 @Injectable()
 export class BookingService {
@@ -15,7 +18,7 @@ export class BookingService {
     constructor(
         private $prisma: PrismaService,
         private $logger: LoggerService,
-        private $hall: HallService
+        private $hall: HallService,
     ) { }
 
     private getBookingDisplayId(): string {
@@ -131,6 +134,9 @@ export class BookingService {
 
         const hallIds = [];
         const notAvailableHalls = [];
+        let totalCost = 0;
+        let noOfCandidates = 0;
+
         for (const slot of payload.timeSlots) {
             const date = dateStringToUtc(slot.date);
             const halls = await this.$hall.availableHallsForDate(slot.slotId, date);
@@ -139,6 +145,7 @@ export class BookingService {
                 notAvailableHalls.push(slot);
                 break
             }
+            noOfCandidates += slot.noOfCandidates;
             const allocateHalls = this.allocateHalls(halls, slot.noOfCandidates);
 
             const bookingHallObj = {
@@ -149,6 +156,7 @@ export class BookingService {
             }
 
             allocateHalls.forEach(e => {
+                totalCost += e.totalPrice;
                 hallIds.push(e.id);
                 bookingHall.push(
                     {
@@ -173,8 +181,8 @@ export class BookingService {
             ApiException.gone('BOOKING.HALL_NOT_AVAILABLE')
         }
 
-        const totalCost = bookingHall.reduce((acc: number, hall: any) => acc + hall.totalPrice, 0);
-        const noOfCandidates = bookingHall.reduce((acc: number, hall: any) => acc + hall.seatsAllocated, 0);
+        // const totalCost = bookingHall.reduce((acc: number, hall: any) => acc + hall.totalPrice, 0);
+        // const noOfCandidates = bookingHall.reduce((acc: number, hall: any) => acc + hall.seatsAllocated, 0);
         const hallAllocated = bookingHall.length;
         const [newBooking] = await this.$prisma.$transaction([
             this.$prisma.booking.upsert({
@@ -196,8 +204,7 @@ export class BookingService {
             this.$prisma.bookingHall.createMany(
                 { data: bookingHall }
             )
-        ])
-
+        ]);
 
         return {
             id: newBooking.id,
@@ -206,9 +213,37 @@ export class BookingService {
             hallAllocated,
             status: BookingStatus.AwaitingForPayment,
             totalCost,
-            paymentLink: '',
+            paymentLink: null,
         }
 
+    }
+
+
+    async handleBookingPaymentStatus(
+        bookingId: string,
+        paymentStatus: PaymentStatus,
+        paymentMode: string
+    ) {
+        let bookingStatus = BookingStatus.Booked;
+        if (paymentStatus !== PaymentStatus.Success)
+            bookingStatus = BookingStatus.Failed;
+
+        const [booking] = await Promise.all([
+            this.$prisma.booking.update({
+                where: { id: bookingId },
+                data: {
+                    status: bookingStatus,
+                    paymentMethod: paymentMode
+                }
+            }),
+            this.$prisma.bookingHall.updateMany({
+                where: { bookingId },
+                data: { status: bookingStatus }
+            })
+        ]);
+
+        this.$logger.log(`Booking status updated for booking ${bookingId} after payment`);
+        return booking.displayId;
     }
 
 
@@ -245,5 +280,112 @@ export class BookingService {
             }
         }
 
+    }
+
+
+    async bookingDetails(id: string, userId: string) {
+        const booking = await this.$prisma.booking.findFirst({
+            where: { id, userId },
+            select: {
+                id: true,
+                displayId: true,
+                noOfCandidates: true,
+                hallAllocated: true,
+                totalCost: true,
+                status: true,
+                startDate: true,
+                endDate: true,
+                createdAt: true,
+                updatedAt: true,
+                contact: true,
+                address: true,
+                bookingHall: {
+                    select: {
+                        id: true,
+                        date: true,
+                        seatsAllocated: true,
+                        totalPrice: true,
+                        hallRaw: true,
+                        slotRaw: true
+                    }
+                }
+            }
+        });
+
+        if (!booking) {
+            ApiException.notFound('BOOKING.NOT_FOUND')
+        }
+
+        return booking;
+    }
+
+
+    async list(payload: BookingListQueryDto, userId: string) {
+        const { page = 1, limit = 10, sort = 'desc', sortBy = 'createdAt' } = payload;
+        const skip = (page - 1) * limit;
+        const where = { userId };
+        const [total, data] = await Promise.all([
+            this.$prisma.booking.count({ where }),
+            this.$prisma.booking.findMany({
+                where,
+                select: {
+                    id: true,
+                    displayId: true,
+                    status: true,
+                    noOfCandidates: true,
+                    hallAllocated: true,
+                    examName: true,
+                    startDate: true,
+                    endDate: true,
+                    createdAt: true,
+                    updatedAt: true
+                },
+                orderBy: {
+                    [sortBy]: sort
+                },
+                skip,
+                take: limit
+            })
+        ]);
+
+        return {
+            page,
+            limit,
+            total,
+            data
+        }
+    }
+
+
+    async costEstimate(payload: CostEstimatePayloadDto) {
+        let totalCost = 0;
+        let totalHalls = 0;
+        let noOfCandidates = 0;
+        const notAvailableHalls = [];
+        for (const slot of payload.timeSlots) {
+            const date = dateStringToUtc(slot.date);
+            const halls = await this.$hall.availableHallsForDate(slot.slotId, date);
+            const totalCapacity = halls.reduce((acc: number, hall: IHall) => acc + hall.capacity, 0);
+            if (totalCapacity < slot.noOfCandidates) {
+                notAvailableHalls.push(slot);
+                break
+            }
+            noOfCandidates += slot.noOfCandidates;
+            const allocateHalls = this.allocateHalls(halls, slot.noOfCandidates);
+            allocateHalls.forEach(e => {
+                totalCost += e.totalPrice;
+                totalHalls += 1
+            })
+        }
+
+        if (notAvailableHalls.length) {
+            ApiException.gone('BOOKING.HALL_NOT_AVAILABLE')
+        }
+
+        return {
+            totalCost,
+            totalHalls,
+            noOfCandidates
+        }
     }
 }
