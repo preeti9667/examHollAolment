@@ -116,6 +116,19 @@ export class EnvConfig {
     @IsDefined()
     REDIRECT_URL_PAYMENT: string;
 
+    @IsString()
+    @IsDefined()
+    MSD_USERNAME: string;
 
+    @IsString()
+    @IsDefined()
+    MSD_PASSWORD: string;
 
+    @IsString()
+    @IsDefined()
+    MSD_SENDER_ID: string;
+
+    @IsString()
+    @IsDefined()
+    MSD_SECURE_KEY: string;
 }

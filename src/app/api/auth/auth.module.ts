@@ -5,6 +5,7 @@ import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { JwtModule } from "@nestjs/jwt";
 import { TokenModule } from "../token/token.module";
+import { SmsModule } from "../sms/sms.module";
 
 @Global()
 @Module({
@@ -14,7 +15,9 @@ import { TokenModule } from "../token/token.module";
         ),
         EnvModule,
         JwtModule,
-        TokenModule
+        TokenModule,
+        SmsModule,
+        EnvModule
     ],
     controllers: [
         AuthController

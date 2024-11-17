@@ -315,15 +315,33 @@ export class BookingService {
         if (!booking) {
             ApiException.notFound('BOOKING.NOT_FOUND')
         }
-
+        const payments = await this.$prisma.payment.findMany({
+            where: { bookingId: id },
+            select: {
+                id: true,
+                transactionId: true,
+                sabpaisaTxnId: true,
+                status: true,
+                amount: true,
+                paidAmount: true,
+                currency: true,
+                paymentMode: true,
+                transDate: true,
+                transaction: true,
+                createdAt: true,
+                updatedAt: true
+            }
+        });
+        booking['payments'] = payments;
         return booking;
     }
 
 
     async list(payload: BookingListQueryDto, userId: string) {
-        const { page = 1, limit = 10, sort = 'desc', sortBy = 'createdAt' } = payload;
+        const { page = 1, limit = 10, sort = 'desc', sortBy = 'createdAt', status } = payload;
         const skip = (page - 1) * limit;
-        const where = { userId };
+        const where: any = { userId };
+        if (status) where.status = status;
         const [total, data] = await Promise.all([
             this.$prisma.booking.count({ where }),
             this.$prisma.booking.findMany({

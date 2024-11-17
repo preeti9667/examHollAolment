@@ -84,6 +84,7 @@ export function utcToDateString(date: Date): string {
 
 export function UtcToDateString() {
     return Transform((obj) => {
-        return utcToDateString(obj.value);
+        if (obj.value instanceof Date)
+            return utcToDateString(obj.value);
     });
 }

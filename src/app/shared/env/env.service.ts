@@ -33,6 +33,13 @@ export class EnvService {
     readonly SUBPAISA_CALLBACK_URL = this.get('SUBPAISA_CALLBACK_URL');
     readonly REDIRECT_URL_PAYMENT = this.get('REDIRECT_URL_PAYMENT');
 
+
+    readonly MSD_USERNAME = this.get('MSD_USERNAME');
+    readonly MSD_PASSWORD = this.get('MSD_PASSWORD');
+    readonly MSD_SENDER_ID = this.get('MSD_SENDER_ID');
+    readonly MSD_SECURE_KEY = this.get('MSD_SECURE_KEY');
+
+
     constructor(private config: ConfigService<EnvConfig, true>) { }
     get<Key extends keyof EnvConfig>(key: Key): EnvConfig[Key] {
         return this.config.get(key);

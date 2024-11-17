@@ -7,17 +7,19 @@ import { VerifyOtpLoginPayloadDto } from "./dto/verify-otp-login.dto";
 import { ApiException } from "../api.exception";
 import * as moment from 'moment';
 import { TokenService } from "../token/token.service";
-import { TokenDecoded } from "../token/interfaces/token-decoded";
 import { OpenId } from "src/utils";
 import { AccountType } from "@prisma/client";
+import { SMS_TEMPLATE } from "../sms/sms.constant";
+import { SmsService } from "../sms/sms.service";
 
 @Injectable()
 export class AuthService {
     constructor(
         private $prisma: PrismaService,
         private $logger: LoggerService,
-        private $env: EnvService,
-        private $token: TokenService
+        private $token: TokenService,
+        private $sms: SmsService,
+        private $env: EnvService
     ) { }
 
 
@@ -43,7 +45,12 @@ export class AuthService {
 
         let otp = this.$env.BYPASS_OTP;
         if (!otp) {
-            //generate otp
+            otp = OpenId.otp();
+            await this.$sms.sendSms(
+                phoneNumber,
+                SMS_TEMPLATE.loginOtp,
+                [{ otp }],
+            );
         }
 
         await this.$prisma.authOtp.deleteMany({ where: { userId: authUser.id } })
