@@ -9,6 +9,7 @@ import * as moment from 'moment';
 import { TokenService } from "../token/token.service";
 import { TokenDecoded } from "../token/interfaces/token-decoded";
 import { OpenId } from "src/utils";
+import { AccountType } from "@prisma/client";
 
 @Injectable()
 export class AuthService {
@@ -151,9 +152,19 @@ export class AuthService {
         })
 
         if (!user) ApiException.unAuthorized();
-        const { id, isActive, phoneNumber, countryCode, email, type } = user.authUser;
+        const { id, isActive, phoneNumber, countryCode, email, type, } = user.authUser;
         if (decoded.type !== type) ApiException.unAuthorized();
         if (!isActive) ApiException.unAuthorized("AUTH.ACCOUNT_DEACTIVATED");
+
+        // let role;
+        // if(type === AccountType.ADMIN) {
+        //    const  admin = await this.$prisma.admin.findFirst({
+        //         where: {
+        //             id,
+        //             isDeleted: false
+        //         }
+        //     })
+        // }
 
         return {
             id,
