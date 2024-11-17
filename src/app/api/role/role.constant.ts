@@ -1,28 +1,32 @@
-import { APP_MODULES } from "../api.constant"
+import { AppModuleNames } from "../api.constant"
 
 export const PERMISSIONS = [
     {
-        module: APP_MODULES.SUB_ADMIN,
+        module: AppModuleNames.Admin,
         permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
     },
     {
-        module: APP_MODULES.USER,
+        module: AppModuleNames.Staff,
         permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
     },
     {
-        module: APP_MODULES.BOOKING,
+        module: AppModuleNames.User,
         permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
     },
     {
-        module: APP_MODULES.ADD_ONS,
+        module: AppModuleNames.Booking,
         permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
     },
     {
-        module: APP_MODULES.HALL,
+        module: AppModuleNames.AddOns,
         permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
     },
     {
-        module: APP_MODULES.TIME_SLOT,
+        module: AppModuleNames.Hall,
+        permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+    },
+    {
+        module: AppModuleNames.TimeSlot,
         permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
     }
 ]
@@ -42,27 +46,31 @@ export const ROLES = [
         description: '',
         permissions: [
             {
-                module: APP_MODULES.SUB_ADMIN,
-                permissions: ['VIEW'],
-            },
-            {
-                module: APP_MODULES.USER,
+                module: AppModuleNames.Admin,
                 permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
             },
             {
-                module: APP_MODULES.BOOKING,
+                module: AppModuleNames.Staff,
+                permissions: ['EDIT', 'VIEW'],
+            },
+            {
+                module: AppModuleNames.User,
                 permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
             },
             {
-                module: APP_MODULES.ADD_ONS,
+                module: AppModuleNames.Booking,
                 permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
             },
             {
-                module: APP_MODULES.HALL,
+                module: AppModuleNames.AddOns,
                 permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
             },
             {
-                module: APP_MODULES.TIME_SLOT,
+                module: AppModuleNames.Hall,
+                permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+            },
+            {
+                module: AppModuleNames.TimeSlot,
                 permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
             }
         ]

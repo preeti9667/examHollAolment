@@ -20,12 +20,12 @@ export class AdminController {
 
     }
 
-    @Get('profile')
+    @Get('my-profile')
     @UseGuards(AuthGuard)
     @ApiBearerAuth('AccessToken')
     @Message('ADMIN.PROFILE')
     // @ApiOkResponse({ type: CostEstimateResponseDto })
-    @ApiOperation({ summary: 'Admin profile details' })
+    @ApiOperation({ summary: 'fetch own admin profile details' })
     async profile(
         @AuthUser() user: IAuthAdmin
     ) {
