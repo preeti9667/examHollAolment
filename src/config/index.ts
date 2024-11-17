@@ -95,6 +95,19 @@ export class EnvConfig {
     @IsDefined()
     REDIRECT_URL_PAYMENT: string;
 
+    @IsString()
+    @IsDefined()
+    MSG91_USERNAME: string;
 
+    @IsString()
+    @IsDefined()
+    MAS91_PASSWORD: string;
 
+    @IsString()
+    @IsDefined()
+    MSG91_SENDER_ID: string;
+
+    @IsString()
+    @IsDefined()
+    MSG91_SECURE_KEY: string;
 }
