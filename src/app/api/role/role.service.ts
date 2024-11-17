@@ -18,7 +18,7 @@ export class RoleService {
         if (roleCount === ROLES.length) {
 
             const superAdmin = await this.$prisma.role.findFirst({ where: { isSuper: true } });
-            if (JSON.stringify(superAdmin.permissions) === JSON.stringify(PERMISSIONS)) {
+            if (JSON.stringify(superAdmin.permissions) !== JSON.stringify(PERMISSIONS)) {
                 await this.$prisma.role.update({
                     where: {
                         id: superAdmin.id
@@ -53,7 +53,7 @@ export class RoleService {
                     displayId: OpenId.format('ROLE', 6),
                     id: role.id,
                     isSuper: role.isSuper,
-                    permissions: []
+                    permissions: role.permissions
                 }
             })
         }
