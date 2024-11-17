@@ -32,16 +32,6 @@ export class EnvService {
     readonly SUBPAISA_CALLBACK_URL = this.get('SUBPAISA_CALLBACK_URL');
     readonly REDIRECT_URL_PAYMENT = this.get('REDIRECT_URL_PAYMENT');
 
-    // readonly ADMIN = this.get('ADMIN');
-    // readonly MONGO = this.get('MONGO');
-    // readonly REDIS = this.get('REDIS');
-    // readonly KAFKA = this.get('KAFKA');
-    // readonly GRPC = this.get('GRPC');
-    // readonly SECRETS = this.get('SECRETS');
-    // readonly AEROSPIKE = this.get('AEROSPIKE');
-    // readonly NODE_ENV = this.get('NODE_ENV');
-    // readonly S3 = this.get('S3');
-    // readonly SCHEDULER = this.get('SCHEDULER');
     constructor(private config: ConfigService<EnvConfig, true>) { }
     get<Key extends keyof EnvConfig>(key: Key): EnvConfig[Key] {
         return this.config.get(key);
