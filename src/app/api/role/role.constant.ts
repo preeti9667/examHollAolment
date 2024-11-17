@@ -1,10 +1,10 @@
 import { AppModuleNames } from "../api.constant"
 
 export const PERMISSIONS = [
-    {
-        module: AppModuleNames.Admin,
-        actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
-    },
+    // {
+    //     module: AppModuleNames.Admin,
+    //     actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+    // },
     {
         module: AppModuleNames.Staff,
         actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
@@ -25,10 +25,10 @@ export const PERMISSIONS = [
         module: AppModuleNames.Hall,
         actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
     },
-    {
-        module: AppModuleNames.TimeSlot,
-        actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
-    }
+    // {
+    //     module: AppModuleNames.TimeSlot,
+    //     actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+    // }
 ]
 
 export const ROLES = [
@@ -45,10 +45,10 @@ export const ROLES = [
         isSuper: false,
         description: '',
         permissions: [
-            {
-                module: AppModuleNames.Admin,
-                actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
-            },
+            // {
+            //     module: AppModuleNames.Admin,
+            //     actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+            // },
             {
                 module: AppModuleNames.Staff,
                 actions: ['EDIT', 'VIEW'],
@@ -69,10 +69,10 @@ export const ROLES = [
                 module: AppModuleNames.Hall,
                 actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
             },
-            {
-                module: AppModuleNames.TimeSlot,
-                actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
-            }
+            // {
+            //     module: AppModuleNames.TimeSlot,
+            //     actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+            // }
         ]
     }
 ]

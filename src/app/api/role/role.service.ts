@@ -24,9 +24,7 @@ export class RoleService {
                         id: superAdmin.id
                     },
                     data: {
-                        permissions: {
-                            set: PERMISSIONS
-                        }
+                        permissions: PERMISSIONS
                     }
                 });
 
@@ -44,9 +42,7 @@ export class RoleService {
                 update: {
                     name: role.name,
                     isSuper: role.isSuper,
-                    permissions: {
-                        set: role.permissions
-                    }
+                    permissions: role.permissions
                 },
                 create: {
                     name: role.name,
