@@ -30,7 +30,7 @@ export class AuthGuard implements CanActivate {
     try {
       const authUser = await this.$auth.veryAccessToken(token);
       const apiType = this.$reflector.get('apiMetaData', context.getHandler()) as IApiType;
-      if (apiType.onlyAdmin) {
+      if (apiType?.onlyAdmin) {
         if (authUser.type !== AccountType.ADMIN) ApiException.unAuthorized('AUTH.NOT_ALLOWED');
         const role = authUser.role as IRole;
         if (!role) throw new UnauthorizedException();
@@ -40,7 +40,8 @@ export class AuthGuard implements CanActivate {
           if (!isAccess)
             ApiException.unAuthorized('AUTH.NOT_PERMITTED');
         }
-
+      } else {
+        if (authUser.type !== AccountType.CUSTOMER) ApiException.unAuthorized('AUTH.NOT_ALLOWED');
       }
 
       request['user'] = authUser;
