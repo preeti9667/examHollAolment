@@ -94,25 +94,28 @@ export class AuthService {
                     isActive: true
                 }
             }),
-            this.$prisma.user.upsert({
-                where: { id: authUser.id },
-                update: {
-                    email: authUser.email,
-                    phoneNumber: authUser.phoneNumber,
-                    countryCode: authUser.countryCode,
-                    isActive: authUser.isActive,
-                    isDeleted: authUser.isDeleted
-                },
-                create: {
-                    id: authUser.id,
-                    email: authUser.email,
-                    displayId: OpenId.format('USR', 6),
-                    phoneNumber: authUser.phoneNumber,
-                    countryCode: authUser.countryCode,
-                    isActive: authUser.isActive,
-                    isDeleted: authUser.isDeleted
-                }
-            }),
+            authUser.type === AccountType.CUSTOMER ?
+                this.$prisma.user.upsert({
+                    where: { id: authUser.id },
+                    update: {
+                        email: authUser.email,
+                        phoneNumber: authUser.phoneNumber,
+                        countryCode: authUser.countryCode,
+                        isActive: authUser.isActive,
+                        isDeleted: authUser.isDeleted
+                    },
+                    create: {
+                        id: authUser.id,
+                        email: authUser.email,
+                        displayId: OpenId.format('USR', 6),
+                        phoneNumber: authUser.phoneNumber,
+                        countryCode: authUser.countryCode,
+                        isActive: authUser.isActive,
+                        isDeleted: authUser.isDeleted
+                    }
+                })
+                :
+                this.$prisma.admin.findFirst({ where: { id: authUser.id } }),
             this.$prisma.authOtp.delete({ where: { id: request_id } })
         ]);
 
@@ -156,22 +159,29 @@ export class AuthService {
         if (decoded.type !== type) ApiException.unAuthorized();
         if (!isActive) ApiException.unAuthorized("AUTH.ACCOUNT_DEACTIVATED");
 
-        // let role;
-        // if(type === AccountType.ADMIN) {
-        //    const  admin = await this.$prisma.admin.findFirst({
-        //         where: {
-        //             id,
-        //             isDeleted: false
-        //         }
-        //     })
-        // }
+        let role;
+        if (type === AccountType.ADMIN) {
+            role = await this.$prisma.role.findFirst({
+                where: {
+                    id,
+                    isActive: true
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    isSuper: true,
+                    permissions: true
+                }
+            })
+        }
 
         return {
             id,
             phoneNumber,
             countryCode,
             email,
-            type
+            type,
+            role
         }
     }
 }
