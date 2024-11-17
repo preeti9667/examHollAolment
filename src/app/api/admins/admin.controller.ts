@@ -7,7 +7,7 @@ import { IAuthAdmin } from "../auth/interfaces/auth-user";
 import { AuthGuard } from "@app/gaurds/auth.guard";
 import { MyProfileResponseDto } from "./dto/profile.dto";
 import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
-import { AppModuleNames } from "../api.constant";
+import { ApiActionNames, AppModuleNames } from "../api.constant";
 
 @Controller({
     path: 'admins',
@@ -24,7 +24,7 @@ export class AdminController {
     }
 
     @Get('my-profile')
-    @SetApiMetadata(AppModuleNames.Staff, 'VIEW', true)
+    @SetApiMetadata(AppModuleNames.Staff, ApiActionNames.View, true)
     @UseGuards(AuthGuard)
     @ApiBearerAuth('AccessToken')
     @Message('ADMIN.PROFILE')

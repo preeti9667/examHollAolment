@@ -170,6 +170,7 @@ export class AuthService {
                     id: true,
                     name: true,
                     isSuper: true,
+                    isActive: true,
                     permissions: true
                 }
             })

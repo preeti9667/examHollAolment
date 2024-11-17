@@ -10,7 +10,7 @@ export interface IAuthUser {
 
 export interface IPermission {
     module: string;
-    permissions: string[]
+    actions: string[]
 }
 
 export interface IRole {
