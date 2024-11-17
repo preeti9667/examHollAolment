@@ -315,7 +315,24 @@ export class BookingService {
         if (!booking) {
             ApiException.notFound('BOOKING.NOT_FOUND')
         }
-
+        const payments = await this.$prisma.payment.findMany({
+            where: { bookingId: id },
+            select: {
+                id: true,
+                transactionId: true,
+                sabpaisaTxnId: true,
+                status: true,
+                amount: true,
+                paidAmount: true,
+                currency: true,
+                paymentMode: true,
+                transDate: true,
+                transaction: true,
+                createdAt: true,
+                updatedAt: true
+            }
+        });
+        booking['payments'] = payments;
         return booking;
     }
 

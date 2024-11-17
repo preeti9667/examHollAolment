@@ -1,9 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsUUID, IsString, IsOptional, IsNumber, IsEnum, IsDate, IsObject, IsInt, ValidateNested, Length } from "class-validator";
+import { IsUUID, IsString, IsOptional, IsNumber, IsEnum, IsDate, IsObject, IsInt, ValidateNested, Length, IsArray } from "class-validator";
 import { BookingStatus } from "../booking.constant";
 import { Format24TO12, UtcToDateString } from "src/utils";
 import { Type } from "class-transformer";
 import { ResponseDto } from "@app/api/response.dto";
+import { PaymentStatus } from "@app/api/payments/payment.constant";
 
 
 export class BookingDetailParamsDto {
@@ -51,6 +52,89 @@ export class BookingDetailsHallDto {
     })
     @IsString()
     groupName: string;
+}
+
+export class BookingDetailsPaymentDto {
+    @ApiProperty({
+        type: String,
+        example: '3e9e93bd-ff1f-4c89-bd12-f09bb8b7f3d3',
+    })
+    @IsString()
+    id: string;
+
+    @ApiProperty({
+        type: String,
+        example: 'txn_1234',
+    })
+    @IsString()
+    transactionId: string;
+
+    @ApiProperty({
+        type: String,
+        example: '530641611240100644',
+    })
+    @IsString()
+    sabpaisaTxnId: string;
+
+    @ApiProperty({
+        type: String,
+        example: PaymentStatus.Success
+    })
+    @IsEnum(PaymentStatus)
+    status: PaymentStatus;
+
+    @ApiProperty({
+        type: Number,
+        example: 80000
+    })
+    @IsNumber()
+    amount: number;
+
+    @ApiProperty({
+        type: Number,
+        example: 80434
+    })
+    @IsNumber()
+    paidAmount: number;
+
+    @ApiProperty({
+        type: String,
+        example: 'INR'
+    })
+    @IsString()
+    currency: string;
+
+    @ApiProperty({
+        type: String,
+        example: 'card'
+    })
+    @IsString()
+    paymentMode: string;
+
+    @ApiProperty({
+        type: String,
+        example: new Date().toISOString()
+    })
+    @IsDate()
+    transDate: Date;
+    @ApiProperty({
+        type: Object
+    })
+    transaction: object;
+
+    @ApiProperty({
+        type: String,
+        example: '2025-01-01T00:00:00.000Z'
+    })
+    @IsDate()
+    createdAt: Date;
+
+    @ApiProperty({
+        type: String,
+        example: '2025-01-01T00:00:00.000Z'
+    })
+    @IsDate()
+    updatedAt: Date;
 }
 
 
@@ -297,6 +381,15 @@ export class BookingDetailsDto {
     @Type(() => BookingDetailsBookingHallDto)
     @IsOptional()
     bookingHall: BookingDetailsBookingHallDto[]
+
+    @ApiProperty({
+        type: [BookingDetailsPaymentDto],
+        required: false
+    })
+    @ValidateNested()
+    @IsArray()
+    @Type(() => BookingDetailsPaymentDto)
+    payments: BookingDetailsPaymentDto
 }
 
 
