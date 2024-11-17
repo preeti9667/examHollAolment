@@ -3,31 +3,31 @@ import { AppModuleNames } from "../api.constant"
 export const PERMISSIONS = [
     {
         module: AppModuleNames.Admin,
-        permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+        actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
     },
     {
         module: AppModuleNames.Staff,
-        permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+        actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
     },
     {
         module: AppModuleNames.User,
-        permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+        actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
     },
     {
         module: AppModuleNames.Booking,
-        permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+        actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
     },
     {
         module: AppModuleNames.AddOns,
-        permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+        actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
     },
     {
         module: AppModuleNames.Hall,
-        permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+        actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
     },
     {
         module: AppModuleNames.TimeSlot,
-        permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+        actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
     }
 ]
 
@@ -47,31 +47,31 @@ export const ROLES = [
         permissions: [
             {
                 module: AppModuleNames.Admin,
-                permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+                actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
             },
             {
                 module: AppModuleNames.Staff,
-                permissions: ['EDIT', 'VIEW'],
+                actions: ['EDIT', 'VIEW'],
             },
             {
                 module: AppModuleNames.User,
-                permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+                actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
             },
             {
                 module: AppModuleNames.Booking,
-                permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+                actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
             },
             {
                 module: AppModuleNames.AddOns,
-                permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+                actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
             },
             {
                 module: AppModuleNames.Hall,
-                permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+                actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
             },
             {
                 module: AppModuleNames.TimeSlot,
-                permissions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+                actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
             }
         ]
     }
