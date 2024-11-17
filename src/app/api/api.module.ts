@@ -11,6 +11,7 @@ import { SchedularModule } from "./schedule/schedular.module";
 import { RoleModule } from "./role/role.module";
 import { PaymentModule } from "./payments/payment.module";
 import { AdminModule } from "./admins/admin.module";
+import { StaffModule } from "./staff/staff.module";
 
 @Module({
         imports: [
@@ -23,7 +24,8 @@ import { AdminModule } from "./admins/admin.module";
                 SchedularModule,
                 PaymentModule,
                 RoleModule,
-                AdminModule
+                AdminModule,
+                StaffModule
         ],
         exports: [],
         controllers: [ApiController],
