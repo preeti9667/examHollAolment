@@ -63,7 +63,10 @@ export class PaymentService {
     async paymentResponse(body: any) {
         this.$logger.log(`Body response : ${JSON.stringify(body)}`);
         const encData = body.encResponse || body.encData || body?.data?.encData;
-        if (!encData) ApiException.badData('PAYMENT.ENC_DATA_MISSING');
+        if (!encData) {
+            this.$logger.error(`Missing encData in request body`, JSON.stringify(body));
+            throw new Error("Payment failed due to missing encData from subpaisa");
+        };
         const decrypted = await this.$subPaisa.paymentHandler(encData);
         const decryptedResponse = decrypted.decryptedResponse.split('&');
         let decryptedResponseObj: any = {};
