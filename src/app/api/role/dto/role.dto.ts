@@ -1,4 +1,4 @@
-import { AppModuleNames } from "@app/api/api.constant";
+import { ApiActionNames, AppModuleNames } from "@app/api/api.constant";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsArray, IsBoolean, IsEnum } from "class-validator";
 
@@ -14,10 +14,10 @@ export class PermissionDto {
     @ApiProperty({
         type: [String],
         description: 'list of permissions',
-        example: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
-        enum: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS']
+        example: [ApiActionNames],
+        enum: [ApiActionNames]
     })
-    @IsEnum(['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'])
+    @IsEnum([ApiActionNames])
     actions: string;
 }
 

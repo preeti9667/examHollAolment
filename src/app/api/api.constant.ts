@@ -10,3 +10,11 @@ export enum AppModuleNames {
     Hall = 'HALL',
     TimeSlot = 'TIME_SLOT',
 }
+
+export enum ApiActionNames {
+    Add = 'ADD',
+    Edit = 'EDIT',
+    Delete = 'DELETE',
+    View = 'VIEW',
+    Status = 'STATUS',
+}

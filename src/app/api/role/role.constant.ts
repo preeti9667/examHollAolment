@@ -1,4 +1,4 @@
-import { AppModuleNames } from "../api.constant"
+import { ApiActionNames, AppModuleNames } from "../api.constant"
 
 export const PERMISSIONS = [
     // {
@@ -7,23 +7,23 @@ export const PERMISSIONS = [
     // },
     {
         module: AppModuleNames.Staff,
-        actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+        actions: Object.values(ApiActionNames),
     },
     {
         module: AppModuleNames.User,
-        actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+        actions: Object.values(ApiActionNames),
     },
     {
         module: AppModuleNames.Booking,
-        actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+        actions: Object.values(ApiActionNames),
     },
     {
         module: AppModuleNames.AddOns,
-        actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+        actions: Object.values(ApiActionNames),
     },
     {
         module: AppModuleNames.Hall,
-        actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+        actions: Object.values(ApiActionNames),
     },
     // {
     //     module: AppModuleNames.TimeSlot,
