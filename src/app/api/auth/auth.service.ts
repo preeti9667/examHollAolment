@@ -44,7 +44,7 @@ export class AuthService {
 
         let otp = this.$env.BYPASS_OTP;
         if (!otp) {
-            otp = OpenId.otp();
+            otp = OpenId.otp(6);
             await this.$sms.sendSms(
                 phoneNumber,
                 SMS_TEMPLATE.loginOtp,

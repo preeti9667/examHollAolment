@@ -34,6 +34,7 @@ export class SmsService {
         },
         variables: { [key: string]: string }[]
     ): Promise<any> {
+
         let messageWithVars = template.message;
         variables.forEach((variable) => {
             Object.keys(variable).forEach((key) => {
@@ -66,6 +67,15 @@ export class SmsService {
                 {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    proxy: {
+                        protocol: "http",
+                        host: 'velodrome.usefixie.com',
+                        port: 80,
+                        auth: {
+                            username: 'fixie',
+                            password: 'ZVKhV0Ushry8aHs'
+                        }
                     },
                 },
             );
