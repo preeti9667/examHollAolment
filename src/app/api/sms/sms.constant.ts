@@ -1,7 +1,7 @@
 export const SMS_TEMPLATE = {
     loginOtp: {
-        name: 'LOGIN_OTP',
-        id: '1',
-        message: 'Your OTP is : $otp for login application - BSEB - Bihar Government.',
+        name: 'BSEB-Institute Forget Password',
+        id: '1307161051885196542',
+        message: 'Your password is : $otp to login in Bihar school examination board mobile application - BSEB - Bihar Government.',
     }
 }
