@@ -1,5 +1,5 @@
 import { COMMON_HEADERS } from "@app/app.constant";
-import { Controller, Get, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AdminService } from "./admin.service";
 import { AuthUser, Message } from "@app/decorators";
@@ -9,6 +9,7 @@ import { MyProfileResponseDto } from "./dto/profile.dto";
 import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
 import { ApiActionNames, AppModuleNames } from "../api.constant";
 import { CreateAdminPayloadDto, CreateAdminResponseDto } from "./dto/create.dto";
+import { ListAdminQueryDto } from "./dto/list.dto";
 
 @Controller({
     path: 'admins',
@@ -24,6 +25,17 @@ export class AdminController {
 
     }
 
+    @Get('')
+    @SetApiMetadata(AppModuleNames.Admin, ApiActionNames.View, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('ADMIN.LIST')
+    // @ApiOkResponse({ type: CreateAdminResponseDto })
+    @ApiOperation({ summary: 'list admins' })
+    async list(@Query() query: ListAdminQueryDto) {
+        return this.$admin.list(query);
+    }
+
     @Post('')
     @SetApiMetadata(AppModuleNames.Admin, ApiActionNames.Add, true)
     @UseGuards(AuthGuard)
@@ -31,7 +43,7 @@ export class AdminController {
     @Message('ADMIN.CREATED')
     @ApiOkResponse({ type: CreateAdminResponseDto })
     @ApiOperation({ summary: 'Create Staff By admin' })
-    async create(payload: CreateAdminPayloadDto) {
+    async create(@Body() payload: CreateAdminPayloadDto) {
         return this.$admin.create(payload);
     }
 

@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type, Transform } from "class-transformer";
-import { IsOptional, IsNumber, Min, IsEnum, IsBoolean } from "class-validator";
+import { IsOptional, IsNumber, Min, IsEnum, IsBoolean, IsString, Max } from "class-validator";
 
 export class ResponseDto {
     @ApiProperty({
@@ -42,6 +42,7 @@ export class ListQueryDto {
     @IsOptional()
     @Type(() => Number)
     @IsNumber()
+    @Max(100)
     limit: number;
 
     @ApiProperty({
@@ -51,7 +52,7 @@ export class ListQueryDto {
     })
     @IsOptional()
     @IsEnum(['createdAt'])
-    sortBy?: 'createdAt';
+    sortBy?: string;
 
     @ApiProperty({
         type: String,
@@ -76,4 +77,14 @@ export class ListQueryDto {
         return obj[key] === 'true' ? true : obj[key] === 'false' ? false : obj[key];
     })
     isActive?: string;
+
+
+    @ApiProperty({
+        type: String,
+        description: 'search some thing eg. name',
+        required: false,
+    })
+    @IsString()
+    @IsOptional()
+    search?: string;
 }

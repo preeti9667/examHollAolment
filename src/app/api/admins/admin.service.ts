@@ -7,6 +7,7 @@ import { RoleService } from "../role/role.service";
 import { IAuthAdmin } from "../auth/interfaces/auth-user";
 import { CreateAdminPayloadDto } from "./dto/create.dto";
 import { ApiException } from "../api.exception";
+import { ListAdminQueryDto } from "./dto/list.dto";
 
 @Injectable()
 export class AdminService {
@@ -154,6 +155,67 @@ export class AdminService {
             email: staff.email,
             createdAt: staff.createdAt,
             updatedAt: staff.updatedAt
+        }
+    }
+
+
+    async list(
+        payload: ListAdminQueryDto
+    ) {
+
+        const { page = 1, limit = 10, sort = 'desc', sortBy = 'createdAt', search, isActive } = payload;
+        const where: any = {};
+        const skip = (page - 1) * limit;
+
+        if (isActive !== undefined) where.isActive = isActive;
+        if (search) where.OR = [
+            {
+                name: { contains: search }
+            },
+            {
+                email: { contains: search }
+            },
+            {
+                phoneNumber: { contains: search }
+            },
+            {
+                displayId: { contains: search }
+            }
+        ]
+
+        const [total, data] = await Promise.all([
+            this.$prisma.admin.count({ where }),
+            this.$prisma.admin.findMany({
+                where,
+                orderBy: {
+                    [sortBy]: sort
+                },
+                skip,
+                take: limit,
+                select: {
+                    id: true,
+                    displayId: true,
+                    name: true,
+                    email: true,
+                    countryCode: true,
+                    phoneNumber: true,
+                    role: {
+                        select: {
+                            id: true,
+                            name: true,
+                        }
+                    },
+                    createdAt: true,
+                    updatedAt: true
+                }
+            })
+        ])
+
+        return {
+            total,
+            page,
+            limit,
+            data
         }
     }
 }
