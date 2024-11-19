@@ -3,7 +3,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsDate, IsEmail, IsString, IsUUID } from "class-validator";
 
-export class CreateStaffPayloadDto {
+export class CreateAdminPayloadDto {
     @ApiProperty({
         type: String,
         example: 'Dr jacal',
@@ -38,7 +38,7 @@ export class CreateStaffPayloadDto {
 }
 
 
-export class CreateStaffResultDto extends CreateStaffPayloadDto {
+export class CreateAdminResultDto extends CreateAdminPayloadDto {
     @ApiProperty({
         type: String,
         example: '3e9e93bd-ff1f-4c89-bd12-f09bb8b7f3d3',
@@ -74,10 +74,10 @@ export class CreateStaffResultDto extends CreateStaffPayloadDto {
 
 
 
-export class CreateStaffResponseDto extends ResponseDto {
+export class CreateAdminResponseDto extends ResponseDto {
     @ApiProperty({
-        type: CreateStaffResultDto
+        type: CreateAdminResultDto
     })
-    @Type(() => CreateStaffResultDto)
-    result: CreateStaffResultDto
+    @Type(() => CreateAdminResultDto)
+    result: CreateAdminResultDto
 }

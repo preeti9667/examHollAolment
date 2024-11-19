@@ -5,6 +5,8 @@ import { Injectable } from "@nestjs/common";
 import { OpenId } from "src/utils";
 import { RoleService } from "../role/role.service";
 import { IAuthAdmin } from "../auth/interfaces/auth-user";
+import { CreateAdminPayloadDto } from "./dto/create.dto";
+import { ApiException } from "../api.exception";
 
 @Injectable()
 export class AdminService {
@@ -103,6 +105,54 @@ export class AdminService {
         return {
             ...adminDetails,
             role: admin.role
+        }
+    }
+
+    async create(payload: CreateAdminPayloadDto) {
+
+        const role = await this.$prisma.role.findFirst({
+            where: {
+                name: 'STAFF'
+            }
+        });
+
+        const { countryCode = '+91', phoneNumber, email, name } = payload;
+        const isStaffExists = await this.$prisma.admin.findFirst({
+            where: {
+                OR: [
+                    {
+                        email
+                    },
+                    {
+                        countryCode,
+                        phoneNumber
+                    }
+                ]
+            }
+        });
+
+        if (isStaffExists) ApiException.badData('ADMIN.EXISTS');
+
+        const staff = await this.$prisma.admin.create({
+            data: {
+                displayId: OpenId.create(8),
+                roleId: role.id,
+                countryCode,
+                email,
+                name,
+                phoneNumber
+            }
+        });
+
+        return {
+            id: staff.id,
+            displayId: staff.displayId,
+            name: staff.name,
+            countryCode: staff.countryCode,
+            phoneNumber: staff.phoneNumber,
+            email: staff.email,
+            createdAt: staff.createdAt,
+            updatedAt: staff.updatedAt
         }
     }
 }
