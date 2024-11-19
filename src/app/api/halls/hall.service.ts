@@ -123,6 +123,12 @@ export class HallService {
                 WHERE
                     H."isActive" = true
                     AND H."isDeleted" = false
+                    AND NOT EXISTS (
+                        SELECT 1
+                        FROM public."OffDate" AS OD
+                        WHERE OD."date" = ds."bookingDate"
+                        AND OD."timeSlotId" = slot
+                    )
                     AND H."id" NOT IN (
                         SELECT "hallId"
                         FROM public."BookingHall"
