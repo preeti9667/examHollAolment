@@ -195,6 +195,12 @@ export class HallService {
              WHERE
              H."isActive" = true
              AND H."isDeleted" = false
+             AND NOT EXISTS (
+                        SELECT 1
+                        FROM public."OffDate" AS OD
+                        WHERE OD."date" = ${date}::date
+                        AND OD."timeSlotId" = ${slotId}
+                )
              AND H.id IN (
                  SELECT "hallId" FROM public."HallTimeSlot"
                  WHERE "timeSlotId" = ${slotId}
