@@ -3,7 +3,7 @@ export const API_BASE_PATH = 'api'
 
 export enum AppModuleNames {
     Admin = 'ADMIN',
-    Staff = 'STAFF',
+    Role = 'ROLE',
     User = 'USER',
     Booking = 'BOOKING',
     AddOns = 'ADD_ONS',

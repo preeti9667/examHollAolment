@@ -21,6 +21,10 @@ export const PERMISSIONS = [
         module: AppModuleNames.Hall,
         actions: Object.values(ApiActionNames),
     },
+    {
+        module: AppModuleNames.Role,
+        actions: Object.values(ApiActionNames),
+    },
     // {
     //     module: AppModuleNames.TimeSlot,
     //     actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],

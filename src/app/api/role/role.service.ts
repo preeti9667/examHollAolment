@@ -55,4 +55,15 @@ export class RoleService {
         }
         this.$logger.log("Roles created");
     }
+
+
+    async list() {
+        const roles = await this.$prisma.role.findMany({
+            select: {
+                id: true,
+                name: true
+            }
+        });
+        return roles;
+    }
 }
