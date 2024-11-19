@@ -2,7 +2,7 @@ import { Body, Controller, Get, Patch, UseGuards } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { UpdateProfilePayloadDto, UpdateProfileResponseDto } from "./dto/update-profile.dto";
 import { AuthUser, Message } from "@app/decorators";
-import { AuthGuard } from "@app/gaurds/auth.guard";
+import { AuthGuard } from "@app/guards/auth.guard";
 import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { IAuthUser } from "../auth/interfaces/auth-user";
 import { COMMON_HEADERS } from "@app/app.constant";

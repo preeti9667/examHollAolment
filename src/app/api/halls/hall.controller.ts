@@ -1,6 +1,6 @@
 import { COMMON_HEADERS } from "@app/app.constant";
 import { Message } from "@app/decorators";
-import { AuthGuard } from "@app/gaurds/auth.guard";
+import { AuthGuard } from "@app/guards/auth.guard";
 import { LoggerService } from "@app/shared/logger";
 import { HallAvailabilityQueryDto, HallAvailabilityResponseDto } from "./dto/availability.dto";
 import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";

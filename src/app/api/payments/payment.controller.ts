@@ -3,7 +3,7 @@ import { Body, Controller, Post, Res, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { InitPaymentBodyDto, InitPaymentResponseDto } from "./dto/init-payment.dto";
 import { Message } from "@app/decorators";
-import { AuthGuard } from "@app/gaurds/auth.guard";
+import { AuthGuard } from "@app/guards/auth.guard";
 import { PaymentService } from "./payment.service";
 import { Response } from "express";
 import { LoggerService } from "@app/shared/logger";

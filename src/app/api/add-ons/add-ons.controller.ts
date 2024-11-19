@@ -1,6 +1,6 @@
 import { COMMON_HEADERS } from "@app/app.constant";
 import { Message } from "@app/decorators";
-import { AuthGuard } from "@app/gaurds/auth.guard";
+import { AuthGuard } from "@app/guards/auth.guard";
 import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AddOnsService } from "./add-ons.service";
@@ -18,7 +18,7 @@ export class AddOnsController {
 
     constructor(
         private $addOnsService: AddOnsService
-    ) {}
+    ) { }
 
     @Post('')
     @Message('ADD-ONS.CREATE')

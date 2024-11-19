@@ -4,7 +4,7 @@ import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from 
 import { AdminService } from "./admin.service";
 import { AuthUser, Message } from "@app/decorators";
 import { IAuthAdmin } from "../auth/interfaces/auth-user";
-import { AuthGuard } from "@app/gaurds/auth.guard";
+import { AuthGuard } from "@app/guards/auth.guard";
 import { MyProfileResponseDto } from "./dto/profile.dto";
 import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
 import { ApiActionNames, AppModuleNames } from "../api.constant";

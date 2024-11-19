@@ -4,7 +4,7 @@ import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from 
 import { COMMON_HEADERS } from "@app/app.constant";
 import { CreateBookingPayloadDto, CreateBookingResponseDto } from "./dto/create.dto";
 import { AuthUser, Message } from "@app/decorators";
-import { AuthGuard } from "@app/gaurds/auth.guard";
+import { AuthGuard } from "@app/guards/auth.guard";
 import { IAuthUser } from "../auth/interfaces/auth-user";
 import { BookingStatus } from "./booking.constant";
 import { BookingDetailParamsDto, BookingDetailsDto, BookingDetailsResponseDto } from "./dto/details.dto";
