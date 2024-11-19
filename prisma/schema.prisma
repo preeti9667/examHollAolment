@@ -158,7 +158,8 @@ model TimeSlot {
   updatedAt    DateTime       @updatedAt
   BookingHall  BookingHall[]
   hallId       String?
-  HallTimeSlot HallTimeSlot[]
+  hallTimeSlot HallTimeSlot[]
+  offDate      OffDate[]
 
   @@unique([from, to])
 }
@@ -201,7 +202,7 @@ model Booking {
   updatedAt        DateTime       @updatedAt
   bookingAddOn     BookingAddOn[]
   bookingHall      BookingHall[]
-  Payment          Payment[]
+  payment          Payment[]
 
   @@index([userId])
 }
@@ -285,4 +286,13 @@ model Admin {
 
   @@index([phoneNumber, countryCode])
   @@index([email])
+}
+
+model OffDate {
+  id         String    @id @default(uuid())
+  timeSlot   TimeSlot? @relation(fields: [timeSlotId], references: [id])
+  timeSlotId String
+  date       String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
