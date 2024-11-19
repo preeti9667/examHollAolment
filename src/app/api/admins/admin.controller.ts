@@ -25,16 +25,16 @@ export class AdminController {
 
     }
 
-    @Get('')
-    @SetApiMetadata(AppModuleNames.Admin, ApiActionNames.View, true)
-    @UseGuards(AuthGuard)
-    @ApiBearerAuth('AccessToken')
-    @Message('ADMIN.LIST')
-    // @ApiOkResponse({ type: CreateAdminResponseDto })
-    @ApiOperation({ summary: 'list admins' })
-    async list(@Query() query: ListAdminQueryDto) {
-        return this.$admin.list(query);
-    }
+    // @Get('')
+    // @SetApiMetadata(AppModuleNames.Admin, ApiActionNames.View, true)
+    // @UseGuards(AuthGuard)
+    // @ApiBearerAuth('AccessToken')
+    // @Message('ADMIN.LIST')
+    // // @ApiOkResponse({ type: CreateAdminResponseDto })
+    // @ApiOperation({ summary: 'list admins' })
+    // async list(@Query() query: ListAdminQueryDto) {
+    //     return this.$admin.list(query);
+    // }
 
     @Post('')
     @SetApiMetadata(AppModuleNames.Admin, ApiActionNames.Add, true)
