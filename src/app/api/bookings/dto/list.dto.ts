@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsUUID, IsString, IsNumber, IsEnum, IsArray, IsObject, ValidateNested, IsOptional, Min, IsDate } from "class-validator";
 import { BookingStatus } from "../booking.constant";
 import { Expose, plainToInstance, Type } from "class-transformer";
-import { ResponseDto } from "@app/api/response.dto";
+import { ResponseDto } from "@app/api/api.dto";
 import { UtcToDateString } from "src/utils";
 
 

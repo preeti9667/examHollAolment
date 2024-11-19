@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsString, IsOptional, IsObject } from "class-validator";
 import { UserAddressDto } from "./address.dto";
 import { Type } from "class-transformer";
-import { ResponseDto } from "@app/api/response.dto";
+import { ResponseDto } from "@app/api/api.dto";
 
 export class UserProfileDto {
     @ApiProperty({

@@ -1,4 +1,4 @@
-import { ResponseDto } from "@app/api/response.dto";
+import { ResponseDto } from "@app/api/api.dto";
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsArray, IsDateString, IsEAN, IsEnum, IsNumber, IsObject, IsOptional, IsString, IsUUID, ValidateIf } from "class-validator";

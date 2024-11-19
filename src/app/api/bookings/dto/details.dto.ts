@@ -3,7 +3,7 @@ import { IsUUID, IsString, IsOptional, IsNumber, IsEnum, IsDate, IsObject, IsInt
 import { BookingStatus } from "../booking.constant";
 import { Format24TO12, UtcToDateString } from "src/utils";
 import { Type } from "class-transformer";
-import { ResponseDto } from "@app/api/response.dto";
+import { ResponseDto } from "@app/api/api.dto";
 import { PaymentStatus } from "@app/api/payments/payment.constant";
 
 

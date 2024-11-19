@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { BookingDateTimeSlotDto } from "./create.dto";
 import { Type } from "class-transformer";
-import { ResponseDto } from "@app/api/response.dto";
+import { ResponseDto } from "@app/api/api.dto";
 import { IsObject } from "class-validator";
 
 export class CostEstimatePayloadDto {

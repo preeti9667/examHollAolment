@@ -1,4 +1,4 @@
-import { ResponseDto } from "@app/api/response.dto";
+import { ResponseDto } from "@app/api/api.dto";
 import { RoleDto } from "@app/api/role/dto/role.dto";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsObject, IsString, IsUUID } from "class-validator";
