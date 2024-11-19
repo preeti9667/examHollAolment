@@ -109,14 +109,7 @@ export class AdminService {
     }
 
     async create(payload: CreateAdminPayloadDto) {
-
-        const role = await this.$prisma.role.findFirst({
-            where: {
-                name: 'STAFF'
-            }
-        });
-
-        const { countryCode = '+91', phoneNumber, email, name } = payload;
+        const { countryCode = '+91', phoneNumber, email, name, roleId } = payload;
         const isStaffExists = await this.$prisma.admin.findFirst({
             where: {
                 OR: [
@@ -132,6 +125,14 @@ export class AdminService {
         });
 
         if (isStaffExists) ApiException.badData('ADMIN.EXISTS');
+
+        const role = await this.$prisma.role.findFirst({
+            where: {
+                id: roleId
+            }
+        });
+
+        if (!role) ApiException.notFound('ADMIN.ROLE_NOT_FOUND');
 
         const staff = await this.$prisma.admin.create({
             data: {

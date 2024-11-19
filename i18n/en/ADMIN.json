@@ -1,0 +1,5 @@
+{
+  "EXISTS": "Admin already exists.",
+  "ROLE_NOT_FOUND": "Role not found.",
+  "CREATED": "Admin created successfully."
+}

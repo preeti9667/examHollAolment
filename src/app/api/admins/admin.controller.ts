@@ -25,7 +25,7 @@ export class AdminController {
     }
 
     @Post('')
-    @SetApiMetadata(AppModuleNames.Staff, ApiActionNames.Add, true)
+    @SetApiMetadata(AppModuleNames.Admin, ApiActionNames.Add, true)
     @UseGuards(AuthGuard)
     @ApiBearerAuth('AccessToken')
     @Message('ADMIN.CREATED')
@@ -36,7 +36,7 @@ export class AdminController {
     }
 
     @Get('my-profile')
-    @SetApiMetadata(AppModuleNames.Staff, ApiActionNames.View, true)
+    @SetApiMetadata(AppModuleNames.Admin, ApiActionNames.View, true)
     @UseGuards(AuthGuard)
     @ApiBearerAuth('AccessToken')
     @Message('ADMIN.PROFILE')

@@ -1,13 +1,9 @@
 import { ApiActionNames, AppModuleNames } from "../api.constant"
 
 export const PERMISSIONS = [
-    // {
-    //     module: AppModuleNames.Admin,
-    //     actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
-    // },
     {
-        module: AppModuleNames.Staff,
-        actions: Object.values(ApiActionNames),
+        module: AppModuleNames.Admin,
+        actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
     },
     {
         module: AppModuleNames.User,
@@ -45,12 +41,8 @@ export const ROLES = [
         isSuper: false,
         description: '',
         permissions: [
-            // {
-            //     module: AppModuleNames.Admin,
-            //     actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
-            // },
             {
-                module: AppModuleNames.Staff,
+                module: AppModuleNames.Admin,
                 actions: ['EDIT', 'VIEW'],
             },
             {

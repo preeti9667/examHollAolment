@@ -35,6 +35,15 @@ export class CreateAdminPayloadDto {
     })
     @IsEmail()
     email: string;
+
+
+    @ApiProperty({
+        type: String,
+        required: true,
+        example: '3e9e93bd-ff1f-4c89-bd12-f09bb8b7f3d3'
+    })
+    @IsUUID()
+    roleId: string
 }
 
 
