@@ -54,15 +54,15 @@ export class CreateHallDto {
     @IsNotEmpty()
     price!: number;
 
-    @ApiProperty({
-        required: true,
-        isArray: true,
-        type: String,
-        description: 'Add-Ons associated with the hall',
-    })
-    @IsArray()
-    @IsDefined()
-    addOnIds!: string[];
+    // @ApiProperty({
+    //     required: true,
+    //     isArray: true,
+    //     type: String,
+    //     description: 'Add-Ons associated with the hall',
+    // })
+    // @IsArray()
+    // @IsDefined()
+    // addOnIds!: string[];
 
     @ApiProperty({
         required: true,

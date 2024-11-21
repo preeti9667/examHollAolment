@@ -221,7 +221,7 @@ export class HallService {
     async create(payload: CreateHallDto) {
         const hall = await this.$prisma.hall.create({
             data: {
-                displayId: OpenId.format('HALL'),
+                displayId: OpenId.format('H'),
                 ...payload
             }
         })
