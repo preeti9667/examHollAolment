@@ -15,20 +15,21 @@ datasource db {
 }
 
 model User {
-  id          String        @id @default(uuid())
-  displayId   String        @default("USR")
-  name        String?
-  email       String?
-  phoneNumber String?
-  countryCode String?
-  bio         String?
-  gstNo       String?
-  isActive    Boolean       @default(true)
-  isDeleted   Boolean       @default(false)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  address     UserAddress[]
-  booking     Booking[]
+  id            String          @id @default(uuid())
+  displayId     String          @default("USR")
+  name          String?
+  email         String?
+  phoneNumber   String?
+  countryCode   String?
+  bio           String?
+  gstNo         String?
+  isActive      Boolean         @default(true)
+  isDeleted     Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  address       UserAddress[]
+  booking       Booking[]
+  paymentRefund PaymentRefund[]
 
   @@index([email])
   @@index([countryCode, phoneNumber])
@@ -177,32 +178,34 @@ model Exam {
 }
 
 model Booking {
-  id               String         @id @default(uuid())
-  displayId        String         @unique()
-  user             User?          @relation(fields: [userId], references: [id])
+  id               String          @id @default(uuid())
+  displayId        String          @unique()
+  user             User?           @relation(fields: [userId], references: [id])
   userId           String
   halls            Json?
-  hallIds          String[]       @default([])
-  noOfCandidates   Int            @default(0)
-  hallAllocated    Int            @default(0)
+  hallIds          String[]        @default([])
+  noOfCandidates   Int             @default(0)
+  hallAllocated    Int             @default(0)
   examName         String?
   organizationName String?
   institutionType  String?
   applicantName    String?
-  totalCost        Float          @default(0)
+  totalCost        Float           @default(0)
   startDate        DateTime?
   endDate          DateTime?
   timeSlots        Json?
-  timeSlotIds      String[]       @default([])
+  timeSlotIds      String[]        @default([])
   address          Json?
   contact          Json?
   paymentMethod    String?
-  status           Int            @default(0)
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  status           Int             @default(0)
+  cancelReason     String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
   bookingAddOn     BookingAddOn[]
   bookingHall      BookingHall[]
   payment          Payment[]
+  paymentRefund    PaymentRefund[]
 
   @@index([userId])
 }
@@ -256,6 +259,19 @@ model Payment {
   transaction   Json?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+}
+
+model PaymentRefund {
+  id         String   @id @default(uuid())
+  refundType String
+  amount     String
+  status     String
+  booking    Booking  @relation(fields: [bookingId], references: [id])
+  bookingId  String
+  user       User?    @relation(fields: [userId], references: [id])
+  userId     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model Role {
