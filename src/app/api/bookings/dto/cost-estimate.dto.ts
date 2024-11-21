@@ -24,6 +24,13 @@ export class CostEstimateResultDto {
 
     @ApiProperty({
         type: Number,
+        example: 25000,
+        description: "Security deposit"
+    })
+    securityDeposit: number;
+
+    @ApiProperty({
+        type: Number,
         example: 4,
         description: "Total no of halls"
     })
