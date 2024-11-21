@@ -23,36 +23,119 @@ export class HallService {
 
 
     async createDummyHall() {
-        for (let i = 0; i < 44; i++) {
-            const displayId = OpenId.create(8);
-            const name = `Hall ${i + 1}`;
-            const groupName = `Group ${i < 5 ? 'A' : i > 5 && i > 11 ? 'B' : 'c'}`;
-            const capacity = 250;
-            const price = 20000;
-            const slots = i % 2 == 0 ? ['1b53c972-bdc7-4cfb-bf86-90a55e8b95ae'] : ['1b53c972-bdc7-4cfb-bf86-90a55e8b95ae', '7fec2a37-d6ff-4d6f-bee8-b97df8b843d2'];
+        const hall_data = [
+            {
+                "groupName": "Block A",
+                "capacity": 273,
+                "floor": 0,
+                "quantity": 2
+            },
+            {
+                "groupName": "Block A",
+                "capacity": 273,
+                "floor": 1,
+                "quantity": 4
+            },
+            {
+                "groupName": "Block A",
+                "capacity": 273,
+                "floor": 2,
+                "quantity": 4
+            },
+            {
+                "groupName": "Block A",
+                "capacity": 273,
+                "floor": 3,
+                "quantity": 4
+            },
+            {
+                "groupName": "Block A",
+                "capacity": 273,
+                "floor": 4,
+                "quantity": 4
+            },
+            {
+                "groupName": "Block A",
+                "capacity": 273,
+                "floor": 5,
+                "quantity": 4
+            },
+            {
+                "groupName": "Block B",
+                "capacity": 273,
+                "floor": 0,
+                "quantity": 3
+            },
+            {
+                "groupName": "Block B",
+                "capacity": 273,
+                "floor": 1,
+                "quantity": 3
+            },
+            {
+                "groupName": "Block B",
+                "capacity": 273,
+                "floor": 2,
+                "quantity": 4
+            },
+            {
+                "groupName": "Block B",
+                "capacity": 273,
+                "floor": 3,
+                "quantity": 4
+            },
+            {
+                "groupName": "Block B",
+                "capacity": 273,
+                "floor": 4,
+                "quantity": 4
+            },
+            {
+                "groupName": "Block B",
+                "capacity": 273,
+                "floor": 5,
+                "quantity": 4
+            }
+        ]
 
-            const hall = await this.$prisma.hall.create({
-                data: {
-                    displayId,
-                    name,
-                    groupName,
-                    capacity,
-                    slots,
-                    price,
-                }
-            })
+        for (let i = 0; i < hall_data.length; i++) {
+            const h = hall_data[i];
+            if (h.quantity > 0) {
+                for (let j = 0; j < h.quantity; j++) {
+                    const displayId = OpenId.format('H', 8);;
+                    const groupName = h.groupName;
+                    const capacity = h.capacity;
+                    const floor = h.floor;
+                    const price = 20000;
+                    const slots = ['1b53c972-bdc7-4cfb-bf86-90a55e8b95ae', '7fec2a37-d6ff-4d6f-bee8-b97df8b843d2'];
+                    const name = `${groupName.split(' ')[1]} ${floor}-${j + 1}`;
 
-            for (const t of slots) {
-                await this.$prisma.hallTimeSlot.create({
-                    data: {
-                        hallId: hall.id,
-                        timeSlotId: t
+                    const hall = await this.$prisma.hall.create({
+                        data: {
+                            displayId,
+                            name,
+                            groupName,
+                            capacity,
+                            slots,
+                            price,
+                            floor
+                        }
+                    })
+
+                    for (const t of slots) {
+                        await this.$prisma.hallTimeSlot.create({
+                            data: {
+                                hallId: hall.id,
+                                timeSlotId: t
+                            }
+                        })
                     }
-                })
+
+
+                    console.log(name, "Hall created")
+                }
             }
 
-
-            console.log(i, "Hall created")
         }
     }
 
@@ -221,7 +304,7 @@ export class HallService {
     async create(payload: CreateHallDto) {
         const hall = await this.$prisma.hall.create({
             data: {
-                displayId: OpenId.format('H'),
+                displayId: OpenId.format('H', 8),
                 ...payload
             }
         })
