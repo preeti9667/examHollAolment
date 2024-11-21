@@ -1,27 +1,20 @@
 -- CreateEnum
 CREATE TYPE "AccountType" AS ENUM ('ADMIN', 'CUSTOMER');
 
--- CreateEnum
-CREATE TYPE "AddOnType" AS ENUM ('SURVEILLANCE', 'SECURITY', 'FACE_RECOGNITION');
-
--- CreateEnum
-CREATE TYPE "BookingStatus" AS ENUM ('APPROVED', 'CANCELLED', 'FAILED', 'DRAFT');
-
--- CreateEnum
-CREATE TYPE "PaymentMethod" AS ENUM ('CASH', 'GATEWAY', 'UPI', 'CARD');
-
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
+    "displayId" TEXT NOT NULL DEFAULT 'USR',
     "name" TEXT,
     "email" TEXT,
     "phoneNumber" TEXT,
     "countryCode" TEXT,
-    "institutionType" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "bio" TEXT,
+    "gstNo" TEXT,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -49,6 +42,7 @@ CREATE TABLE "Auth" (
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
     "type" "AccountType" NOT NULL DEFAULT 'CUSTOMER',
+    "roleId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -90,8 +84,9 @@ CREATE TABLE "Hall" (
     "name" TEXT NOT NULL,
     "groupName" TEXT NOT NULL,
     "capacity" INTEGER NOT NULL,
+    "price" INTEGER NOT NULL DEFAULT 0,
     "slots" TEXT[],
-    "addOnIds" TEXT[],
+    "floor" INTEGER NOT NULL DEFAULT 0,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
     "bookingCount" INTEGER NOT NULL DEFAULT 0,
@@ -106,12 +101,34 @@ CREATE TABLE "AddOn" (
     "id" TEXT NOT NULL,
     "displayId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "type" "AddOnType" NOT NULL DEFAULT 'SECURITY',
+    "type" TEXT NOT NULL DEFAULT 'SECURITY',
     "price" INTEGER NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "AddOn_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "HallTimeSlot" (
+    "hallId" TEXT NOT NULL,
+    "timeSlotId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "HallTimeSlot_pkey" PRIMARY KEY ("hallId","timeSlotId")
+);
+
+-- CreateTable
+CREATE TABLE "HallAddOn" (
+    "hallId" TEXT NOT NULL,
+    "addOnId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "HallAddOn_pkey" PRIMARY KEY ("hallId","addOnId")
 );
 
 -- CreateTable
@@ -121,6 +138,7 @@ CREATE TABLE "TimeSlot" (
     "to" DOUBLE PRECISION NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "hallId" TEXT,
 
     CONSTRAINT "TimeSlot_pkey" PRIMARY KEY ("id")
 );
@@ -145,17 +163,23 @@ CREATE TABLE "Booking" (
     "id" TEXT NOT NULL,
     "displayId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    "halls" JSONB,
-    "hallIds" TEXT[],
-    "examName" TEXT NOT NULL,
-    "totalCost" DOUBLE PRECISION NOT NULL,
-    "from" TIMESTAMP(3) NOT NULL,
-    "to" TIMESTAMP(3) NOT NULL,
-    "timeSlots" JSONB,
-    "timeSlotIds" TEXT[],
+    "noOfCandidates" INTEGER NOT NULL DEFAULT 0,
+    "hallAllocated" INTEGER NOT NULL DEFAULT 0,
+    "examName" TEXT,
+    "organizationName" TEXT,
+    "institutionType" TEXT,
+    "applicantName" TEXT,
+    "securityDeposit" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "hallPrice" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "totalCost" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "startDate" TIMESTAMP(3),
+    "endDate" TIMESTAMP(3),
     "address" JSONB,
-    "paymentMethod" "PaymentMethod" NOT NULL,
-    "status" "BookingStatus" NOT NULL DEFAULT 'DRAFT',
+    "contact" JSONB,
+    "paymentMethod" TEXT,
+    "status" INTEGER NOT NULL DEFAULT 0,
+    "cancelReason" TEXT,
+    "cancelledBy" JSONB,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -167,8 +191,13 @@ CREATE TABLE "BookingHall" (
     "id" TEXT NOT NULL,
     "bookingId" TEXT NOT NULL,
     "hallId" TEXT NOT NULL,
-    "quantity" INTEGER NOT NULL,
+    "timeSlotId" TEXT NOT NULL,
+    "seatsAllocated" INTEGER NOT NULL DEFAULT 0,
     "totalPrice" DOUBLE PRECISION NOT NULL,
+    "hallRaw" JSONB,
+    "slotRaw" JSONB,
+    "date" TIMESTAMP(3),
+    "status" INTEGER NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -186,6 +215,39 @@ CREATE TABLE "BookingAddOn" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "BookingAddOn_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Payment" (
+    "id" TEXT NOT NULL,
+    "bookingId" TEXT NOT NULL,
+    "transactionId" TEXT NOT NULL,
+    "sabpaisaTxnId" TEXT,
+    "amount" DOUBLE PRECISION NOT NULL,
+    "status" TEXT NOT NULL,
+    "paidAmount" DOUBLE PRECISION,
+    "paymentMode" TEXT,
+    "transDate" TIMESTAMP(3),
+    "currency" TEXT NOT NULL DEFAULT 'INR',
+    "transaction" JSONB,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Payment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "PaymentRefund" (
+    "id" TEXT NOT NULL,
+    "refundType" TEXT NOT NULL,
+    "amount" DOUBLE PRECISION NOT NULL,
+    "status" TEXT NOT NULL,
+    "bookingId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "PaymentRefund_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -208,9 +270,11 @@ CREATE TABLE "Admin" (
     "displayId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "roleId" TEXT NOT NULL,
-    "email" TEXT,
-    "phoneNumber" TEXT,
-    "countryCode" TEXT,
+    "email" TEXT NOT NULL,
+    "phoneNumber" TEXT NOT NULL,
+    "countryCode" TEXT NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -218,9 +282,14 @@ CREATE TABLE "Admin" (
 );
 
 -- CreateTable
-CREATE TABLE "_HallAddOns" (
-    "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL
+CREATE TABLE "OffDate" (
+    "id" TEXT NOT NULL,
+    "timeSlotId" TEXT NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "OffDate_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -254,10 +323,13 @@ CREATE UNIQUE INDEX "Booking_displayId_key" ON "Booking"("displayId");
 CREATE INDEX "Booking_userId_idx" ON "Booking"("userId");
 
 -- CreateIndex
-CREATE INDEX "BookingHall_bookingId_idx" ON "BookingHall"("bookingId");
+CREATE INDEX "BookingHall_bookingId_hallId_idx" ON "BookingHall"("bookingId", "hallId");
 
 -- CreateIndex
 CREATE INDEX "BookingAddOn_bookingId_idx" ON "BookingAddOn"("bookingId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Payment_transactionId_key" ON "Payment"("transactionId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Role_displayId_key" ON "Role"("displayId");
@@ -274,12 +346,6 @@ CREATE INDEX "Admin_phoneNumber_countryCode_idx" ON "Admin"("phoneNumber", "coun
 -- CreateIndex
 CREATE INDEX "Admin_email_idx" ON "Admin"("email");
 
--- CreateIndex
-CREATE UNIQUE INDEX "_HallAddOns_AB_unique" ON "_HallAddOns"("A", "B");
-
--- CreateIndex
-CREATE INDEX "_HallAddOns_B_index" ON "_HallAddOns"("B");
-
 -- AddForeignKey
 ALTER TABLE "LoginHistory" ADD CONSTRAINT "LoginHistory_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Auth"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -287,13 +353,28 @@ ALTER TABLE "LoginHistory" ADD CONSTRAINT "LoginHistory_userId_fkey" FOREIGN KEY
 ALTER TABLE "UserAddress" ADD CONSTRAINT "UserAddress_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "HallTimeSlot" ADD CONSTRAINT "HallTimeSlot_hallId_fkey" FOREIGN KEY ("hallId") REFERENCES "Hall"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "HallTimeSlot" ADD CONSTRAINT "HallTimeSlot_timeSlotId_fkey" FOREIGN KEY ("timeSlotId") REFERENCES "TimeSlot"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "HallAddOn" ADD CONSTRAINT "HallAddOn_hallId_fkey" FOREIGN KEY ("hallId") REFERENCES "Hall"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "HallAddOn" ADD CONSTRAINT "HallAddOn_addOnId_fkey" FOREIGN KEY ("addOnId") REFERENCES "AddOn"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Booking" ADD CONSTRAINT "Booking_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "BookingHall" ADD CONSTRAINT "BookingHall_bookingId_fkey" FOREIGN KEY ("bookingId") REFERENCES "Booking"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "BookingHall" ADD CONSTRAINT "BookingHall_bookingId_fkey" FOREIGN KEY ("bookingId") REFERENCES "Booking"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "BookingHall" ADD CONSTRAINT "BookingHall_hallId_fkey" FOREIGN KEY ("hallId") REFERENCES "Hall"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "BookingHall" ADD CONSTRAINT "BookingHall_timeSlotId_fkey" FOREIGN KEY ("timeSlotId") REFERENCES "TimeSlot"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "BookingAddOn" ADD CONSTRAINT "BookingAddOn_bookingId_fkey" FOREIGN KEY ("bookingId") REFERENCES "Booking"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -302,10 +383,16 @@ ALTER TABLE "BookingAddOn" ADD CONSTRAINT "BookingAddOn_bookingId_fkey" FOREIGN 
 ALTER TABLE "BookingAddOn" ADD CONSTRAINT "BookingAddOn_addOnId_fkey" FOREIGN KEY ("addOnId") REFERENCES "AddOn"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Payment" ADD CONSTRAINT "Payment_bookingId_fkey" FOREIGN KEY ("bookingId") REFERENCES "Booking"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "PaymentRefund" ADD CONSTRAINT "PaymentRefund_bookingId_fkey" FOREIGN KEY ("bookingId") REFERENCES "Booking"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "PaymentRefund" ADD CONSTRAINT "PaymentRefund_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Admin" ADD CONSTRAINT "Admin_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_HallAddOns" ADD CONSTRAINT "_HallAddOns_A_fkey" FOREIGN KEY ("A") REFERENCES "AddOn"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_HallAddOns" ADD CONSTRAINT "_HallAddOns_B_fkey" FOREIGN KEY ("B") REFERENCES "Hall"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "OffDate" ADD CONSTRAINT "OffDate_timeSlotId_fkey" FOREIGN KEY ("timeSlotId") REFERENCES "TimeSlot"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
