@@ -326,6 +326,8 @@ export class BookingService {
                 updatedAt: true,
                 contact: true,
                 address: true,
+                hallPrice: true,
+                securityDeposit: true,
                 bookingHall: {
                     select: {
                         id: true,
@@ -417,11 +419,10 @@ export class BookingService {
             }
             noOfCandidates += slot.noOfCandidates;
             const allocateHalls = this.allocateHalls(halls, slot.noOfCandidates);
-            allocateHalls.forEach(e => {
-                totalCost += e.totalPrice;
-                totalHalls += 1
-            })
+            totalHalls += allocateHalls.length;
+            totalCost += BOOKING_PRICE.PER_SEAT * slot.noOfCandidates;
         }
+        totalCost = totalCost + BOOKING_PRICE.SECURITY_DEPOSIT;
 
         if (notAvailableHalls.length) {
             ApiException.gone('BOOKING.HALL_NOT_AVAILABLE')
@@ -429,8 +430,9 @@ export class BookingService {
 
         return {
             totalCost,
+            securityDeposit: BOOKING_PRICE.SECURITY_DEPOSIT,
             totalHalls,
-            noOfCandidates
+            noOfCandidates,
         }
     }
 
