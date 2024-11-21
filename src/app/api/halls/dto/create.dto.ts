@@ -36,6 +36,16 @@ export class CreateHallDto {
 
     @ApiProperty({
         type: Number,
+        description: 'Floor number, 0 for ground, 1 for first floor',
+        example: 0,
+    })
+    @IsNumber()
+    @IsDefined()
+    @IsNotEmpty()
+    floor!: number;
+
+    @ApiProperty({
+        type: Number,
         description: 'Hall Pice',
         example: 20000,
     })

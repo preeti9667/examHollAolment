@@ -104,7 +104,7 @@ model Hall {
   capacity     Int
   price        Int            @default(0)
   slots        String[]
-  addOnIds     String[]
+  floor        Int            @default(0)
   isActive     Boolean        @default(true)
   isDeleted    Boolean        @default(false)
   bookingCount Int            @default(0)
