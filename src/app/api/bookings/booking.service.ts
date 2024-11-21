@@ -3,7 +3,7 @@ import { LoggerService } from "@app/shared/logger";
 import { Injectable } from "@nestjs/common";
 import { dateStringToUtc, OpenId } from "src/utils";
 import { CreateBookingPayloadDto } from "./dto/create.dto";
-import { BookingCancelledBy, BookingStatus } from "./booking.constant";
+import { BOOKING_PRICE, BookingCancelledBy, BookingStatus } from "./booking.constant";
 import { v4 as uuid } from 'uuid'
 import { HallService } from "../halls/hall.service";
 import { IHall } from "../halls/interfaces/hall";
@@ -135,8 +135,9 @@ export class BookingService {
 
         const hallIds = [];
         const notAvailableHalls = [];
-        let totalCost = 0;
+        let hallCost = 0;
         let noOfCandidates = 0;
+        let securityDeposit = BOOKING_PRICE.SECURITY_DEPOSIT;
 
         for (const slot of payload.timeSlots) {
             const date = dateStringToUtc(slot.date);
@@ -157,14 +158,15 @@ export class BookingService {
             }
 
             allocateHalls.forEach(e => {
-                totalCost += e.totalPrice;
+                hallCost += (BOOKING_PRICE.PER_SEAT * e.seatsAllocated);
+                // hallCost += e.price;
                 hallIds.push(e.id);
                 bookingHall.push(
                     {
                         ...bookingHallObj,
                         hallId: e.id,
                         seatsAllocated: e.seatsAllocated,
-                        totalPrice: e.totalPrice,
+                        totalPrice: BOOKING_PRICE.PER_SEAT * e.seatsAllocated,
                         hallRaw: {
                             id: e.id,
                             displayId: e.displayId,
@@ -182,24 +184,41 @@ export class BookingService {
             ApiException.gone('BOOKING.HALL_NOT_AVAILABLE')
         }
 
+
         // const totalCost = bookingHall.reduce((acc: number, hall: any) => acc + hall.totalPrice, 0);
         // const noOfCandidates = bookingHall.reduce((acc: number, hall: any) => acc + hall.seatsAllocated, 0);
         const hallAllocated = bookingHall.length;
+
+        console.log({
+            id,
+            ...bookingData,
+            totalCost: securityDeposit + hallCost,
+            noOfCandidates,
+            hallAllocated,
+            securityDeposit,
+            hallCost
+        })
+
         const [newBooking] = await this.$prisma.$transaction([
             this.$prisma.booking.upsert({
                 where: { id },
                 create: {
                     id,
                     ...bookingData,
-                    totalCost,
+                    totalCost: securityDeposit + hallCost,
                     noOfCandidates,
-                    hallAllocated
+                    hallAllocated,
+                    securityDeposit,
+                    hallPrice: hallCost,
+
                 },
                 update: {
                     ...bookingData,
-                    totalCost,
+                    totalCost: securityDeposit + hallCost,
                     noOfCandidates,
-                    hallAllocated
+                    hallAllocated,
+                    securityDeposit,
+                    hallPrice: hallCost,
                 }
             }),
             this.$prisma.bookingHall.createMany(
@@ -213,7 +232,7 @@ export class BookingService {
             noOfCandidates,
             hallAllocated,
             status: BookingStatus.AwaitingForPayment,
-            totalCost,
+            totalCost: newBooking.totalCost,
             paymentLink: null,
         }
 

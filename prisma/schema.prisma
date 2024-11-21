@@ -182,19 +182,17 @@ model Booking {
   displayId        String          @unique()
   user             User?           @relation(fields: [userId], references: [id])
   userId           String
-  halls            Json?
-  hallIds          String[]        @default([])
   noOfCandidates   Int             @default(0)
   hallAllocated    Int             @default(0)
   examName         String?
   organizationName String?
   institutionType  String?
   applicantName    String?
+  securityDeposit  Float           @default(0)
+  hallPrice        Float           @default(0)
   totalCost        Float           @default(0)
   startDate        DateTime?
   endDate          DateTime?
-  timeSlots        Json?
-  timeSlotIds      String[]        @default([])
   address          Json?
   contact          Json?
   paymentMethod    String?

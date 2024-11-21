@@ -14,3 +14,12 @@ export enum BookingCancelledBy {
     User = 'USER',
     System = 'SYSTEM'
 }
+
+
+export const BOOKING_PRICE = {
+    PER_SEAT: 125,
+    SECURITY_DEPOSIT: 25000,
+    ADD_ONS: {
+        JAMMER: 50
+    }
+}
