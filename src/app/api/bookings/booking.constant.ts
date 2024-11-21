@@ -7,3 +7,10 @@ export enum BookingStatus {
     Cancelled = 90,
     Completed = 110
 }
+
+
+export enum BookingCancelledBy {
+    Admin = 'ADMIN',
+    User = 'USER',
+    System = 'SYSTEM'
+}

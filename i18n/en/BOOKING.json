@@ -2,7 +2,9 @@
   "DRAFT_CREATED": "Booking saved as draft successfully.",
   "AWAITING_FOR_PAYMENT": "Booking created successfully. Awaiting payment.",
   "INVALID_ID": "Invalid booking ID.",
+  "NOT_FOUND": "Invalid booking ID.",
   "HALL_NOT_AVAILABLE": "The hall is not available.",
   "LIST": "Booking list fetched successfully",
-  "COST_ESTIMATE": "Cost estimate"
+  "COST_ESTIMATE": "Cost estimate",
+  "CANCELLED": "Booking cancelled successfully"
 }

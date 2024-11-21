@@ -200,6 +200,7 @@ model Booking {
   paymentMethod    String?
   status           Int             @default(0)
   cancelReason     String?
+  cancelledBy      Json?
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
   bookingAddOn     BookingAddOn[]
@@ -264,7 +265,7 @@ model Payment {
 model PaymentRefund {
   id         String   @id @default(uuid())
   refundType String
-  amount     String
+  amount     Float
   status     String
   booking    Booking  @relation(fields: [bookingId], references: [id])
   bookingId  String

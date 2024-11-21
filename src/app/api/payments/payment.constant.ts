@@ -7,3 +7,16 @@ export enum PaymentStatus {
     ChallanSpecific = 'CHALLAN_SPECIFIC',
     NotFound = 'NOT_FOUND'
 }
+
+
+export enum PaymentRefundStatus {
+    Requested = 'REQUESTED',
+    Rejected = 'REJECTED',
+    Approved = 'APPROVED'
+}
+
+
+export enum PaymentRefundType {
+    Full = 'FULL',
+    SecurityDeposit = 'SECURITY_DEPOSIT',
+}

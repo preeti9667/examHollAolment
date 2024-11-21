@@ -3,14 +3,15 @@ import { LoggerService } from "@app/shared/logger";
 import { Injectable } from "@nestjs/common";
 import { dateStringToUtc, OpenId } from "src/utils";
 import { CreateBookingPayloadDto } from "./dto/create.dto";
-import { BookingStatus } from "./booking.constant";
+import { BookingCancelledBy, BookingStatus } from "./booking.constant";
 import { v4 as uuid } from 'uuid'
 import { HallService } from "../halls/hall.service";
 import { IHall } from "../halls/interfaces/hall";
 import { ApiException } from "../api.exception";
-import { PaymentStatus } from "../payments/payment.constant";
+import { PaymentRefundStatus, PaymentRefundType, PaymentStatus } from "../payments/payment.constant";
 import { BookingListQueryDto } from "./dto/list.dto";
 import { CostEstimatePayloadDto } from "./dto/cost-estimate.dto";
+import { CancelBookingDto } from "./dto/cancel.dto";
 
 @Injectable()
 export class BookingService {
@@ -262,7 +263,14 @@ export class BookingService {
                         this.$prisma.booking.update(
                             {
                                 where: { id: booking.id },
-                                data: { status: BookingStatus.Cancelled }
+                                data: {
+                                    status: BookingStatus.Cancelled,
+                                    cancelReason: "Payment not completed",
+                                    cancelledBy: {
+                                        by: BookingCancelledBy.System,
+                                        date: new Date()
+                                    }
+                                }
                             }
                         ),
                         this.$prisma.bookingHall.updateMany({
@@ -404,6 +412,60 @@ export class BookingService {
             totalCost,
             totalHalls,
             noOfCandidates
+        }
+    }
+
+
+
+    async cancel(payload: CancelBookingDto, bookingId: string, userId: string) {
+        const booking = await this.$prisma.booking.findFirst({
+            where: {
+                id: bookingId,
+                userId,
+                status: {
+                    in: [BookingStatus.AwaitingForPayment, BookingStatus.Booked]
+                }
+            },
+        });
+
+
+        if (!booking) ApiException.badData('BOOKING.NOT_FOUND');
+
+        await Promise.all([
+            this.$prisma.booking.update({
+                where: { id: bookingId },
+                data: {
+                    status: BookingStatus.Cancelled,
+                    cancelReason: payload.reason,
+                    cancelledBy: {
+                        id: userId,
+                        by: BookingCancelledBy.User,
+                        date: new Date()
+                    }
+                }
+            }),
+            this.$prisma.bookingHall.updateMany({
+                where: { bookingId },
+                data: { status: BookingStatus.Cancelled }
+            })
+        ]);
+
+        if (booking.status === BookingStatus.Booked) {
+            await this.$prisma.paymentRefund.create({
+                data: {
+                    bookingId,
+                    amount: booking.totalCost,
+                    status: PaymentRefundStatus.Requested,
+                    userId,
+                    refundType: PaymentRefundType.Full
+                }
+            });
+        }
+
+        return {
+            id: bookingId,
+            displayId: booking.displayId,
+            status: BookingStatus.Cancelled,
         }
     }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { BookingService } from "./booking.service";
 import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { COMMON_HEADERS } from "@app/app.constant";
@@ -11,6 +11,7 @@ import { BookingDetailParamsDto, BookingDetailsDto, BookingDetailsResponseDto } 
 import { plainToInstance } from "class-transformer";
 import { BookingListQueryDto, BookingListResultDto } from "./dto/list.dto";
 import { CostEstimatePayloadDto, CostEstimateResponseDto } from "./dto/cost-estimate.dto";
+import { CancelBookingDto, CancelBookingResultDto } from "./dto/cancel.dto";
 
 @Controller({
     path: 'booking',
@@ -63,6 +64,21 @@ export class BookingController {
     ) {
         const result = await this.$booking.list(payload, user.id);
         return plainToInstance(BookingListResultDto, result);
+    }
+
+    @Patch('/cancel/:id')
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('BOOKING.CANCELLED')
+    @ApiOkResponse({ type: CancelBookingResultDto })
+    @ApiOperation({ summary: 'Booking cancelled By  customer' })
+    async cancel(
+        @Param() payload: BookingDetailParamsDto,
+        @Body() body: CancelBookingDto,
+        @AuthUser() user: IAuthUser
+    ) {
+        const result = await this.$booking.cancel(body, payload.id, user.id);
+        return result;
     }
 
 
