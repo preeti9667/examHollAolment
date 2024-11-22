@@ -6,6 +6,8 @@ import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from 
 import { AddOnsService } from "./add-ons.service";
 import { CreateAddOnsDto, CreateAddOnsResponseDto } from "./dto/create.dto";
 import { AddOnsListResponseDto, AddOnsListResultDto, ListAddOnsQueryDto } from "./dto/list.dto";
+import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
+import { AppModuleNames, ApiActionNames } from "../api.constant";
 
 @Controller({
     path: 'add-ons',
@@ -21,6 +23,9 @@ export class AddOnsController {
     ) { }
 
     @Post('')
+    @SetApiMetadata(AppModuleNames.Hall, ApiActionNames.Add, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
     @Message('ADD-ONS.CREATE')
     @ApiOkResponse({ type: CreateAddOnsResponseDto })
     @ApiOperation({ summary: 'Create AddOns' })
@@ -30,7 +35,23 @@ export class AddOnsController {
         );
     }
 
+    @Get('/list')
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('ADD-ONS.LIST')
+    @ApiOkResponse({ type: AddOnsListResponseDto })
+    @ApiOperation({ summary: 'Add-Ons Listing For customer' })
+    async listForCustomer(
+    ) {
+        const result = await this.$addOnsService.listForCustomer(
+        );
+        return result;
+    }
+
     @Get('')
+    @SetApiMetadata(AppModuleNames.Hall, ApiActionNames.Add, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
     @Message('ADD-ONS.LIST')
     @ApiOkResponse({ type: AddOnsListResponseDto })
     @ApiOperation({ summary: 'Add-Ons Listing' })
@@ -42,4 +63,7 @@ export class AddOnsController {
         );
         return AddOnsListResultDto.parse(result);
     }
+
+
+
 }

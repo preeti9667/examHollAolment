@@ -49,4 +49,22 @@ export class AddOnsService {
             data,
         };
     }
+
+
+    async listForCustomer() {
+        const data = await this.$prisma.addOn.findMany({
+            where: {
+                isActive: true,
+                isDeleted: false
+            },
+            select: {
+                id: true,
+                name: true,
+                price: true,
+                displayId: true,
+            }
+        });
+
+        return data;
+    }
 }
