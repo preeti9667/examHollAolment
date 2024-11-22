@@ -8,6 +8,7 @@ import { IAuthAdmin } from "../auth/interfaces/auth-user";
 import { CreateAdminPayloadDto } from "./dto/create.dto";
 import { ApiException } from "../api.exception";
 import { ListAdminQueryDto } from "./dto/list.dto";
+import { AccountType } from "@prisma/client";
 
 @Injectable()
 export class AdminService {
@@ -111,6 +112,23 @@ export class AdminService {
 
     async create(payload: CreateAdminPayloadDto) {
         const { countryCode = '+91', phoneNumber, email, name, roleId } = payload;
+
+        const authUser = await this.$prisma.auth.findFirst({
+            where: {
+                OR: [
+                    {
+                        email
+                    },
+                    {
+                        countryCode,
+                        phoneNumber
+                    }
+                ],
+                isDeleted: false
+            }
+        })
+
+        if (authUser) ApiException.conflict('ADMIN.USER_ADMIN_SAME');
         const isStaffExists = await this.$prisma.admin.findFirst({
             where: {
                 OR: [
@@ -121,12 +139,12 @@ export class AdminService {
                         countryCode,
                         phoneNumber
                     }
-                ]
+                ],
+                isDeleted: false
             }
         });
 
-        if (isStaffExists) ApiException.badData('ADMIN.EXISTS');
-
+        if (isStaffExists) ApiException.conflict('ADMIN.EXISTS');
         const role = await this.$prisma.role.findFirst({
             where: {
                 id: roleId
@@ -142,9 +160,20 @@ export class AdminService {
                 countryCode,
                 email,
                 name,
-                phoneNumber
+                phoneNumber,
             }
         });
+
+        await this.$prisma.auth.create({
+            data: {
+                id: staff.id,
+                countryCode,
+                email,
+                phoneNumber,
+                type: AccountType.ADMIN,
+                roleId: role.id
+            }
+        })
 
         return {
             id: staff.id,
