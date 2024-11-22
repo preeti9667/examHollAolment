@@ -2,9 +2,17 @@ import { ApiProperty } from "@nestjs/swagger";
 import { BookingDateTimeSlotDto } from "./create.dto";
 import { Type } from "class-transformer";
 import { ResponseDto } from "@app/api/api.dto";
-import { IsObject } from "class-validator";
+import { IsArray, IsObject, IsOptional } from "class-validator";
 
 export class CostEstimatePayloadDto {
+    @ApiProperty({
+        type: [String],
+        description: "add ons Id",
+    })
+    @IsOptional()
+    @IsArray()
+    addOnsIds: string[];
+
     @ApiProperty({
         type: [BookingDateTimeSlotDto],
         description: "Array of time slots with date and no of candidates"
@@ -28,6 +36,13 @@ export class CostEstimateResultDto {
         description: "Security deposit"
     })
     securityDeposit: number;
+
+    @ApiProperty({
+        type: Number,
+        example: 25000,
+        description: "add on price"
+    })
+    addOnPrice: number;
 
     @ApiProperty({
         type: Number,

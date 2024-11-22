@@ -182,7 +182,7 @@ export class CreateBookingPayloadDto {
     })
     @IsOptional()
     @IsArray()
-    addOnsIds: string[]
+    addOnsIds: string[];
 
 
     @ApiProperty({

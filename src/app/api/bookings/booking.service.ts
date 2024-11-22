@@ -101,6 +101,22 @@ export class BookingService {
             if (!isBooking) ApiException.badData('BOOKING.INVALID_ID');
         }
 
+        let addOns = [];
+        if (payload.addOnsIds && payload.addOnsIds.length) {
+            addOns = await this.$prisma.addOn.findMany({
+                where: {
+                    id: {
+                        in: payload.addOnsIds
+                    },
+                    isActive: true
+                }
+            });
+
+            if (addOns.length !== payload.addOnsIds.length) {
+                ApiException.badData('ADD_ON.INVALID_ID');
+            }
+        }
+
         let id = payload.id || uuid();
         const bookingData: any = {
             organizationName: payload.organizationName,
@@ -189,16 +205,7 @@ export class BookingService {
         // const totalCost = bookingHall.reduce((acc: number, hall: any) => acc + hall.totalPrice, 0);
         // const noOfCandidates = bookingHall.reduce((acc: number, hall: any) => acc + hall.seatsAllocated, 0);
         const hallAllocated = bookingHall.length;
-
-        console.log({
-            id,
-            ...bookingData,
-            totalCost: securityDeposit + hallCost,
-            noOfCandidates,
-            hallAllocated,
-            securityDeposit,
-            hallCost
-        })
+        let addOnCost = addOns.reduce((acc, addOn) => acc + addOn.price, 0) * noOfCandidates;
 
         const [newBooking] = await this.$prisma.$transaction([
             this.$prisma.booking.upsert({
@@ -206,25 +213,42 @@ export class BookingService {
                 create: {
                     id,
                     ...bookingData,
-                    totalCost: securityDeposit + hallCost,
+                    totalCost: securityDeposit + hallCost + addOnCost,
                     noOfCandidates,
                     hallAllocated,
                     securityDeposit,
                     hallPrice: hallCost,
+                    addOnPrice: addOnCost
 
                 },
                 update: {
                     ...bookingData,
-                    totalCost: securityDeposit + hallCost,
+                    totalCost: securityDeposit + hallCost + addOnCost,
                     noOfCandidates,
                     hallAllocated,
                     securityDeposit,
                     hallPrice: hallCost,
+                    addOnPrice: addOnCost
                 }
             }),
             this.$prisma.bookingHall.createMany(
                 { data: bookingHall }
-            )
+            ),
+            this.$prisma.bookingAddOn.createMany({
+                data: addOns.map(e => ({
+                    bookingId: id,
+                    addOnId: e.id,
+                    totalPrice: e.price * noOfCandidates,
+                    quantity: noOfCandidates,
+                    addOnRaw: {
+                        id: e.id,
+                        displayId: e.displayId,
+                        name: e.name,
+                        price: e.price,
+                        type: e.type
+                    }
+                }))
+            })
         ]);
 
         return {
@@ -331,6 +355,15 @@ export class BookingService {
                 securityDeposit: true,
                 gstNo: true,
                 examName: true,
+                addOnPrice: true,
+                bookingAddOn: {
+                    select: {
+                        id: true,
+                        addOnRaw: true,
+                        totalPrice: true,
+                        quantity: true,
+                    }
+                },
                 bookingHall: {
                     select: {
                         id: true,
@@ -411,6 +444,22 @@ export class BookingService {
         let totalCost = 0;
         let totalHalls = 0;
         let noOfCandidates = 0;
+
+        let addOns = [];
+        if (payload.addOnsIds && payload.addOnsIds.length) {
+            addOns = await this.$prisma.addOn.findMany({
+                where: {
+                    id: {
+                        in: payload.addOnsIds
+                    },
+                    isActive: true
+                }
+            });
+
+            if (addOns.length !== payload.addOnsIds.length) {
+                ApiException.badData('ADD_ON.INVALID_ID');
+            }
+        }
         const notAvailableHalls = [];
         for (const slot of payload.timeSlots) {
             const date = dateStringToUtc(slot.date);
@@ -425,15 +474,18 @@ export class BookingService {
             totalHalls += allocateHalls.length;
             totalCost += BOOKING_PRICE.PER_SEAT * slot.noOfCandidates;
         }
-        totalCost = totalCost + BOOKING_PRICE.SECURITY_DEPOSIT;
 
         if (notAvailableHalls.length) {
             ApiException.gone('BOOKING.HALL_NOT_AVAILABLE')
         }
 
+        const addOnCost = addOns.reduce((acc: number, addOn) => acc + addOn.price, 0) * noOfCandidates;
+        totalCost = totalCost + BOOKING_PRICE.SECURITY_DEPOSIT + addOnCost;
+
         return {
             totalCost,
             securityDeposit: BOOKING_PRICE.SECURITY_DEPOSIT,
+            addOnPrice: addOnCost,
             totalHalls,
             noOfCandidates,
         }
