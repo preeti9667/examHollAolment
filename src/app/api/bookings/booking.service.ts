@@ -329,6 +329,7 @@ export class BookingService {
                 address: true,
                 hallPrice: true,
                 securityDeposit: true,
+                gstNo: true,
                 bookingHall: {
                     select: {
                         id: true,
