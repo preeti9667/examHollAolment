@@ -16,7 +16,7 @@ export class AddOnsService {
     async create(payload: CreateAddOnsDto) {
         await this.$prisma.addOn.create({
             data: {
-                displayId: OpenId.format('ADD-ONS'),
+                displayId: OpenId.format('AO'),
                 ...payload
             }
         })

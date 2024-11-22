@@ -276,6 +276,69 @@ export class BookingDetailsContactDto {
     })
     phoneNumber: string
 }
+
+export class BookingDetailsAddOnsRawDto {
+    @ApiProperty({
+        type: String,
+        example: '3e9e93bd-ff1f-4c89-bd12-f09bb8b7f3d3',
+    })
+    id: string;
+
+    @ApiProperty({
+        type: String,
+        example: 'AO-9A4O0NVQL3'
+    })
+    displayId: string;
+
+    @ApiProperty({
+        type: String,
+        example: 'JAMMER'
+    })
+    name: string;
+
+    @ApiProperty({
+        type: String,
+        example: 'SECURITY'
+    })
+    type: string;
+
+    @ApiProperty({
+        type: Number,
+        example: 50
+    })
+    @IsNumber()
+    price: number;
+}
+
+export class BookingDetailsAddOnsDto {
+    @ApiProperty({
+        description: 'The unique identifier of the booking.',
+        example: '544e7ccc-b06e-47e0-b243-7bf8687f20fa'
+    })
+    @IsString()
+    id: string;
+
+    @ApiProperty({
+        type: Number,
+        example: 80000
+    })
+    @IsNumber()
+    totalPrice: number;
+
+    @ApiProperty({
+        type: Number,
+        example: 1000
+    })
+    @IsNumber()
+    quantity: number;
+
+    @ApiProperty({
+        type: BookingDetailsAddOnsRawDto
+    })
+    @IsObject()
+    @Type(() => BookingDetailsAddOnsRawDto)
+    addOnRaw: BookingDetailsAddOnsRawDto
+}
 export class BookingDetailsDto {
     @ApiProperty({
         type: String,
@@ -289,14 +352,6 @@ export class BookingDetailsDto {
     })
     @IsString()
     displayId: string;
-
-    // @ApiProperty({
-    //     type: String,
-    //     required: false
-    // })
-    // @IsString()
-    // @IsOptional()
-    // paymentLink: string;
 
     @ApiProperty({
         type: Number,
@@ -381,6 +436,15 @@ export class BookingDetailsDto {
     @Type(() => BookingDetailsBookingHallDto)
     @IsOptional()
     bookingHall: BookingDetailsBookingHallDto[]
+
+    @ApiProperty({
+        type: [BookingDetailsAddOnsDto],
+        required: false
+    })
+    @ValidateNested()
+    @Type(() => BookingDetailsAddOnsDto)
+    @IsOptional()
+    bookingAddOn: BookingDetailsAddOnsDto[]
 
     @ApiProperty({
         type: [BookingDetailsPaymentDto],
