@@ -168,13 +168,13 @@ export class CreateBookingPayloadDto {
     noOfCandidates: number;
 
 
-    // @ApiProperty({
-    //     type: String,
-    //     description: "Time  Slots Ids"
-    // })
-    // @IsOptional()
-    // @IsString()
-    // timeSlotId: string
+    @ApiProperty({
+        type: String,
+        description: "GST no for booking",
+    })
+    @IsOptional()
+    @IsString()
+    gstNo: string
 
 
     @ApiProperty({

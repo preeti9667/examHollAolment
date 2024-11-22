@@ -109,6 +109,7 @@ export class BookingService {
             institutionType: payload.institutionType,
             examName: payload.examName,
             noOfCandidates: payload.noOfCandidates,
+            gstNo: payload.gstNo,
             contact: {
                 phoneNumber: payload.phoneNumber,
                 countryCode: payload.countryCode,
