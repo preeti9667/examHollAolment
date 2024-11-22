@@ -9,6 +9,7 @@ import { HallService } from "./hall.service";
 import { CreateHallDto, CreateHallResponseDto } from "./dto/create.dto";
 import { HallListResponseDto, HallListResultDto, ListHallDto, ListHallQueryDto } from "./dto/list.dto";
 import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
+import { ApiActionNames, AppModuleNames } from "../api.constant";
 
 @Controller({
     path: 'hall',
@@ -40,6 +41,9 @@ export class HallController {
 
 
     @Post('')
+    @SetApiMetadata(AppModuleNames.Hall, ApiActionNames.Add, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
     @Message('HALL.CREATE')
     @ApiOkResponse({ type: CreateHallResponseDto })
     @ApiOperation({ summary: 'Create Hall by admin' })
@@ -51,6 +55,7 @@ export class HallController {
 
 
     @Get('')
+    @SetApiMetadata(AppModuleNames.Hall, ApiActionNames.View, true)
     @UseGuards(AuthGuard)
     @ApiBearerAuth('AccessToken')
     @Message('HALL.LIST')
