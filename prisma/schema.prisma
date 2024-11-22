@@ -197,6 +197,7 @@ model Booking {
   contact          Json?
   paymentMethod    String?
   status           Int             @default(0)
+  gstNo            String?
   cancelReason     String?
   cancelledBy      Json?
   createdAt        DateTime        @default(now())
