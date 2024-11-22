@@ -176,6 +176,14 @@ export class CreateBookingPayloadDto {
     @IsString()
     gstNo: string
 
+    @ApiProperty({
+        type: [String],
+        description: "add ons Id",
+    })
+    @IsOptional()
+    @IsArray()
+    addOnsIds: string[]
+
 
     @ApiProperty({
         type: Number,
