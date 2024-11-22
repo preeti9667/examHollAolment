@@ -1,5 +1,7 @@
+import { ResponseDto } from "@app/api/api.dto";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsUUID } from "class-validator";
+import { AccountType } from "@prisma/client";
+import { IsBoolean, IsString, IsUUID } from "class-validator";
 
 export class VerifyOtpLoginPayloadDto {
     @ApiProperty({
@@ -29,5 +31,33 @@ export class VerifyOtpUserDto {
 }
 
 export class VerifyOtpResultDto {
+    @ApiProperty({
+        type: Boolean,
+        example: true
+    })
+    @IsBoolean()
+    isNew: string
 
+    @ApiProperty({
+        type: String,
+        enum: AccountType
+    })
+    @IsString()
+    type: AccountType;
+
+
+    @ApiProperty({
+        type: String,
+    })
+    @IsString()
+    token: string
+}
+
+
+
+export class VerifyOtpLoginResponseDto extends ResponseDto {
+    @ApiProperty({
+        type: VerifyOtpResultDto
+    })
+    result: VerifyOtpResultDto;
 }

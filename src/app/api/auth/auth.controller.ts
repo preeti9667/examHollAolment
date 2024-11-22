@@ -4,7 +4,7 @@ import { AuthService } from "./auth.service";
 import { SendOtpPayloadDto, SendOtpResponseDto } from "./dto/send-otp.dto";
 import { Message } from "@app/decorators";
 import { COMMON_HEADERS } from "@app/app.constant";
-import { VerifyOtpLoginPayloadDto } from "./dto/verify-otp-login.dto";
+import { VerifyOtpLoginPayloadDto, VerifyOtpLoginResponseDto } from "./dto/verify-otp-login.dto";
 
 @Controller({
     path: 'auth',
@@ -33,7 +33,7 @@ export class AuthController {
     // @UseGuards(AccessGuard)
     // @ApiBearerAuth('AccessToken')
     @Message('AUTH.OTP_VERIFIED_LOGIN')
-    @ApiOkResponse({ type: SendOtpResponseDto })
+    @ApiOkResponse({ type: VerifyOtpLoginResponseDto })
     @ApiOperation({ summary: 'verify Otp for login' })
     async verifyOtp(@Body() payload: VerifyOtpLoginPayloadDto) {
         return this.$auth.verifyOtpLogin(payload)

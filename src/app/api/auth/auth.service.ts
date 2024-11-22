@@ -135,6 +135,7 @@ export class AuthService {
         return {
             accessToken,
             type: authUser.type,
+            isNew: user.name ? false : true,
             user: {
                 id: user.id,
                 name: user.name

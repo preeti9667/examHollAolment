@@ -1,7 +1,7 @@
 import { ResponseDto } from "@app/api/api.dto";
 import { ApiProperty } from "@nestjs/swagger";
 import { AccountType } from "@prisma/client";
-import { IsObject, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsObject, IsOptional, IsString } from "class-validator";
 
 export class SendOtpPayloadDto {
     @ApiProperty({
