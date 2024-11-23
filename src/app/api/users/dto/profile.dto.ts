@@ -71,6 +71,25 @@ export class UserProfileDto {
 
 
     @ApiProperty({
+        type: String,
+        required: false,
+        example: 'Dr'
+    })
+    @IsString()
+    @IsOptional()
+    jobTitle?: string;
+
+    @ApiProperty({
+        type: String,
+        required: false,
+        example: 'The Fastest'
+    })
+    @IsString()
+    @IsOptional()
+    organizationName?: string;
+
+
+    @ApiProperty({
         type: Date,
         example: '2023-01-01T00:00:00.000Z',
     })

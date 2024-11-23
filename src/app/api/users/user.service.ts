@@ -23,7 +23,9 @@ export class UserService {
             data: {
                 name: payload.name,
                 bio: payload.bio,
-                gstNo: payload.gstNo
+                gstNo: payload.gstNo,
+                jobTitle: payload.jobTitle,
+                organizationName: payload.organizationName
             }
         })
 
@@ -62,6 +64,8 @@ export class UserService {
             countryCode: profile.countryCode,
             email: profile.email,
             gstNo: profile.gstNo,
+            organizationName: profile.organizationName,
+            jobTitle: profile.jobTitle,
             createdAt: profile.createdAt,
             updatedAt: profile.updatedAt,
             address: {

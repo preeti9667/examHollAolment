@@ -76,6 +76,23 @@ export class UpdateProfilePayloadDto {
     @IsOptional()
     gstNo?: string;
 
+    @ApiProperty({
+        type: String,
+        required: false,
+        example: 'Dr'
+    })
+    @IsString()
+    @IsOptional()
+    jobTitle?: string;
+
+    @ApiProperty({
+        type: String,
+        required: false,
+        example: 'The Fastest'
+    })
+    @IsString()
+    @IsOptional()
+    organizationName?: string;
 
     @ApiProperty({
         type: UpdateProfileAddressDto,
