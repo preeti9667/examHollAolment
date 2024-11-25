@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Type, Transform } from "class-transformer";
+import { Type, Transform, Expose } from "class-transformer";
 import { IsOptional, IsNumber, Min, IsEnum, IsBoolean, IsString, Max } from "class-validator";
 
 export class ResponseDto {
@@ -19,6 +19,32 @@ export class ResponseDto {
         type: Object,
     })
     result: any;
+}
+
+export class PaginateResultDto {
+    @ApiProperty({
+        type: Number,
+        description: 'total count of records',
+        example: 100
+    })
+    @Expose()
+    total: number;
+
+    @ApiProperty({
+        type: Number,
+        description: 'current page',
+        example: 1
+    })
+    @Expose()
+    page: number;
+
+    @ApiProperty({
+        type: Number,
+        description: 'documents per page',
+        example: 10
+    })
+    @Expose()
+    limit: number;
 }
 
 export class ListQueryDto {
