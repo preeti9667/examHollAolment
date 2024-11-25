@@ -12,3 +12,5 @@ export class ListAdminQueryDto extends ListQueryDto {
     @IsEnum(['createdAt', 'name', 'displayId', 'email'])
     sortBy?: string;
 }
+
+
