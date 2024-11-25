@@ -104,6 +104,8 @@ export class UserService {
             countryCode: profile.countryCode,
             email: profile.email,
             gstNo: profile.gstNo,
+            organizationName: profile.organizationName,
+            jobTitle: profile.jobTitle,
             createdAt: profile.createdAt,
             updatedAt: profile.updatedAt,
             address: profile.address[0]
