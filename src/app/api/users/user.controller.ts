@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Query, UseGuards } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { UpdateProfilePayloadDto, UpdateProfileResponseDto } from "./dto/update-profile.dto";
 import { AuthUser, Message } from "@app/decorators";
@@ -10,6 +10,7 @@ import { ProfileDetailsResponseDto } from "./dto/profile.dto";
 import { UserListQueryDto, UserListResponseDto } from "./dto/list.dto";
 import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
 import { AppModuleNames, ApiActionNames } from "../api.constant";
+import { identity } from "rxjs";
 
 @Controller({
     path: 'users',
@@ -58,5 +59,19 @@ export class UserController {
         @AuthUser() user: IAuthUser
     ) {
         return this.$user.details(user.id);
+    }
+
+
+    @Get('/:id')
+    @UseGuards(AuthGuard)
+    @SetApiMetadata(AppModuleNames.User, ApiActionNames.View, true)
+    @ApiBearerAuth('AccessToken')
+    @Message('USER.DETAILS')
+    @ApiOkResponse({ type: ProfileDetailsResponseDto })
+    @ApiOperation({ summary: 'User Profile details by admin' })
+    async detailsByAdmin(
+        @Param('id') userId: string
+    ) {
+        return this.$user.details(userId);
     }
 }
