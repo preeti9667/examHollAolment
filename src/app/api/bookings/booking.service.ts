@@ -442,6 +442,7 @@ export class BookingService {
 
     async costEstimate(payload: CostEstimatePayloadDto) {
         let totalCost = 0;
+        let seatPrice = 0;
         let totalHalls = 0;
         let noOfCandidates = 0;
 
@@ -473,6 +474,7 @@ export class BookingService {
             const allocateHalls = this.allocateHalls(halls, slot.noOfCandidates);
             totalHalls += allocateHalls.length;
             totalCost += BOOKING_PRICE.PER_SEAT * slot.noOfCandidates;
+            seatPrice += BOOKING_PRICE.PER_SEAT * slot.noOfCandidates;
         }
 
         if (notAvailableHalls.length) {
@@ -484,6 +486,7 @@ export class BookingService {
 
         return {
             totalCost,
+            seatPrice,
             securityDeposit: BOOKING_PRICE.SECURITY_DEPOSIT,
             addOnPrice: addOnCost,
             totalHalls,
