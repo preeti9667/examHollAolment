@@ -25,7 +25,8 @@ export class UserService {
                 bio: payload.bio,
                 gstNo: payload.gstNo,
                 jobTitle: payload.jobTitle,
-                organizationName: payload.organizationName
+                organizationName: payload.organizationName,
+                email: payload.email
             }
         })
 

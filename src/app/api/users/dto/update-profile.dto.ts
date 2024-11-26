@@ -1,7 +1,7 @@
 import { ResponseDto } from "@app/api/api.dto";
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsObject, IsOptional, IsString, Length } from "class-validator";
+import { IsEmail, IsObject, IsOptional, IsString, Length } from "class-validator";
 import { UserProfileDto } from "./profile.dto";
 
 
@@ -93,6 +93,15 @@ export class UpdateProfilePayloadDto {
     @IsString()
     @IsOptional()
     organizationName?: string;
+
+    @ApiProperty({
+        type: String,
+        required: false,
+        example: 'fastest@email.com'
+    })
+    @IsEmail()
+    @IsOptional()
+    email?: string;
 
     @ApiProperty({
         type: UpdateProfileAddressDto,
