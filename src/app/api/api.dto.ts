@@ -107,7 +107,7 @@ export class ListQueryDto {
 
     @ApiProperty({
         type: String,
-        description: 'search some thing eg. name',
+        description: 'search some thing eg. name, displayId',
         required: false,
     })
     @IsString()

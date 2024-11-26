@@ -4,6 +4,7 @@ import { UpdateProfilePayloadDto, UpdateProfileResultDto } from "./dto/update-pr
 import { PrismaService } from "@app/databases/prisma/prisma.service";
 import { OpenId } from "src/utils";
 import { add } from "winston";
+import { UserListQueryDto } from "./dto/list.dto";
 
 @Injectable()
 export class UserService {
@@ -110,6 +111,75 @@ export class UserService {
             createdAt: profile.createdAt,
             updatedAt: profile.updatedAt,
             address: profile.address[0]
+        }
+    }
+
+
+    async list(
+        payload: UserListQueryDto
+    ) {
+
+        const { page = 1, limit = 10, sort = 'desc', sortBy = 'createdAt', search, isActive } = payload;
+        const where: any = {};
+        const skip = (page - 1) * limit;
+
+        if (isActive !== undefined) where.isActive = isActive;
+        if (search) where.OR = [
+            {
+                name: { contains: search }
+            },
+            {
+                email: { contains: search }
+            },
+            {
+                phoneNumber: { contains: search }
+            },
+            {
+                displayId: { contains: search }
+            }
+        ]
+
+        const [total, data] = await Promise.all([
+            this.$prisma.user.count({ where }),
+            this.$prisma.user.findMany({
+                where,
+                orderBy: {
+                    [sortBy]: sort
+                },
+                skip,
+                take: limit,
+                select: {
+                    id: true,
+                    displayId: true,
+                    bio: true,
+                    gstNo: true,
+                    jobTitle: true,
+                    organizationName: true,
+                    name: true,
+                    email: true,
+                    countryCode: true,
+                    phoneNumber: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    address: {
+                        select: {
+                            id: true,
+                            street: true,
+                            addressLine: true,
+                            pincode: true,
+                            city: true,
+                            state: true
+                        }
+                    }
+                }
+            })
+        ])
+
+        return {
+            total,
+            page,
+            limit,
+            data
         }
     }
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Patch, Query, UseGuards } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { UpdateProfilePayloadDto, UpdateProfileResponseDto } from "./dto/update-profile.dto";
 import { AuthUser, Message } from "@app/decorators";
@@ -7,6 +7,9 @@ import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from 
 import { IAuthUser } from "../auth/interfaces/auth-user";
 import { COMMON_HEADERS } from "@app/app.constant";
 import { ProfileDetailsResponseDto } from "./dto/profile.dto";
+import { UserListQueryDto, UserListResponseDto } from "./dto/list.dto";
+import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
+import { AppModuleNames, ApiActionNames } from "../api.constant";
 
 @Controller({
     path: 'users',
@@ -21,6 +24,16 @@ export class UserController {
     ) { }
 
 
+    @Get('')
+    @SetApiMetadata(AppModuleNames.User, ApiActionNames.View, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('USER.LIST')
+    @ApiOkResponse({ type: UserListResponseDto })
+    @ApiOperation({ summary: 'User list by admin' })
+    async list(@Query() query: UserListQueryDto) {
+        return this.$user.list(query);
+    }
 
     @Patch('')
     @UseGuards(AuthGuard)
