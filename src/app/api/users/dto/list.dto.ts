@@ -3,6 +3,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsOptional } from "class-validator";
 import { UserProfileDto } from "./profile.dto";
 import { Type } from "class-transformer";
+import { UserAddressDto } from "./address.dto";
 
 export class UserListQueryDto extends ListQueryDto {
     @ApiProperty({
@@ -16,12 +17,19 @@ export class UserListQueryDto extends ListQueryDto {
 }
 
 
+export class UserListProfileDto extends UserProfileDto {
+    @ApiProperty({
+        type: undefined
+    })
+    address: undefined;
+}
+
 export class UserListResultDto extends PaginateResultDto {
     @ApiProperty({
-        type: [UserProfileDto],
+        type: [UserListProfileDto],
     })
-    @Type(() => UserProfileDto)
-    data: UserProfileDto[]
+    @Type(() => UserListProfileDto)
+    data: UserListProfileDto[]
 }
 
 

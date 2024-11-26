@@ -160,17 +160,7 @@ export class UserService {
                     countryCode: true,
                     phoneNumber: true,
                     createdAt: true,
-                    updatedAt: true,
-                    address: {
-                        select: {
-                            id: true,
-                            street: true,
-                            addressLine: true,
-                            pincode: true,
-                            city: true,
-                            state: true
-                        }
-                    }
+                    updatedAt: true
                 }
             })
         ])
