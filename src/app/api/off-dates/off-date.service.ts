@@ -48,18 +48,6 @@ export class OffDateService {
 
 
     async list() {
-        const result = await this.$prisma.offDate.findMany({
-            select: {
-                date: true,
-                timeSlot: {
-                    select: {
-                        from: true,
-                        to: true
-                    }
-                }
-            }
-        });
 
-        return result;
     }
 }
