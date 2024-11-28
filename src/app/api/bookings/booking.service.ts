@@ -271,7 +271,7 @@ export class BookingService {
     ) {
         let bookingStatus = BookingStatus.Booked;
         if (paymentStatus !== PaymentStatus.Success)
-            bookingStatus = BookingStatus.Failed;
+            bookingStatus = BookingStatus.PaymentFailed;
 
         const [booking] = await Promise.all([
             this.$prisma.booking.update({

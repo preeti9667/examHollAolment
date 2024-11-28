@@ -3,6 +3,7 @@ export enum BookingStatus {
     Pending = 20,
     AwaitingForPayment = 30,
     Booked = 50,
+    PaymentFailed = 60,
     Failed = 70,
     Cancelled = 90,
     Completed = 110

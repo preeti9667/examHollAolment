@@ -217,7 +217,7 @@ export class HallService {
                         FROM public."BookingHall"
                         WHERE "date" = ds."bookingDate"
                         AND "timeSlotId" = slot
-                        AND "status" IN (30, 50)
+                        AND "status" IN (30, 50, 60)
                     )
                 GROUP BY
                     ds."bookingDate", slot
@@ -293,7 +293,7 @@ export class HallService {
                  FROM public."BookingHall"
                  WHERE "date" = ${date}::date
                  AND "timeSlotId" = ${slotId}
-                 AND "status" IN (30, 50)
+                 AND "status" IN (30, 50, 60)
              )
              `;
         const data = await this.$prisma.$queryRaw(query);
