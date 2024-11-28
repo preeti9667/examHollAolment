@@ -1,7 +1,7 @@
 import { IsBpDateFormat } from "@app/decorators/date-validator.decorator";
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsArray, IsUUID } from "class-validator";
+import { IsArray, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class AddUpdateOffDateDto {
     @ApiProperty({
@@ -19,6 +19,21 @@ export class AddUpdateOffDateDto {
     @IsArray()
     @IsUUID()
     slots: string[];
+
+    @ApiProperty({
+        type: String,
+        example: "Public holiday"
+    })
+    @IsString()
+    offType: string;
+
+    @ApiProperty({
+        type: String,
+        example: "Today is gandhi jayanti",
+    })
+    @IsOptional()
+    @IsString()
+    description: string;
 }
 
 export class AddUpdateOffDatePayloadDto {

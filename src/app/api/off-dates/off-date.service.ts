@@ -23,7 +23,9 @@ export class OffDateService {
                         where: { id: isExists.id },
                         data: {
                             date: dateStringToUtc(date.date),
-                            timeSlotId: slot
+                            timeSlotId: slot,
+                            offType: date.offType,
+                            description: date.description
                         }
                     })
 
@@ -32,7 +34,9 @@ export class OffDateService {
                     await this.$prisma.offDate.create({
                         data: {
                             date: dateStringToUtc(date.date),
-                            timeSlotId: slot
+                            timeSlotId: slot,
+                            offType: date.offType,
+                            description: date.description
                         }
                     })
                 }
