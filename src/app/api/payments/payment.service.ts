@@ -124,10 +124,9 @@ export class PaymentService {
         else {
             this.$sms.sendSms(
                 booking.contact['phoneNumber'],
-                SMS_TEMPLATE.bookingCompleted,
+                SMS_TEMPLATE.paymentConfirmation,
                 [{
-                    examName: booking.examName,
-                    dateTime: utcToDateString(booking.startDate),
+                    amount: `Rs ${booking.totalCost}`,
                     bookingId: booking.displayId
                 }]
             );

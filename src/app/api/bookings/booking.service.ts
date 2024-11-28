@@ -290,6 +290,17 @@ export class BookingService {
             })
         ]);
 
+        if (paymentStatus === PaymentStatus.Success) {
+            this.$sms.sendSms(
+                booking.contact['phoneNumber'],
+                SMS_TEMPLATE.bookingCompleted,
+                [{
+                    examName: booking.examName,
+                    bookingId: booking.displayId,
+                    dateTime: utcToDateString(booking.startDate)
+                }]
+            );
+        }
         this.$logger.log(`Booking status updated for booking ${bookingId} after payment`);
         return booking;
     }
