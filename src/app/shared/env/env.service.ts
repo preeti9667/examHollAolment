@@ -6,6 +6,7 @@ import { EnvConfig } from "src/config";
 export class EnvService {
     readonly PORT = this.get('PORT');
     readonly BYPASS_OTP = this.get('BYPASS_OTP');
+    readonly SMS_ENABLED = this.get('SMS_ENABLED');
     readonly SECRETS_AUTH_TOKEN = this.get('SECRETS_AUTH_TOKEN');
     readonly SECRETS_REFRESH_TOKEN = this.get('SECRETS_REFRESH_TOKEN');
     readonly SECRETS_PASSWORD_TOKEN = this.get('SECRETS_PASSWORD_TOKEN');

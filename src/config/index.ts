@@ -1,4 +1,4 @@
-import { IsDefined, IsNumber, IsObject, IsOptional, IsString, Min, ValidateNested } from "class-validator";
+import { IsDefined, IsEnum, IsNumber, IsObject, IsOptional, IsString, Min, ValidateNested } from "class-validator";
 import { RedisConfig } from "./redis.config";
 import { Expose, Transform, Type } from "class-transformer";
 import { resolve } from "path";
@@ -63,6 +63,11 @@ export class EnvConfig {
 
     @IsOptional()
     BYPASS_OTP: string;
+
+    @IsDefined()
+    @IsEnum([0, 1])
+    @Type(() => Number)
+    SMS_ENABLED: number;
 
 
 

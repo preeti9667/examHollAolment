@@ -34,6 +34,9 @@ export class SmsService {
         },
         variables: { [key: string]: string }[]
     ): Promise<any> {
+        if (!this.$env.SMS_ENABLED) {
+            return;
+        }
 
         let messageWithVars = template.message;
         variables.forEach((variable) => {
