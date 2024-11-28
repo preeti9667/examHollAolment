@@ -38,9 +38,11 @@ export class SmsService {
         let messageWithVars = template.message;
         variables.forEach((variable) => {
             Object.keys(variable).forEach((key) => {
-                messageWithVars = messageWithVars.replace(`$${key}`, variable[key]);
+                messageWithVars = messageWithVars.replace(`{#${key}#}`, variable[key]);
             })
         });
+
+        this.$logger.log(messageWithVars)
         const hashedPassword = this.hashPassword(this.$env.MSD_PASSWORD);
         const hashKey = this.generateHashKey(
             this.$env.MSD_USERNAME,
