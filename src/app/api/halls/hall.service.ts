@@ -222,7 +222,7 @@ export class HallService {
                 GROUP BY
                     ds."bookingDate", slot
                 ORDER BY
-                    ds."bookingDate", "totalCapacity" DESC;
+                    ds."bookingDate", "slot" ASC;
                 `;
 
         const data = await this.$prisma.$queryRawUnsafe(sqlQuery, startDate, endDate);
