@@ -1,7 +1,7 @@
 import { PrismaService } from "@app/databases/prisma/prisma.service";
 import { LoggerService } from "@app/shared/logger";
 import { Injectable } from "@nestjs/common";
-import { dateStringToUtc, OpenId } from "src/utils";
+import { dateStringToUtc, OpenId, utcToDateString } from "src/utils";
 import { CreateBookingPayloadDto } from "./dto/create.dto";
 import { BOOKING_PRICE, BookingCancelledBy, BookingStatus } from "./booking.constant";
 import { v4 as uuid } from 'uuid'
@@ -12,6 +12,8 @@ import { PaymentRefundStatus, PaymentRefundType, PaymentStatus } from "../paymen
 import { BookingListQueryDto } from "./dto/list.dto";
 import { CostEstimatePayloadDto } from "./dto/cost-estimate.dto";
 import { CancelBookingDto } from "./dto/cancel.dto";
+import { SmsService } from "../sms/sms.service";
+import { SMS_TEMPLATE } from "../sms/sms.constant";
 
 @Injectable()
 export class BookingService {
@@ -20,6 +22,7 @@ export class BookingService {
         private $prisma: PrismaService,
         private $logger: LoggerService,
         private $hall: HallService,
+        private $sms: SmsService
     ) { }
 
     private getBookingDisplayId(): string {
@@ -288,7 +291,7 @@ export class BookingService {
         ]);
 
         this.$logger.log(`Booking status updated for booking ${bookingId} after payment`);
-        return booking.displayId;
+        return booking;
     }
 
 
@@ -540,6 +543,15 @@ export class BookingService {
                 }
             });
         }
+
+        this.$sms.sendSms(
+            booking.contact['phoneNumber'],
+            SMS_TEMPLATE.bookingCanceled,
+            [{
+                examName: booking.examName,
+                dateTime: utcToDateString(booking.startDate),
+            }]
+        )
 
         return {
             id: bookingId,

@@ -5,6 +5,7 @@ import { LoggerModule } from "@app/shared/logger";
 import { PaymentService } from "./payment.service";
 import { BookingModule } from "../bookings/booking.module";
 import { EnvModule } from "@app/shared/env/env.module";
+import { SmsModule } from "../sms/sms.module";
 
 @Module({
     imports: [
@@ -12,6 +13,7 @@ import { EnvModule } from "@app/shared/env/env.module";
         BookingModule,
         EnvModule,
         LoggerModule.register({ context: PaymentModule.name }),
+        SmsModule
     ],
     controllers: [
         PaymentController

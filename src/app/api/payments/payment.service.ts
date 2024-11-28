@@ -7,10 +7,12 @@ import { ApiException } from "../api.exception";
 import { SubPaisaService } from "../subpaisa/subpaisa.service";
 import { PaymentStatus } from "./payment.constant";
 import { SubPaisaPaymentStatus } from "../subpaisa/subpaisa.contant";
-import { dsToUTC } from "src/utils";
+import { dsToUTC, utcToDateString, UtcToDateString } from "src/utils";
 import { BookingService } from "../bookings/booking.service";
 import { EnvService } from "@app/shared/env";
 import { logger } from "nestjs-i18n";
+import { SmsService } from "../sms/sms.service";
+import { SMS_TEMPLATE } from "../sms/sms.constant";
 
 @Injectable()
 export class PaymentService {
@@ -20,7 +22,8 @@ export class PaymentService {
         private $prisma: PrismaService,
         private $subPaisa: SubPaisaService,
         private $booking: BookingService,
-        private $env: EnvService
+        private $env: EnvService,
+        private $sms: SmsService
     ) { }
 
     async initPayment(payload: InitPaymentBodyDto) {
@@ -104,14 +107,33 @@ export class PaymentService {
                 }
             }
         })
-        const bookingDisplayId = await this.$booking.handleBookingPaymentStatus(
+        const booking = await this.$booking.handleBookingPaymentStatus(
             payment.bookingId,
             paymentStatus,
             decryptedResponseObj.paymentMode
         );
 
-        this.$logger.log(`Booking display id : ${bookingDisplayId}`);
-        const encodedData = encodeURIComponent(JSON.stringify({ ...decryptedResponseObj, bookingDisplayId }));
+
+        if (paymentStatus !== PaymentStatus.Success) {
+            this.$sms.sendSms(
+                booking.contact['phoneNumber'],
+                SMS_TEMPLATE.paymentFailure,
+                [{ bookingId: booking.displayId }]
+            );
+        }
+        else {
+            this.$sms.sendSms(
+                booking.contact['phoneNumber'],
+                SMS_TEMPLATE.bookingCompleted,
+                [{
+                    examName: booking.examName,
+                    dateTime: utcToDateString(booking.startDate),
+                    bookingId: booking.displayId
+                }]
+            );
+        }
+        this.$logger.log(`Booking display id : ${booking.displayId}`);
+        const encodedData = encodeURIComponent(JSON.stringify({ ...decryptedResponseObj, bookingDisplayId: booking.displayId }));
         return { dataString: encodedData, redirectUrl: this.$env.REDIRECT_URL_PAYMENT };
     }
 
