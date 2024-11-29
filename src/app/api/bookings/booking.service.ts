@@ -1,6 +1,6 @@
 import { PrismaService } from "@app/databases/prisma/prisma.service";
 import { LoggerService } from "@app/shared/logger";
-import { Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { dateStringToUtc, OpenId, utcToDateString } from "src/utils";
 import { CreateBookingPayloadDto } from "./dto/create.dto";
 import { BOOKING_PRICE, BookingCancelledBy, BookingStatus } from "./booking.constant";
@@ -14,6 +14,7 @@ import { CostEstimatePayloadDto } from "./dto/cost-estimate.dto";
 import { CancelBookingDto } from "./dto/cancel.dto";
 import { SmsService } from "../sms/sms.service";
 import { SMS_TEMPLATE } from "../sms/sms.constant";
+import { PaymentService } from "../payments/payment.service";
 
 @Injectable()
 export class BookingService {
@@ -22,7 +23,9 @@ export class BookingService {
         private $prisma: PrismaService,
         private $logger: LoggerService,
         private $hall: HallService,
-        private $sms: SmsService
+        private $sms: SmsService,
+        @Inject(forwardRef(() => PaymentService))
+        private $payment: PaymentService
     ) {
 
     }
@@ -415,6 +418,8 @@ export class BookingService {
                 updatedAt: true
             }
         });
+
+
         booking['payments'] = payments;
         return booking;
     }

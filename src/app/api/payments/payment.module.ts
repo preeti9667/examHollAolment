@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import { PaymentController } from "./payment.controller";
 import { SubPaisaModule } from "../subpaisa/subpaisa.module";
 import { LoggerModule } from "@app/shared/logger";
@@ -10,7 +10,7 @@ import { SmsModule } from "../sms/sms.module";
 @Module({
     imports: [
         SubPaisaModule,
-        BookingModule,
+        forwardRef(() => BookingModule),
         EnvModule,
         LoggerModule.register({ context: PaymentModule.name }),
         SmsModule

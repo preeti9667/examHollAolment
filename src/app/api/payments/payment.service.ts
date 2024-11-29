@@ -1,6 +1,6 @@
 import { PrismaService } from "@app/databases/prisma/prisma.service";
 import { LoggerService } from "@app/shared/logger";
-import { Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { InitPaymentBodyDto } from "./dto/init-payment.dto";
 import { BookingStatus } from "../bookings/booking.constant";
 import { ApiException } from "../api.exception";
@@ -23,6 +23,7 @@ export class PaymentService {
         private $logger: LoggerService,
         private $prisma: PrismaService,
         private $subPaisa: SubPaisaService,
+        @Inject(forwardRef(() => BookingService))
         private $booking: BookingService,
         private $env: EnvService,
         private $sms: SmsService

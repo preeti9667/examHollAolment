@@ -1,10 +1,11 @@
-import { Module } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import { BookingController } from "./booking.controller";
 import { LoggerModule } from "@app/shared/logger";
 import { BookingService } from "./booking.service";
 import { HallModule } from "../halls/hall.module";
 import { SubPaisaModule } from "../subpaisa/subpaisa.module";
 import { SmsModule } from "../sms/sms.module";
+import { PaymentModule } from "../payments/payment.module";
 
 @Module({
     controllers: [
@@ -15,7 +16,8 @@ import { SmsModule } from "../sms/sms.module";
             context: BookingModule.name
         }),
         HallModule,
-        SmsModule
+        SmsModule,
+        forwardRef(() => PaymentModule)
     ],
     exports: [BookingService],
     providers: [BookingService]
