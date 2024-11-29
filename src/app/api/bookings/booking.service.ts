@@ -420,7 +420,12 @@ export class BookingService {
         });
 
 
+        let refunds = [];
+        if (booking.status === BookingStatus.refunded || booking.status === BookingStatus.RefundRequested || booking.status === BookingStatus.Cancelled) {
+            refunds = await this.$payment.refundDetailsByBookingId(booking.id);
+        }
         booking['payments'] = payments;
+        booking['refunds'] = refunds;
         return booking;
     }
 
