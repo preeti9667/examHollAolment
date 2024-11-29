@@ -114,6 +114,7 @@ export class PaymentService {
         );
 
 
+        this.$logger.log(`Payment status : ${paymentStatus}`);
         if (paymentStatus !== PaymentStatus.Success) {
             this.$sms.sendSms(
                 booking.contact['phoneNumber'],

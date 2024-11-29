@@ -290,6 +290,8 @@ export class BookingService {
             })
         ]);
 
+        this.$logger.log("Handle payment status for booking " + booking.displayId);
+
         if (paymentStatus === PaymentStatus.Success) {
             this.$sms.sendSms(
                 booking.contact['phoneNumber'],
