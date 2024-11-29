@@ -14,7 +14,6 @@ import { logger } from "nestjs-i18n";
 import { SmsService } from "../sms/sms.service";
 import { SMS_TEMPLATE } from "../sms/sms.constant";
 import { RefundRequestPayloadDto } from "./dto/refund-request.dto";
-import { identity } from "rxjs";
 
 @Injectable()
 export class PaymentService {
@@ -182,11 +181,12 @@ export class PaymentService {
         });
 
         if (!booking) ApiException.badData('BOOKING.NOT_FOUND');
+        if (booking.status === BookingStatus.RefundRequested || booking.status === BookingStatus.Refunded) ApiException.badData('PAYMENT.REFUND_ALREADY_REQUESTED');
         if (booking.status !== BookingStatus.Completed) ApiException.badData('BOOKING.NOT_COMPLETED');
 
         const refundMethod = payload.refundMethod;
         let upiId = payload.upiId;
-        let bankDetails = '';
+        let bankDetails = null;
         if (refundMethod === PaymentRefundMethod.Upi) {
             upiId = this.$subPaisa.encrypt(payload.upiId);
         }
@@ -238,7 +238,7 @@ export class PaymentService {
                 refund.upiId = this.$subPaisa.decrypt(refund.upiId);
             }
             if (refund.paymentMethod === PaymentRefundMethod.NetBanking) {
-                refund.bankDetails = this.$subPaisa.decrypt(refund.bankDetails);
+                refund.bankDetails = JSON.parse(this.$subPaisa.decrypt(refund.bankDetails));
             }
             return refund;
         });
