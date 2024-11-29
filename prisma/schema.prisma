@@ -309,10 +309,12 @@ model Admin {
 }
 
 model OffDate {
-  id         String    @id @default(uuid())
-  timeSlot   TimeSlot? @relation(fields: [timeSlotId], references: [id])
-  timeSlotId String
-  date       DateTime
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id          String    @id @default(uuid())
+  timeSlot    TimeSlot? @relation(fields: [timeSlotId], references: [id])
+  timeSlotId  String
+  date        DateTime
+  offType     String?
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
