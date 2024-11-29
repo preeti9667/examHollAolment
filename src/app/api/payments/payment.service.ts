@@ -225,4 +225,22 @@ export class PaymentService {
         }
     }
 
+
+    async refundDetailsByBookingId(bookingId: string) {
+        const list = await this.$prisma.paymentRefund.findMany({
+            where: {
+                bookingId
+            }
+        });
+        return list.map(refund => {
+            if (refund.paymentMethod === PaymentRefundMethod.Upi) {
+                refund.upiId = this.$subPaisa.decrypt(refund.upiId);
+            }
+            if (refund.paymentMethod === PaymentRefundMethod.NetBanking) {
+                refund.bankDetails = this.$subPaisa.decrypt(refund.bankDetails);
+            }
+            return refund;
+        });
+    }
+
 }
