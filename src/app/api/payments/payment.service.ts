@@ -205,7 +205,7 @@ export class PaymentService {
                     status: PaymentRefundStatus.Requested,
                     refundType: PaymentRefundType.SecurityDeposit,
                     amount: booking.securityDeposit,
-                    displayId: OpenId.format('RFD', 8)
+                    displayId: OpenId.create(8)
                 }
             }),
             this.$prisma.booking.update({

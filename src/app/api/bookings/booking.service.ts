@@ -554,7 +554,8 @@ export class BookingService {
                     amount: booking.totalCost,
                     status: PaymentRefundStatus.Requested,
                     userId,
-                    refundType: PaymentRefundType.Full
+                    refundType: PaymentRefundType.Full,
+                    displayId: OpenId.create(8)
                 }
             });
         }

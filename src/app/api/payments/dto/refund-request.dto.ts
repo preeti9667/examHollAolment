@@ -2,6 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsOptional, IsString, IsUUID } from "class-validator";
 import { PaymentRefundMethod } from "../payment.constant";
 import { Type } from "class-transformer";
+import { ResponseDto } from "@app/api/api.dto";
 
 
 export class PaymentRefundBankDetailsDto {
@@ -62,4 +63,31 @@ export class RefundRequestPayloadDto {
     @Type(() => PaymentRefundBankDetailsDto)
     bankDetails: PaymentRefundBankDetailsDto;
 
+}
+
+
+
+export class RefundRequestResultDto {
+    @ApiProperty({
+        type: String,
+        example: '3e9e93bd-ff1f-4c89-bd12-f09bb8b7f3d3',
+    })
+    @IsUUID()
+    id: string
+
+
+    @ApiProperty({
+        type: String,
+        example: 'RFD-123XYZAABB'
+    })
+    @IsString()
+    displayId: string;
+}
+
+
+export class RefundRequestResponseDto extends ResponseDto {
+    @ApiProperty({
+        type: RefundRequestResultDto,
+    })
+    result: RefundRequestResultDto
 }

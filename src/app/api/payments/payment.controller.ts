@@ -2,11 +2,13 @@ import { COMMON_HEADERS } from "@app/app.constant";
 import { Body, Controller, Post, Res, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { InitPaymentBodyDto, InitPaymentResponseDto } from "./dto/init-payment.dto";
-import { Message } from "@app/decorators";
+import { AuthUser, Message } from "@app/decorators";
 import { AuthGuard } from "@app/guards/auth.guard";
 import { PaymentService } from "./payment.service";
 import { Response } from "express";
 import { LoggerService } from "@app/shared/logger";
+import { RefundRequestPayloadDto, RefundRequestResponseDto } from "./dto/refund-request.dto";
+import { IAuthUser } from "../auth/interfaces/auth-user";
 
 @Controller({
     path: 'payments',
@@ -53,5 +55,19 @@ export class PaymentController {
                 "Error processing payment response"
             )}`);
         }
+    }
+
+
+    @Post('/refund-request')
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('PAYMENT.REFUND_REQUEST')
+    @ApiOkResponse({ type: RefundRequestResponseDto })
+    @ApiOperation({ summary: 'Refund request by customer' })
+    async refundRequest(
+        @Body() payload: RefundRequestPayloadDto,
+        @AuthUser() user: IAuthUser
+    ) {
+        return this.$payment.refundRequest(payload, user.id)
     }
 }
