@@ -6,7 +6,9 @@ export enum BookingStatus {
     PaymentFailed = 60,
     Failed = 70,
     Cancelled = 90,
-    Completed = 110
+    Completed = 110,
+    RefundRequested = 130,
+    refunded = 150
 }
 
 

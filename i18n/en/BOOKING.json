@@ -6,5 +6,6 @@
   "HALL_NOT_AVAILABLE": "The hall is not available.",
   "LIST": "Booking list fetched successfully",
   "COST_ESTIMATE": "Cost estimate",
-  "CANCELLED": "Booking cancelled successfully"
+  "CANCELLED": "Booking cancelled successfully",
+  "NOT_COMPLETED": "Booking not completed"
 }

@@ -267,6 +267,7 @@ model Payment {
 
 model PaymentRefund {
   id            String   @id @default(uuid())
+  displayId     String
   refundType    String
   amount        Float
   status        String

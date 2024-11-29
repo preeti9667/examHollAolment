@@ -5,14 +5,16 @@ import { InitPaymentBodyDto } from "./dto/init-payment.dto";
 import { BookingStatus } from "../bookings/booking.constant";
 import { ApiException } from "../api.exception";
 import { SubPaisaService } from "../subpaisa/subpaisa.service";
-import { PaymentStatus } from "./payment.constant";
+import { PaymentRefundMethod, PaymentRefundStatus, PaymentRefundType, PaymentStatus } from "./payment.constant";
 import { SubPaisaPaymentStatus } from "../subpaisa/subpaisa.contant";
-import { dsToUTC, utcToDateString, UtcToDateString } from "src/utils";
+import { dsToUTC, OpenId, utcToDateString, UtcToDateString } from "src/utils";
 import { BookingService } from "../bookings/booking.service";
 import { EnvService } from "@app/shared/env";
 import { logger } from "nestjs-i18n";
 import { SmsService } from "../sms/sms.service";
 import { SMS_TEMPLATE } from "../sms/sms.constant";
+import { RefundRequestPayloadDto } from "./dto/refund-request.dto";
+import { identity } from "rxjs";
 
 @Injectable()
 export class PaymentService {
@@ -169,4 +171,58 @@ export class PaymentService {
         return status;
 
     }
+
+
+    async refundRequest(payload: RefundRequestPayloadDto, userId: string) {
+        const booking = await this.$prisma.booking.findFirst({
+            where: {
+                id: payload.bookingId
+            },
+        });
+
+        if (!booking) ApiException.badData('BOOKING.NOT_FOUND');
+        if (booking.status !== BookingStatus.Completed) ApiException.badData('BOOKING.NOT_COMPLETED');
+
+        const refundMethod = payload.refundMethod;
+        let upiId = payload.upiId;
+        let bankDetails = '';
+        if (refundMethod === PaymentRefundMethod.Upi) {
+            upiId = this.$subPaisa.encrypt(payload.upiId);
+        }
+        if (refundMethod === PaymentRefundMethod.NetBanking) {
+            bankDetails = this.$subPaisa.encrypt(JSON.stringify(payload.bankDetails));
+        }
+
+
+        const [refund] = await this.$prisma.$transaction([
+            this.$prisma.paymentRefund.create({
+                data: {
+                    bookingId: payload.bookingId,
+                    userId,
+                    paymentMethod: payload.refundMethod,
+                    upiId,
+                    bankDetails,
+                    status: PaymentRefundStatus.Requested,
+                    refundType: PaymentRefundType.SecurityDeposit,
+                    amount: booking.securityDeposit,
+                    displayId: OpenId.format('RFD', 8)
+                }
+            }),
+            this.$prisma.booking.update({
+                where: {
+                    id: payload.bookingId
+                },
+                data: {
+                    status: BookingStatus.RefundRequested
+                }
+            })
+
+        ]);
+
+        return {
+            id: refund.id,
+            displayId: refund.displayId
+        }
+    }
+
 }

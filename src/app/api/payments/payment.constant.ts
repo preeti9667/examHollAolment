@@ -20,3 +20,10 @@ export enum PaymentRefundType {
     Full = 'FULL',
     SecurityDeposit = 'SECURITY_DEPOSIT',
 }
+
+
+export enum PaymentRefundMethod {
+    Upi = 'UPI',
+    NetBanking = 'NET_BANKING',
+    Cash = 'CASH'
+}

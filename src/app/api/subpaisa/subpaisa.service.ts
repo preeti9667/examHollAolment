@@ -13,7 +13,7 @@ export class SubPaisaService {
         private $env: EnvService
     ) { }
 
-    private encrypt(text: string) {
+    encrypt(text: string) {
         let cipher = createCipheriv(this.algorithm, Buffer.from(this.$env.SABPAISA_AUTH_KEY), this.$env.SABPAISA_AUTH_IV);
         let encrypted = cipher.update(text);
         encrypted = Buffer.concat([encrypted, cipher.final()]);
@@ -21,7 +21,7 @@ export class SubPaisaService {
     }
 
 
-    private decrypt(text: string) {
+    decrypt(text: string) {
         let decipher = createDecipheriv(this.algorithm, Buffer.from(this.$env.SABPAISA_AUTH_KEY), this.$env.SABPAISA_AUTH_IV);
         let decrypted = decipher.update(Buffer.from(text, 'base64'));
         decrypted = Buffer.concat([decrypted, decipher.final()]);
