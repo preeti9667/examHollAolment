@@ -23,7 +23,9 @@ export class BookingService {
         private $logger: LoggerService,
         private $hall: HallService,
         private $sms: SmsService
-    ) { }
+    ) {
+
+    }
 
     private getBookingDisplayId(): string {
         return OpenId.format('BK', 8) as string
