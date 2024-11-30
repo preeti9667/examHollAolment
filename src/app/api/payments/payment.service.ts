@@ -182,7 +182,7 @@ export class PaymentService {
 
         if (!booking) ApiException.badData('BOOKING.NOT_FOUND');
         if (booking.status === BookingStatus.RefundRequested || booking.status === BookingStatus.Refunded) ApiException.badData('PAYMENT.REFUND_ALREADY_REQUESTED');
-        if (booking.status !== BookingStatus.Completed) ApiException.badData('BOOKING.NOT_COMPLETED');
+        if (![BookingStatus.Completed, BookingStatus.Cancelled].includes(booking.status)) ApiException.badData('BOOKING.NOT_COMPLETED');
 
         const refundMethod = payload.refundMethod;
         let upiId = payload.upiId;
