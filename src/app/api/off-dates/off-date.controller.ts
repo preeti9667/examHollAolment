@@ -8,7 +8,7 @@ import { AuthGuard } from "@app/guards/auth.guard";
 import { AppModuleNames, ApiActionNames } from "../api.constant";
 import { AddUpdateOffDatePayloadDto } from "./dto/add-update.dto";
 import { OffDateService } from "./off-date.service";
-import { OffDateListQueryDto } from "./dto/list.dto";
+import { OffDateListQueryDto, OffDateListResponseDto } from "./dto/list.dto";
 
 @Controller({
     path: 'off-dates',
@@ -27,7 +27,7 @@ export class OffDateController {
     @UseGuards(AuthGuard)
     @ApiBearerAuth('AccessToken')
     @Message('OFF_DATE.LIST')
-    // @ApiOkResponse({ type:  })
+    @ApiOkResponse({ type: OffDateListResponseDto })
     @ApiOperation({ summary: 'off dates list for  admin' })
     async list(
         @Query() payload: OffDateListQueryDto

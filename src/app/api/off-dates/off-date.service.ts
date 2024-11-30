@@ -1,7 +1,7 @@
 import { PrismaService } from "@app/databases/prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
 import { AddUpdateOffDatePayloadDto } from "./dto/add-update.dto";
-import { dateStringToUtc, utcToDateString } from "src/utils";
+import { dateStringToUtc, format24TO12, utcToDateString } from "src/utils";
 import { OffDateListQueryDto } from "./dto/list.dto";
 
 @Injectable()
@@ -89,10 +89,18 @@ export class OffDateService {
                     offType: item.offType,
                     description: item.description,
                     createdAt: item.createdAt,
-                    slots: [item.timeSlot]
+                    slots: [{
+                        id: item.timeSlot.id,
+                        from: format24TO12(item.timeSlot.from),
+                        to: format24TO12(item.timeSlot.to)
+                    }]
                 }
             } else {
-                dateObj[date].slots.push(item.timeSlot);
+                dateObj[date].slots.push({
+                    id: item.timeSlot.id,
+                    from: format24TO12(item.timeSlot.from),
+                    to: format24TO12(item.timeSlot.to)
+                });
             }
         }
 
