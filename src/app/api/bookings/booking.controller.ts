@@ -111,4 +111,19 @@ export class BookingController {
         const result = await this.$booking.bookingDetails(payload.id, user.id);
         return plainToInstance(BookingDetailsDto, result);
     }
+
+
+    @Get('/:id')
+    @SetApiMetadata(AppModuleNames.Booking, ApiActionNames.View, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('BOOKING.DETAILS')
+    @ApiOkResponse({ type: BookingDetailsResponseDto })
+    @ApiOperation({ summary: 'Booking details for Admin' })
+    async detailsAdmin(
+        @Param() payload: BookingDetailParamsDto,
+    ) {
+        const result = await this.$booking.bookingDetails(payload.id);
+        return plainToInstance(BookingDetailsDto, result);
+    }
 }

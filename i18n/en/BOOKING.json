@@ -7,5 +7,6 @@
   "LIST": "Booking list fetched successfully",
   "COST_ESTIMATE": "Cost estimate",
   "CANCELLED": "Booking cancelled successfully",
-  "NOT_COMPLETED": "Booking not completed"
+  "NOT_COMPLETED": "Booking not completed",
+  "DETAILS": "Booking details fetched successfully"
 }

@@ -357,9 +357,11 @@ export class BookingService {
     }
 
 
-    async bookingDetails(id: string, userId: string) {
+    async bookingDetails(id: string, userId?: string) {
+        const where = { id };
+        if (userId) where['userId'] = userId;
         const booking = await this.$prisma.booking.findFirst({
-            where: { id, userId },
+            where,
             select: {
                 id: true,
                 displayId: true,
