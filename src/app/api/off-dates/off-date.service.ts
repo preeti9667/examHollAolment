@@ -3,6 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { AddUpdateOffDatePayloadDto } from "./dto/add-update.dto";
 import { dateStringToUtc, format24TO12, utcToDateString } from "src/utils";
 import { OffDateListQueryDto } from "./dto/list.dto";
+import { OffDateRemoveQueryDto } from "./dto/delete.dto";
 
 @Injectable()
 export class OffDateService {
@@ -119,5 +120,18 @@ export class OffDateService {
             limit,
             data
         }
+    }
+
+
+
+    async remove(
+        payload: OffDateRemoveQueryDto
+    ) {
+        await this.$prisma.offDate.deleteMany({
+            where: {
+                date: dateStringToUtc(payload.date)
+            }
+        });
+        return { status: true }
     }
 }
