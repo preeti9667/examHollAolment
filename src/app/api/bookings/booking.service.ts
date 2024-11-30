@@ -330,7 +330,7 @@ export class BookingService {
                             {
                                 where: { id: booking.id },
                                 data: {
-                                    status: BookingStatus.Cancelled,
+                                    status: BookingStatus.AutoCancelled,
                                     cancelReason: "Payment not completed",
                                     cancelledBy: {
                                         by: BookingCancelledBy.System,
@@ -344,7 +344,7 @@ export class BookingService {
                                 bookingId: booking.id
                             },
                             data: {
-                                status: BookingStatus.Cancelled
+                                status: BookingStatus.AutoCancelled
                             }
                         })
                     ]
@@ -532,9 +532,7 @@ export class BookingService {
             where: {
                 id: bookingId,
                 userId,
-                status: {
-                    in: [BookingStatus.AwaitingForPayment, BookingStatus.Booked]
-                }
+                status: BookingStatus.Booked
             },
         });
 

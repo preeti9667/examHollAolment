@@ -5,6 +5,7 @@ export enum BookingStatus {
     Booked = 50,
     PaymentFailed = 60,
     Failed = 70,
+    AutoCancelled = 80,
     Cancelled = 90,
     Completed = 110,
     RefundRequested = 130,
