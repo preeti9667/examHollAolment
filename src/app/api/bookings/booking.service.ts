@@ -15,6 +15,7 @@ import { CancelBookingDto } from "./dto/cancel.dto";
 import { SmsService } from "../sms/sms.service";
 import { SMS_TEMPLATE } from "../sms/sms.constant";
 import { PaymentService } from "../payments/payment.service";
+import { BookingListAdminQueryDto } from "./dto/list-admin.dto";
 
 @Injectable()
 export class BookingService {
@@ -583,6 +584,55 @@ export class BookingService {
             id: bookingId,
             displayId: booking.displayId,
             status: BookingStatus.Cancelled,
+        }
+    }
+
+
+    async listForAdmin(payload: BookingListAdminQueryDto) {
+        const { page = 1, limit = 10, sort = 'desc', sortBy = 'createdAt', status, search } = payload;
+        const skip = (page - 1) * limit;
+        const where: any = {};
+        if (status) where.status = status;
+        if (search) {
+            where.OR = [
+                {
+                    displayId: { contains: search, mode: 'insensitive' }
+                },
+            ];
+        }
+
+        const [total, data] = await Promise.all([
+            this.$prisma.booking.count({ where }),
+            this.$prisma.booking.findMany({
+                where,
+                select: {
+                    id: true,
+                    displayId: true,
+                    status: true,
+                    noOfCandidates: true,
+                    hallAllocated: true,
+                    examName: true,
+                    startDate: true,
+                    endDate: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    totalCost: true,
+                    applicantName: true,
+                    organizationName: true,
+                },
+                orderBy: {
+                    [sortBy]: sort
+                },
+                skip,
+                take: limit
+            })
+        ]);
+
+        return {
+            page,
+            limit,
+            total,
+            data
         }
     }
 }

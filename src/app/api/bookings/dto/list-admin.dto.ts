@@ -4,7 +4,6 @@ import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
 import { BookingStatus } from "../booking.constant";
 import { Type } from "class-transformer";
 import { BookingListBookingDetailDto } from "./list.dto";
-import { ClassSerializerInterceptor } from "@nestjs/common";
 
 export class BookingListAdminQueryDto extends ListQueryDto {
     @ApiProperty({
@@ -18,7 +17,9 @@ export class BookingListAdminQueryDto extends ListQueryDto {
 
     @ApiProperty({
         type: Number,
-        enum: BookingStatus
+        enum: BookingStatus,
+        required: false,
+        example: BookingStatus.AwaitingForPayment
     })
     @IsOptional()
     @IsNumber()

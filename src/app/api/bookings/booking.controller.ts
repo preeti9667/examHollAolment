@@ -12,6 +12,9 @@ import { plainToInstance } from "class-transformer";
 import { BookingListQueryDto, BookingListResultDto } from "./dto/list.dto";
 import { CostEstimatePayloadDto, CostEstimateResponseDto } from "./dto/cost-estimate.dto";
 import { CancelBookingDto, CancelBookingResultDto } from "./dto/cancel.dto";
+import { BookingListAdminQueryDto, BookingListAdminResponseDto, BookingListAdminResultDto } from "./dto/list-admin.dto";
+import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
+import { ApiActionNames, AppModuleNames } from "../api.constant";
 
 @Controller({
     path: 'booking',
@@ -23,6 +26,19 @@ export class BookingController {
 
     constructor(private $booking: BookingService) { }
 
+    @Get('')
+    @SetApiMetadata(AppModuleNames.Booking, ApiActionNames.View, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('BOOKING.LIST')
+    @ApiOkResponse({ type: BookingListAdminResponseDto })
+    @ApiOperation({ summary: 'Booking list for admin' })
+    async listAdmin(
+        @Query() payload: BookingListAdminQueryDto,
+    ) {
+        const result = await this.$booking.listForAdmin(payload);
+        return plainToInstance(BookingListAdminResultDto, result);
+    }
 
     @Post('/')
     @UseGuards(AuthGuard)

@@ -1,6 +1,6 @@
 export enum BookingStatus {
     Draft = 10,
-    Pending = 20,
+    // Pending = 20,
     AwaitingForPayment = 30,
     Booked = 50,
     PaymentFailed = 60,
