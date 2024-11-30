@@ -199,16 +199,16 @@ export class AdminService {
         if (isActive !== undefined) where.isActive = isActive;
         if (search) where.OR = [
             {
-                name: { contains: search }
+                name: { contains: search, mode: 'insensitive' }
             },
             {
-                email: { contains: search }
+                email: { contains: search, mode: 'insensitive' }
             },
             {
-                phoneNumber: { contains: search }
+                phoneNumber: { contains: search, mode: 'insensitive' }
             },
             {
-                displayId: { contains: search }
+                displayId: { contains: search, mode: 'insensitive' }
             }
         ]
 
