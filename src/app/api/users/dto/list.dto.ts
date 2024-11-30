@@ -19,9 +19,9 @@ export class UserListQueryDto extends ListQueryDto {
 
 export class UserListProfileDto extends UserProfileDto {
     @ApiProperty({
-        type: undefined
+        type: UserAddressDto
     })
-    address: undefined;
+    address: UserAddressDto;
 }
 
 export class UserListResultDto extends PaginateResultDto {
