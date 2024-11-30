@@ -1,5 +1,5 @@
 import { COMMON_HEADERS } from "@app/app.constant";
-import { Body, Controller, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ResponseDto } from "../api.dto";
 import { Message } from "@app/decorators";
@@ -8,6 +8,7 @@ import { AuthGuard } from "@app/guards/auth.guard";
 import { AppModuleNames, ApiActionNames } from "../api.constant";
 import { AddUpdateOffDatePayloadDto } from "./dto/add-update.dto";
 import { OffDateService } from "./off-date.service";
+import { OffDateListQueryDto } from "./dto/list.dto";
 
 @Controller({
     path: 'off-dates',
@@ -21,6 +22,19 @@ export class OffDateController {
         private $offDate: OffDateService
     ) { }
 
+    @Get()
+    @SetApiMetadata(AppModuleNames.OffDate, ApiActionNames.View, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('OFF_DATE.LIST')
+    // @ApiOkResponse({ type:  })
+    @ApiOperation({ summary: 'off dates list for  admin' })
+    async list(
+        @Query() payload: OffDateListQueryDto
+    ) {
+        return this.$offDate.list(payload);
+    }
+
     @Post()
     @SetApiMetadata(AppModuleNames.OffDate, ApiActionNames.Add, true)
     @UseGuards(AuthGuard)
@@ -33,4 +47,6 @@ export class OffDateController {
     ) {
         return this.$offDate.addUpdate(payload);
     }
+
+
 }
