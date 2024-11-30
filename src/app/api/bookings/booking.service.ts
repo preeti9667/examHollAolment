@@ -424,7 +424,7 @@ export class BookingService {
 
 
         let refunds = [];
-        if (booking.status === BookingStatus.Refunded || booking.status === BookingStatus.RefundRequested || booking.status === BookingStatus.Cancelled) {
+        if (booking.status === BookingStatus.Refunded || booking.status === BookingStatus.RefundRequested) {
             refunds = await this.$payment.refundDetailsByBookingId(booking.id);
         }
         booking['payments'] = payments;
@@ -560,18 +560,18 @@ export class BookingService {
             })
         ]);
 
-        if (booking.status === BookingStatus.Booked) {
-            await this.$prisma.paymentRefund.create({
-                data: {
-                    bookingId,
-                    amount: booking.totalCost,
-                    status: PaymentRefundStatus.Requested,
-                    userId,
-                    refundType: PaymentRefundType.Full,
-                    displayId: OpenId.create(8)
-                }
-            });
-        }
+        // if (booking.status === BookingStatus.Booked) {
+        //     await this.$prisma.paymentRefund.create({
+        //         data: {
+        //             bookingId,
+        //             amount: booking.totalCost,
+        //             status: PaymentRefundStatus.Requested,
+        //             userId,
+        //             refundType: PaymentRefundType.Full,
+        //             displayId: OpenId.create(8),
+        //         }
+        //     });
+        // }
 
         this.$sms.sendSms(
             booking.contact['phoneNumber'],
