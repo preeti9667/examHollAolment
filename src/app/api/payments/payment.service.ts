@@ -51,7 +51,7 @@ export class PaymentService {
             }
         });
 
-        const res = this.$subPaisa.initPaymentRequest({
+        const res = await this.$subPaisa.initPaymentRequest({
             orderId: booking.id,
             payerName: booking.applicantName,
             payerEmail: booking.contact['email'],
