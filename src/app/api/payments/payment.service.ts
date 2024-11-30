@@ -64,6 +64,71 @@ export class PaymentService {
         return res;
     }
 
+    async page(payload: InitPaymentBodyDto) {
+        const { bookingId } = payload;
+        const booking = await this.$prisma.booking.findFirst({
+            where: {
+                id: bookingId,
+                status: BookingStatus.AwaitingForPayment
+            }
+        });
+        if (!booking) ApiException.badData('PAYMENT.INVALID_BOOKING_ID');
+        const transactionId = `tx_${this.$subPaisa.randomStr(30, "12345abcdefghijkl1234567")}`;
+        await this.$prisma.payment.create({
+            data: {
+                bookingId,
+                transactionId,
+                status: PaymentStatus.Pending,
+                amount: booking.totalCost
+            }
+        });
+
+        const res = await this.$subPaisa.initPaymentRequest({
+            orderId: booking.id,
+            payerName: booking.applicantName,
+            payerEmail: booking.contact['email'],
+            payerMobile: booking.contact['phoneNumber'],
+            amount: booking.totalCost,
+            transactionId
+        });
+
+        let html = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                    <title>SubPaisa Payment Gateway</title>
+                </head>
+                <body>
+                    <h2>Redirecting to SubPaisa Payment Gateway...</h2>
+                    <form
+                    id="paymentForm"
+                    action="$spURL"
+                    method="POST"
+                    >
+                    <input
+                        type="hidden"
+                        name="encData"
+                        value="$encData"
+                    />
+                    <input type="hidden" name="clientCode" value="$clientCode" />
+                    </form>
+
+                    <script type="text/javascript">
+                    document.getElementById("paymentForm").submit();
+                    </script>
+                </body>
+                </html>
+            `;
+
+        html = html.replace('$spURL', res.spURL)
+            .replace('$encData', res.encData)
+            .replace('$clientCode', res.clientCode);
+
+
+        return html;
+    }
 
     async paymentResponse(body: any) {
         this.$logger.log(`Body response : ${JSON.stringify(body)}`);
