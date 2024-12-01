@@ -136,4 +136,12 @@ export class EnvConfig {
     @IsString()
     @IsDefined()
     MSD_SECURE_KEY: string;
+
+    @IsString()
+    @IsDefined()
+    PAYMENT_LINK_BASE_URL: string;
+
+    @IsString()
+    @IsDefined()
+    PAYMENT_LINK_REDIRECT_URL: string;
 }

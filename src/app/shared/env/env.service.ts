@@ -40,6 +40,9 @@ export class EnvService {
     readonly MSD_SENDER_ID = this.get('MSD_SENDER_ID');
     readonly MSD_SECURE_KEY = this.get('MSD_SECURE_KEY');
 
+    readonly PAYMENT_LINK_BASE_URL = this.get('PAYMENT_LINK_BASE_URL');
+    readonly PAYMENT_LINK_REDIRECT_URL = this.get('PAYMENT_LINK_REDIRECT_URL');
+
 
     constructor(private config: ConfigService<EnvConfig, true>) { }
     get<Key extends keyof EnvConfig>(key: Key): EnvConfig[Key] {
