@@ -40,7 +40,10 @@ export class BookingService {
             }
         });
         const dateString = utcToDateString(new Date());
-        const displayId = `${dateString.split('-').join('')}-${(todayBookingCount + 1).toString().padStart(5, '0')}`;
+        const displayId = `BK${dateString.split('-').join('')}${(todayBookingCount + 1).toString().padStart(5, '0')}`;
+        if (await this.$prisma.booking.findFirst({ where: { displayId } })) {
+            return this.getBookingDisplayId();
+        }
         return displayId;
 
     }

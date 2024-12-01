@@ -28,6 +28,38 @@ export class PaymentService {
         private $sms: SmsService
     ) { }
 
+    private async generateTransactionId(): Promise<string> {
+        const todayTransactionCount = await this.$prisma.payment.count({
+            where: {
+                createdAt: {
+                    gte: new Date(new Date().setHours(0, 0, 0, 0))
+                }
+            }
+        });
+        const dateString = utcToDateString(new Date());
+        const transactionId = `TXN${dateString.split('-').join('')}${(todayTransactionCount + 1).toString().padStart(5, '0')}`;
+        if (await this.$prisma.payment.findFirst({ where: { transactionId } }))
+            return this.generateTransactionId();
+        return transactionId;
+
+    }
+
+    private async generatePaymentRefundId(): Promise<string> {
+        const todayRefundCount = await this.$prisma.paymentRefund.count({
+            where: {
+                createdAt: {
+                    gte: new Date(new Date().setHours(0, 0, 0, 0))
+                }
+            }
+        });
+        const dateString = utcToDateString(new Date());
+        const displayId = `RF${dateString.split('-').join('')}${(todayRefundCount + 1).toString().padStart(5, '0')}`;
+        if (await this.$prisma.paymentRefund.findFirst({ where: { displayId } }))
+            return this.generatePaymentRefundId();
+        return displayId;
+
+    }
+
     async initPayment(payload: InitPaymentBodyDto) {
         const { bookingId } = payload;
 
@@ -40,7 +72,7 @@ export class PaymentService {
 
         if (!booking) ApiException.badData('PAYMENT.INVALID_BOOKING_ID');
 
-        const transactionId = `tx_${this.$subPaisa.randomStr(30, "12345abcdefghijkl1234567")}`;
+        const transactionId = await this.generateTransactionId();
 
         await this.$prisma.payment.create({
             data: {
@@ -271,7 +303,7 @@ export class PaymentService {
                     status: PaymentRefundStatus.Requested,
                     refundType: PaymentRefundType.SecurityDeposit,
                     amount: booking.securityDeposit,
-                    displayId: OpenId.create(8)
+                    displayId: await this.generatePaymentRefundId()
                 }
             }),
             this.$prisma.booking.update({
