@@ -9,6 +9,8 @@ import { Response } from "express";
 import { LoggerService } from "@app/shared/logger";
 import { RefundRequestPayloadDto, RefundRequestResponseDto } from "./dto/refund-request.dto";
 import { IAuthUser } from "../auth/interfaces/auth-user";
+import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
+import { ApiActionNames, AppModuleNames } from "../api.constant";
 
 @Controller({
     path: 'payments',
@@ -35,6 +37,19 @@ export class PaymentController {
         @Body() payload: InitPaymentBodyDto,
     ) {
         return this.$payment.initPayment(payload)
+    }
+
+    @Post('/link')
+    @SetApiMetadata(AppModuleNames.Booking, ApiActionNames.Add, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('PAYMENT.INITIATED')
+    @ApiOkResponse({ type: InitPaymentResponseDto })
+    @ApiOperation({ summary: 'Initiate booking payment' })
+    async link(
+        @Body() payload: InitPaymentBodyDto,
+    ) {
+        return this.$payment.paymentLink(payload.bookingId)
     }
 
     @Get('/page/:bookingId')

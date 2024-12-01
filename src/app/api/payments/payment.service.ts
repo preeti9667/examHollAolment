@@ -162,6 +162,28 @@ export class PaymentService {
         return html;
     }
 
+
+    async paymentLink(bookingId: string) {
+        const booking = await this.$prisma.booking.findFirst({
+            where: {
+                id: bookingId,
+                status: BookingStatus.AwaitingForPayment
+            }
+        });
+        if (!booking) ApiException.badData('PAYMENT.INVALID_BOOKING_ID');
+        if (booking.status !== BookingStatus.AwaitingForPayment) {
+            ApiException.badData('PAYMENT.BOOKING_NOT_AVAILABLE');
+        }
+        const param = `${new Date().toISOString()}_${booking.id}_${booking.totalCost}`;
+        const encryptedParam = await this.$subPaisa.encrypt(param);
+        const link = `${this.$env.PAYMENT_LINK_BASE_URL}/api/v1/payments/page/${encryptedParam}`;
+        await this.$prisma.booking.update({
+            where: { id: bookingId },
+            data: { paymentLink: link }
+        })
+        return link;
+    }
+
     async paymentResponse(body: any) {
         this.$logger.log(`Body response : ${JSON.stringify(body)}`);
         const encData = body.encResponse || body.encData || body?.data?.encData;
