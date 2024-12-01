@@ -68,6 +68,19 @@ export class BookingController {
         return this.$booking.costEstimate(payload);
     }
 
+    @Post('/estimate-cost')
+    @UseGuards(AuthGuard)
+    @SetApiMetadata(AppModuleNames.Booking, ApiActionNames.View, true)
+    @ApiBearerAuth('AccessToken')
+    @Message('BOOKING.COST_ESTIMATE')
+    @ApiOkResponse({ type: CostEstimateResponseDto })
+    @ApiOperation({ summary: 'Booking Cost Estimate for admin' })
+    async costEstimateByAdmin(
+        @Body() payload: CostEstimatePayloadDto,
+    ) {
+        return this.$booking.costEstimate(payload);
+    }
+
     @Get('/list')
     @UseGuards(AuthGuard)
     @ApiBearerAuth('AccessToken')
