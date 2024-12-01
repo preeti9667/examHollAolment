@@ -203,6 +203,10 @@ model Booking {
   gstNo            String?
   cancelReason     String?
   cancelledBy      Json?
+  admin            Admin?          @relation(fields: [createdByAdmin], references: [id])
+  createdByAdmin   String?
+  isPaymentDone    Boolean?
+  paymentLink      String?
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
   bookingAddOn     BookingAddOn[]
@@ -295,18 +299,19 @@ model Role {
 }
 
 model Admin {
-  id          String   @id @default(uuid())
-  displayId   String   @unique()
+  id          String    @id @default(uuid())
+  displayId   String    @unique()
   name        String
-  role        Role     @relation(fields: [roleId], references: [id])
+  role        Role      @relation(fields: [roleId], references: [id])
   roleId      String
   email       String
   phoneNumber String
   countryCode String
-  isActive    Boolean  @default(true)
-  isDeleted   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  isActive    Boolean   @default(true)
+  isDeleted   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  booking     Booking[]
 
   @@index([phoneNumber, countryCode])
   @@index([email])
