@@ -11,6 +11,7 @@ import { RefundRequestPayloadDto, RefundRequestResponseDto } from "./dto/refund-
 import { IAuthUser } from "../auth/interfaces/auth-user";
 import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
 import { ApiActionNames, AppModuleNames } from "../api.constant";
+import { LinkPaymentQueryDto } from "./dto/link-payment.dto";
 
 @Controller({
     path: 'payments',
@@ -56,12 +57,11 @@ export class PaymentController {
     @Message('PAYMENT.PAGE')
     @ApiOperation({ summary: 'page for booking payment' })
     async page(
-        @Param() param: InitPaymentBodyDto,
+        @Param() param: LinkPaymentQueryDto,
         @Res() res: Response
     ) {
         const html = await this.$payment.page(param);
         res.send(html);
-
     }
 
 

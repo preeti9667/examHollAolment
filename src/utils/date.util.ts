@@ -88,3 +88,7 @@ export function UtcToDateString() {
             return utcToDateString(obj.value);
     });
 }
+
+export function dateDifferenceInMinutes(from: Date, to: Date): number {
+    return moment(to).diff(from, 'minutes');
+}

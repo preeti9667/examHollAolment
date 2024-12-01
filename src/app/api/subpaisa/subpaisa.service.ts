@@ -37,7 +37,7 @@ export class SubPaisaService {
         return ans;
     }
 
-    async initPaymentRequest(data: InitPaymentRequest) {
+    async initPaymentRequest(data: InitPaymentRequest, isLink = false) {
         const payerName = data.payerName;
         const payerEmail = data.payerEmail;
         const payerMobile = data.payerMobile;
@@ -45,7 +45,7 @@ export class SubPaisaService {
         const amount = 1;
         const channelId = "W";
         const transData = new Date().toISOString();
-        const stringForRequest = `payerName=${payerName}&payerEmail=${payerEmail}&payerMobile=${payerMobile}&clientTxnId=${clientTxnId}&amount=${amount}&clientCode=${this.$env.SABPAISA_CLIENT_CODE}&transUserName=${this.$env.SABPAISA_TRANS_USER_NAME}&transUserPassword=${this.$env.SABPAISA_TRANS_USER_PASSWORD}&callbackUrl=${this.$env.SUBPAISA_CALLBACK_URL}&channelId=${channelId}&mcc=${this.$env.SABPAISA_MCC}&transData=${transData}&udf1=${data.orderId}`;
+        const stringForRequest = `payerName=${payerName}&payerEmail=${payerEmail}&payerMobile=${payerMobile}&clientTxnId=${clientTxnId}&amount=${amount}&clientCode=${this.$env.SABPAISA_CLIENT_CODE}&transUserName=${this.$env.SABPAISA_TRANS_USER_NAME}&transUserPassword=${this.$env.SABPAISA_TRANS_USER_PASSWORD}&callbackUrl=${this.$env.SUBPAISA_CALLBACK_URL}&channelId=${channelId}&mcc=${this.$env.SABPAISA_MCC}&transData=${transData}&udf1=${data.orderId}&udf2=${isLink}`;
         this.$logger.log("stringForRequest :: " + stringForRequest);
         const encryptedStringForRequest = this.encrypt(stringForRequest);
         this.$logger.log("encryptedStringForRequest :: " + encryptedStringForRequest);

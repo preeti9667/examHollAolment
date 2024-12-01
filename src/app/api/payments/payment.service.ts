@@ -7,7 +7,7 @@ import { ApiException } from "../api.exception";
 import { SubPaisaService } from "../subpaisa/subpaisa.service";
 import { PaymentRefundMethod, PaymentRefundStatus, PaymentRefundType, PaymentStatus } from "./payment.constant";
 import { SubPaisaPaymentStatus } from "../subpaisa/subpaisa.contant";
-import { dsToUTC, OpenId, utcToDateString, UtcToDateString } from "src/utils";
+import { dateDifferenceInMinutes, dsToUTC, OpenId, utcToDateString, UtcToDateString } from "src/utils";
 import { BookingService } from "../bookings/booking.service";
 import { EnvService } from "@app/shared/env";
 import { logger } from "nestjs-i18n";
@@ -97,7 +97,12 @@ export class PaymentService {
     }
 
     async page(payload: InitPaymentBodyDto) {
-        const { bookingId } = payload;
+        const dataString = payload.bookingId;
+        const decrypted = this.$subPaisa.decrypt(dataString);
+        const [createdAt, bookingId, totalCost] = decrypted.split('_');
+        const linkDiff = dateDifferenceInMinutes(new Date(createdAt), new Date());
+        if (linkDiff > 25) ApiException.badData('PAYMENT.LINK_EXPIRED');
+
         const booking = await this.$prisma.booking.findFirst({
             where: {
                 id: bookingId,
@@ -122,7 +127,7 @@ export class PaymentService {
             payerMobile: booking.contact['phoneNumber'],
             amount: booking.totalCost,
             transactionId
-        });
+        }, true);
 
         let html = `
                 <!DOCTYPE html>
