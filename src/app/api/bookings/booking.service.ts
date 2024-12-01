@@ -8,7 +8,7 @@ import { v4 as uuid } from 'uuid'
 import { HallService } from "../halls/hall.service";
 import { IHall } from "../halls/interfaces/hall";
 import { ApiException } from "../api.exception";
-import { PaymentRefundStatus, PaymentRefundType, PaymentStatus } from "../payments/payment.constant";
+import { PaymentStatus } from "../payments/payment.constant";
 import { BookingListQueryDto } from "./dto/list.dto";
 import { CostEstimatePayloadDto } from "./dto/cost-estimate.dto";
 import { CancelBookingDto } from "./dto/cancel.dto";
@@ -31,8 +31,18 @@ export class BookingService {
 
     }
 
-    private getBookingDisplayId(): string {
-        return OpenId.format('BK', 8) as string
+    private async getBookingDisplayId(): Promise<string> {
+        const todayBookingCount = await this.$prisma.booking.count({
+            where: {
+                createdAt: {
+                    gte: new Date(new Date().setHours(0, 0, 0, 0))
+                }
+            }
+        });
+        const dateString = utcToDateString(new Date());
+        const displayId = `${dateString.split('-').join('')}-${(todayBookingCount + 1).toString().padStart(5, '0')}`;
+        return displayId;
+
     }
 
     async createBooking(payload: CreateBookingPayloadDto, userId: string) {
@@ -50,7 +60,7 @@ export class BookingService {
             data: {
                 organizationName: payload.organizationName,
                 applicantName: payload.applicantName,
-                displayId: this.getBookingDisplayId(),
+                displayId: await this.getBookingDisplayId(),
                 institutionType: payload.institutionType,
                 examName: payload.examName,
                 noOfCandidates: payload.noOfCandidates,
@@ -130,7 +140,7 @@ export class BookingService {
         const bookingData: any = {
             organizationName: payload.organizationName,
             applicantName: payload.applicantName,
-            displayId: isBooking?.displayId || this.getBookingDisplayId(),
+            displayId: isBooking?.displayId || await this.getBookingDisplayId(),
             institutionType: payload.institutionType,
             examName: payload.examName,
             noOfCandidates: payload.noOfCandidates,
