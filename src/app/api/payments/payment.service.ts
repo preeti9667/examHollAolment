@@ -105,7 +105,7 @@ export class PaymentService {
             }
         });
         if (!booking) ApiException.badData('PAYMENT.INVALID_BOOKING_ID');
-        const transactionId = `tx_${this.$subPaisa.randomStr(30, "12345abcdefghijkl1234567")}`;
+        const transactionId = await this.generateTransactionId();
         await this.$prisma.payment.create({
             data: {
                 bookingId,
