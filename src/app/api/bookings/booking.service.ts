@@ -306,15 +306,19 @@ export class BookingService {
         paymentMode: string
     ) {
         let bookingStatus = BookingStatus.Booked;
-        if (paymentStatus !== PaymentStatus.Success)
+        let isPaymentDone = true
+        if (paymentStatus !== PaymentStatus.Success) {
             bookingStatus = BookingStatus.PaymentFailed;
+            isPaymentDone = false
+        }
 
         const [booking] = await Promise.all([
             this.$prisma.booking.update({
                 where: { id: bookingId },
                 data: {
                     status: bookingStatus,
-                    paymentMethod: paymentMode
+                    paymentMethod: paymentMode,
+                    isPaymentDone
                 }
             }),
             this.$prisma.bookingHall.updateMany({
@@ -407,6 +411,7 @@ export class BookingService {
                 gstNo: true,
                 examName: true,
                 addOnPrice: true,
+                isPaymentDone: true,
                 bookingAddOn: {
                     select: {
                         id: true,
@@ -423,6 +428,13 @@ export class BookingService {
                         totalPrice: true,
                         hallRaw: true,
                         slotRaw: true
+                    }
+                },
+                admin: {
+                    select: {
+                        id: true,
+                        name: true,
+                        displayId: true
                     }
                 }
             }
