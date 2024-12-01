@@ -37,7 +37,7 @@ export class PaymentService {
             }
         });
         const dateString = utcToDateString(new Date());
-        const transactionId = `TXN${dateString.split('-').join('')}${(todayTransactionCount + 1).toString().padStart(5, '0')}`;
+        const transactionId = `TXN${dateString.split('-').join('')}${(todayTransactionCount + 1).toString().padStart(3, '0')}`;
         if (await this.$prisma.payment.findFirst({ where: { transactionId } }))
             return this.generateTransactionId();
         return transactionId;
@@ -53,7 +53,7 @@ export class PaymentService {
             }
         });
         const dateString = utcToDateString(new Date());
-        const displayId = `RF${dateString.split('-').join('')}${(todayRefundCount + 1).toString().padStart(5, '0')}`;
+        const displayId = `RF${dateString.split('-').join('')}${(todayRefundCount + 1).toString().padStart(3, '0')}`;
         if (await this.$prisma.paymentRefund.findFirst({ where: { displayId } }))
             return this.generatePaymentRefundId();
         return displayId;
