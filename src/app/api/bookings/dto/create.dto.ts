@@ -214,6 +214,16 @@ export class CreateBookingPayloadDto {
     timeSlots: BookingDateTimeSlotDto[]
 }
 
+export class CreateBookingAdminPayloadDto extends CreateBookingPayloadDto {
+    @ApiProperty({
+        type: String,
+        example: '3e9e93bd-ff1f-4c89-bd12-f09bb8b7f3d3',
+        description: 'id of user for admin is creating the booking'
+    })
+    @IsUUID()
+    userId: string
+}
+
 
 export class CreateBookingResultDto {
     @ApiProperty({

@@ -2,7 +2,7 @@ import { PrismaService } from "@app/databases/prisma/prisma.service";
 import { LoggerService } from "@app/shared/logger";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { dateStringToUtc, OpenId, utcToDateString } from "src/utils";
-import { CreateBookingPayloadDto } from "./dto/create.dto";
+import { CreateBookingAdminPayloadDto, CreateBookingPayloadDto } from "./dto/create.dto";
 import { BOOKING_PRICE, BookingCancelledBy, BookingStatus } from "./booking.constant";
 import { v4 as uuid } from 'uuid'
 import { HallService } from "../halls/hall.service";
@@ -58,7 +58,18 @@ export class BookingService {
         }
     }
 
-    private async handleBookingDraft(payload: CreateBookingPayloadDto, userId: string) {
+
+    async createBookingAdmin(payload: CreateBookingAdminPayloadDto, adminId: string) {
+        if (payload.status === BookingStatus.Draft) {
+            return this.handleBookingDraft(payload, payload.userId, adminId);
+        }
+
+        if (payload.status === BookingStatus.AwaitingForPayment) {
+            return this.handleAwaitingForPayment(payload, payload.userId, adminId)
+        }
+    }
+
+    private async handleBookingDraft(payload: CreateBookingPayloadDto, userId: string, adminId?: string) {
         const newBooking = await this.$prisma.booking.create({
             data: {
                 organizationName: payload.organizationName,
@@ -76,7 +87,8 @@ export class BookingService {
                     ...payload.address
                 },
                 status: BookingStatus.Draft,
-                userId
+                userId,
+                createdByAdmin: adminId
             }
         });
 
@@ -111,7 +123,7 @@ export class BookingService {
         return allocation;
     }
 
-    private async handleAwaitingForPayment(payload: CreateBookingPayloadDto, userId: String) {
+    private async handleAwaitingForPayment(payload: CreateBookingPayloadDto, userId: String, adminId?: string) {
         let isBooking;
         if (payload.id) {
             isBooking = await this.$prisma.booking.findFirst({
@@ -159,7 +171,9 @@ export class BookingService {
             status: BookingStatus.AwaitingForPayment,
             userId,
             startDate: dateStringToUtc(payload.startDate),
-            endDate: dateStringToUtc(payload.endDate)
+            endDate: dateStringToUtc(payload.endDate),
+            createdByAdmin: adminId,
+            isPaymentDone: false,
         }
         const bookingHall = [];
         const slots = await this.$prisma.timeSlot.findMany();
@@ -273,6 +287,7 @@ export class BookingService {
             })
         ]);
 
+
         return {
             id: newBooking.id,
             displayId: newBooking.displayId,
@@ -280,7 +295,6 @@ export class BookingService {
             hallAllocated,
             status: BookingStatus.AwaitingForPayment,
             totalCost: newBooking.totalCost,
-            paymentLink: null,
         }
 
     }

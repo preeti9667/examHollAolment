@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from "@ne
 import { BookingService } from "./booking.service";
 import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { COMMON_HEADERS } from "@app/app.constant";
-import { CreateBookingPayloadDto, CreateBookingResponseDto } from "./dto/create.dto";
+import { CreateBookingAdminPayloadDto, CreateBookingPayloadDto, CreateBookingResponseDto } from "./dto/create.dto";
 import { AuthUser, Message } from "@app/decorators";
 import { AuthGuard } from "@app/guards/auth.guard";
 import { IAuthUser } from "../auth/interfaces/auth-user";
@@ -54,6 +54,23 @@ export class BookingController {
         @AuthUser() user: IAuthUser
     ) {
         return this.$booking.createBooking(payload, user.id);
+    }
+
+    @Post('/create')
+    @UseGuards(AuthGuard)
+    @SetApiMetadata(AppModuleNames.Booking, ApiActionNames.Add, true)
+    @ApiBearerAuth('AccessToken')
+    @Message((req) => {
+        if (req.body.status === BookingStatus.Draft) return 'BOOKING.DRAFT_CREATED';
+        return 'BOOKING.AWAITING_FOR_PAYMENT';
+    })
+    @ApiOkResponse({ type: CreateBookingResponseDto })
+    @ApiOperation({ summary: 'create or draft booking by admin' })
+    async createByAdmin(
+        @Body() payload: CreateBookingAdminPayloadDto,
+        @AuthUser() user: IAuthUser
+    ) {
+        return this.$booking.createBookingAdmin(payload, user.id);
     }
 
     @Post('/cost-estimate')
