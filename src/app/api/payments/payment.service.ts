@@ -209,6 +209,13 @@ export class PaymentService {
             }
         });
 
+        let redirectUrl = this.$env.REDIRECT_URL_PAYMENT;
+        const udf2 = decryptedResponseObj.udf2;
+
+        if (udf2 === 'true') {
+            redirectUrl = this.$env.PAYMENT_LINK_REDIRECT_URL;
+        }
+
         const paymentStatus = this.paymentStatus(decryptedResponseObj.statusCode);
 
         await this.$prisma.payment.update({
@@ -259,8 +266,9 @@ export class PaymentService {
             );
         }
         this.$logger.log(`Booking display id : ${booking.displayId}`);
+
         const encodedData = encodeURIComponent(JSON.stringify({ ...decryptedResponseObj, bookingDisplayId: booking.displayId }));
-        return { dataString: encodedData, redirectUrl: this.$env.REDIRECT_URL_PAYMENT };
+        return { dataString: encodedData, redirectUrl };
     }
 
 
