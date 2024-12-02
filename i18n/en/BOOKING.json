@@ -8,5 +8,6 @@
   "COST_ESTIMATE": "Cost estimate",
   "CANCELLED": "Booking cancelled successfully",
   "NOT_COMPLETED": "Booking not completed",
-  "DETAILS": "Booking details fetched successfully"
+  "DETAILS": "Booking details fetched successfully",
+  "INVALID_DATE_RANGE": "Invalid date range"
 }

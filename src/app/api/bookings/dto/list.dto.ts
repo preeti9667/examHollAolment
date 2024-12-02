@@ -4,6 +4,7 @@ import { BookingStatus } from "../booking.constant";
 import { Expose, plainToInstance, Type } from "class-transformer";
 import { ResponseDto } from "@app/api/api.dto";
 import { UtcToDateString } from "src/utils";
+import { IsBpDateFormat } from "@app/decorators/date-validator.decorator";
 
 
 export class BookingListQueryDto {
@@ -61,7 +62,36 @@ export class BookingListQueryDto {
     @Type(() => Number)
     @IsNumber()
     @IsEnum(BookingStatus)
-    status: number
+    status: number;
+
+
+    @ApiProperty({
+        type: String,
+        required: false,
+        example: '2024-11-11',
+    })
+    @IsBpDateFormat()
+    @IsOptional()
+    fromDate: string;
+
+    @ApiProperty({
+        type: String,
+        required: false,
+        example: '2024-11-23',
+    })
+    @IsBpDateFormat()
+    @IsOptional()
+    toDate: string;
+
+
+    @ApiProperty({
+        type: String,
+        required: false,
+        description: 'search by booking displayId and exam name',
+    })
+    @IsOptional()
+    @IsString()
+    search: string;
 }
 export class BookingListBookingDetailDto {
     @ApiProperty({
