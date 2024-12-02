@@ -1,6 +1,6 @@
 import { PrismaService } from "@app/databases/prisma/prisma.service";
 import { LoggerService } from "@app/shared/logger";
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import { ConsoleLogger, forwardRef, Inject, Injectable } from "@nestjs/common";
 import { InitPaymentBodyDto } from "./dto/init-payment.dto";
 import { BookingStatus } from "../bookings/booking.constant";
 import { ApiException } from "../api.exception";
@@ -27,23 +27,9 @@ export class PaymentService {
         private $env: EnvService,
         private $sms: SmsService
     ) {
-        this.test();
     }
 
-    async test() {
-        await this.$sms.sendSms(
-            '9882552978',
-            SMS_TEMPLATE.refundProcessed,
-            [
-                {
-                    bookingId: '123'
-                }
-            ]
 
-        );
-
-        console.log('send sms');
-    }
 
     private async generateTransactionId(): Promise<string> {
         const todayTransactionCount = await this.$prisma.payment.count({
