@@ -93,7 +93,23 @@ export class AuthService {
                     data: { isActive: false }
                 }
             )
-        ])
+        ]);
+
+        const updateObj = {
+            email: authUser.email,
+            phoneNumber: authUser.phoneNumber,
+            countryCode: authUser.countryCode,
+            isActive: authUser.isActive,
+            isDeleted: authUser.isDeleted
+        }
+
+        if (!authUser.email) delete updateObj.email;
+        if (!authUser.phoneNumber) {
+            delete updateObj.phoneNumber;
+            delete updateObj.phoneNumber;
+        }
+
+
         const [loginHistory, user] = await Promise.all([
             this.$prisma.loginHistory.create({
                 data: {
@@ -104,13 +120,7 @@ export class AuthService {
             authUser.type === AccountType.CUSTOMER ?
                 this.$prisma.user.upsert({
                     where: { id: authUser.id },
-                    update: {
-                        email: authUser.email,
-                        phoneNumber: authUser.phoneNumber,
-                        countryCode: authUser.countryCode,
-                        isActive: authUser.isActive,
-                        isDeleted: authUser.isDeleted
-                    },
+                    update: updateObj,
                     create: {
                         id: authUser.id,
                         email: authUser.email,
