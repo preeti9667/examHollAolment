@@ -26,7 +26,24 @@ export class PaymentService {
         private $booking: BookingService,
         private $env: EnvService,
         private $sms: SmsService
-    ) { }
+    ) {
+        this.test();
+    }
+
+    async test() {
+        await this.$sms.sendSms(
+            '9882552978',
+            SMS_TEMPLATE.refundProcessed,
+            [
+                {
+                    bookingId: '123'
+                }
+            ]
+
+        );
+
+        console.log('send sms');
+    }
 
     private async generateTransactionId(): Promise<string> {
         const todayTransactionCount = await this.$prisma.payment.count({
@@ -351,6 +368,17 @@ export class PaymentService {
             })
 
         ]);
+
+        this.$sms.sendSms(
+            booking.contact['phoneNumber'],
+            SMS_TEMPLATE.refundProcessed,
+            [
+                {
+                    bookingId: booking.displayId
+                }
+            ]
+
+        )
 
         return {
             id: refund.id,
