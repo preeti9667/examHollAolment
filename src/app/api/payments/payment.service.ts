@@ -198,7 +198,8 @@ export class PaymentService {
         }
         const param = `${new Date().toISOString()}_${booking.id}_${booking.totalCost}`;
         const encryptedParam = await this.$subPaisa.encrypt(param);
-        const link = `${this.$env.PAYMENT_LINK_BASE_URL}/api/v1/payments/page/${encryptedParam}`;
+        const encryptedParamWithoutSlash = encodeURIComponent(encryptedParam);
+        const link = `${this.$env.PAYMENT_LINK_BASE_URL}/api/v1/payments/page/${encryptedParamWithoutSlash}`;
         await this.$prisma.booking.update({
             where: { id: bookingId },
             data: { paymentLink: link }
