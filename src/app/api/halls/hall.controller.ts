@@ -26,19 +26,18 @@ export class HallController {
     ) { }
 
     @Get('/availability')
+    @SetApiMetadata(AppModuleNames.Hall, ApiActionNames.View, false)
     @UseGuards(AuthGuard)
     @ApiBearerAuth('AccessToken')
     @Message('HALL.AVAILABILITY')
     @ApiOkResponse({ type: HallAvailabilityResponseDto })
-    @ApiOperation({ summary: 'hall availability for customer' })
+    @ApiOperation({ summary: 'hall availability for customer and admin' })
     async availability(
         @Query() query: HallAvailabilityQueryDto
     ) {
         const availability = await this.$hall.availability(query);
         return { availability };
     }
-
-
 
     @Post('')
     @SetApiMetadata(AppModuleNames.Hall, ApiActionNames.Add, true)
