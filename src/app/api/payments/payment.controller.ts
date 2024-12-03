@@ -1,5 +1,5 @@
 import { COMMON_HEADERS } from "@app/app.constant";
-import { Body, Controller, Get, Param, Post, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query, Res, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { InitPaymentBodyDto, InitPaymentResponseDto } from "./dto/init-payment.dto";
 import { AuthUser, Message } from "@app/decorators";
@@ -12,6 +12,7 @@ import { IAuthUser } from "../auth/interfaces/auth-user";
 import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
 import { ApiActionNames, AppModuleNames } from "../api.constant";
 import { LinkPaymentQueryDto } from "./dto/link-payment.dto";
+import { RefundListQueryDto, RefundListResponseDto } from "./dto/refund-list.dto";
 
 @Controller({
     path: 'payments',
@@ -98,5 +99,19 @@ export class PaymentController {
         @AuthUser() user: IAuthUser
     ) {
         return this.$payment.refundRequest(payload, user.id)
+    }
+
+
+    @Get('refunds')
+    @SetApiMetadata(AppModuleNames.Refund, ApiActionNames.View, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('PAYMENT.REFUND_LIST')
+    @ApiOkResponse({ type: RefundListResponseDto })
+    @ApiOperation({ summary: 'Refund list by admin' })
+    async refundList(
+        @Query() payload: RefundListQueryDto
+    ) {
+        return this.$payment.refundList(payload)
     }
 }

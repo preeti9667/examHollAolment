@@ -14,6 +14,7 @@ import { logger } from "nestjs-i18n";
 import { SmsService } from "../sms/sms.service";
 import { SMS_TEMPLATE } from "../sms/sms.constant";
 import { RefundRequestPayloadDto } from "./dto/refund-request.dto";
+import { RefundListQueryDto } from "./dto/refund-list.dto";
 
 @Injectable()
 export class PaymentService {
@@ -391,4 +392,61 @@ export class PaymentService {
         });
     }
 
+
+    async refundList(payload: RefundListQueryDto) {
+        const { page = 1, limit = 10, sort = 'desc', sortBy = 'createdAt', search } = payload;
+        const skip = (page - 1) * limit;
+        const where: any = {};
+        if (search) where.OR = [
+            {
+                displayId: { contains: search, mode: 'insensitive' }
+            }
+        ]
+
+        const [total, data] = await Promise.all([
+            this.$prisma.paymentRefund.count({ where }),
+            this.$prisma.paymentRefund.findMany({
+                where,
+                select: {
+                    id: true,
+                    displayId: true,
+                    status: true,
+                    paymentMethod: true,
+                    upiId: true,
+                    bankDetails: true,
+                    amount: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    booking: {
+                        select: {
+                            id: true,
+                            displayId: true,
+                            examName: true,
+                        }
+                    }
+                },
+                orderBy: {
+                    [sortBy]: sort
+                },
+                skip,
+                take: limit
+            })
+        ]);
+
+        return {
+            page,
+            limit,
+            total,
+            data: data.map(refund => {
+                if (refund.paymentMethod === PaymentRefundMethod.Upi) {
+                    refund.upiId = this.$subPaisa.decrypt(refund.upiId);
+                }
+                if (refund.paymentMethod === PaymentRefundMethod.NetBanking) {
+                    refund.bankDetails = JSON.parse(this.$subPaisa.decrypt(refund.bankDetails));
+                }
+                return refund;
+            })
+        }
+    }
 }
+
