@@ -725,29 +725,6 @@ export class BookingService {
             )
         }
 
-
-        if (status === BookingStatus.Refunded) {
-            if (booking.status !== BookingStatus.RefundRequested)
-                ApiException.badData('BOOKING.REFUND_NOT_ALLOWED');
-
-
-            promises.push(
-                this.$prisma.booking.update({
-                    where: { id: bookingId },
-                    data: {
-                        status
-                    }
-                }),
-                this.$prisma.paymentRefund.updateMany({
-                    where: { bookingId },
-                    data: {
-                        status: PaymentRefundStatus.Approved
-                    }
-                })
-            )
-        }
-
-
         if (status === BookingStatus.Completed) {
             const todayDate = new Date();
             if (todayDate <= new Date(booking.endDate)) {

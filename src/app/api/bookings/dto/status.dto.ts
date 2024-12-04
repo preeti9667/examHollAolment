@@ -5,10 +5,10 @@ import { IsEnum, IsString, ValidateIf } from "class-validator";
 export class BookingStatusPayloadDto {
     @ApiProperty({
         type: String,
-        enum: [BookingStatus.Cancelled, BookingStatus.Completed, BookingStatus.Refunded],
+        enum: [BookingStatus.Cancelled, BookingStatus.Completed],
         example: BookingStatus.Cancelled
     })
-    @IsEnum([BookingStatus.Cancelled, BookingStatus.Completed, BookingStatus.Refunded])
+    @IsEnum([BookingStatus.Cancelled, BookingStatus.Completed])
     status: BookingStatus;
 
     @ApiProperty({
