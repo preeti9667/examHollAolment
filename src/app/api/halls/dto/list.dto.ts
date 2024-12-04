@@ -125,6 +125,17 @@ export class ListHallDto {
     capacity!: number;
 
     @ApiProperty({
+        type: Number,
+        description: 'Floor number',
+        example: 2,
+    })
+    @IsNumber()
+    @IsDefined()
+    @IsNotEmpty()
+    @Expose()
+    floor!: number;
+
+    @ApiProperty({
         required: true,
         isArray: true,
         type: SlotDto,
