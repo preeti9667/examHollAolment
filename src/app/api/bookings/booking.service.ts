@@ -8,7 +8,7 @@ import { v4 as uuid } from 'uuid'
 import { HallService } from "../halls/hall.service";
 import { IHall } from "../halls/interfaces/hall";
 import { ApiException } from "../api.exception";
-import { PaymentStatus } from "../payments/payment.constant";
+import { PaymentRefundStatus, PaymentStatus } from "../payments/payment.constant";
 import { BookingListQueryDto } from "./dto/list.dto";
 import { CostEstimatePayloadDto } from "./dto/cost-estimate.dto";
 import { CancelBookingDto } from "./dto/cancel.dto";
@@ -16,6 +16,7 @@ import { SmsService } from "../sms/sms.service";
 import { SMS_TEMPLATE } from "../sms/sms.constant";
 import { PaymentService } from "../payments/payment.service";
 import { BookingListAdminQueryDto } from "./dto/list-admin.dto";
+import { BookingStatusPayloadDto } from "./dto/status.dto";
 
 @Injectable()
 export class BookingService {
@@ -691,5 +692,92 @@ export class BookingService {
             total,
             data
         }
+    }
+
+
+    async status(payload: BookingStatusPayloadDto, bookingId: string, adminId: string) {
+        const { status, reason } = payload;
+
+        const booking = await this.$prisma.booking.findFirst({
+            where: { id: bookingId },
+        })
+
+        if (!booking) ApiException.badData('BOOKING.NOT_FOUND');
+
+        const promises = [];
+        if (status === BookingStatus.Cancelled) {
+            if (![BookingStatus.Booked, BookingStatus.AwaitingForPayment].includes(booking.status))
+                ApiException.badData('BOOKING.CANCEL_NOT_ALLOWED');
+
+            promises.push(
+                this.$prisma.booking.update({
+                    where: { id: bookingId },
+                    data: {
+                        status,
+                        cancelReason: reason,
+                        cancelledBy: {
+                            id: adminId,
+                            by: BookingCancelledBy.Admin,
+                            date: new Date()
+                        }
+                    }
+                })
+            )
+        }
+
+
+        if (status === BookingStatus.Refunded) {
+            if (booking.status !== BookingStatus.RefundRequested)
+                ApiException.badData('BOOKING.REFUND_NOT_ALLOWED');
+
+
+            promises.push(
+                this.$prisma.booking.update({
+                    where: { id: bookingId },
+                    data: {
+                        status
+                    }
+                }),
+                this.$prisma.paymentRefund.updateMany({
+                    where: { bookingId },
+                    data: {
+                        status: PaymentRefundStatus.Approved
+                    }
+                })
+            )
+        }
+
+
+        if (status === BookingStatus.Completed) {
+            const todayDate = new Date();
+            if (todayDate <= new Date(booking.endDate)) {
+                ApiException.badData('BOOKING.COMPLETED_BEFORE_NOT_ALLOWED');
+            }
+            promises.push(
+                this.$prisma.booking.update({
+                    where: { id: bookingId },
+                    data: {
+                        status
+                    }
+                })
+            )
+        }
+
+
+        promises.push(
+            this.$prisma.bookingHall.updateMany({
+                where: { bookingId },
+                data: { status }
+            })
+        )
+
+        await Promise.all(promises);
+
+        return {
+            id: bookingId,
+            displayId: booking.displayId,
+            status
+        }
+
     }
 }
