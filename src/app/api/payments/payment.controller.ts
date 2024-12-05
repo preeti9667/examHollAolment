@@ -13,6 +13,7 @@ import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
 import { ApiActionNames, AppModuleNames } from "../api.constant";
 import { LinkPaymentQueryDto } from "./dto/link-payment.dto";
 import { RefundDetailsResponseDto, RefundListQueryDto, RefundListResponseDto } from "./dto/refund-list.dto";
+import { RefundParamDto } from "./dto/refund-status.dto";
 
 @Controller({
     path: 'payments',
@@ -123,8 +124,8 @@ export class PaymentController {
     @ApiOkResponse({ type: RefundDetailsResponseDto })
     @ApiOperation({ summary: 'Refund details by admin' })
     async refundDetails(
-        @Param('id') id: string
+        @Param() param: RefundParamDto
     ) {
-        return this.$payment.refundDetails(id)
+        return this.$payment.refundDetails(param.id)
     }
 }

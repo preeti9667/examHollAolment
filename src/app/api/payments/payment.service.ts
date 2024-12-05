@@ -15,6 +15,7 @@ import { SmsService } from "../sms/sms.service";
 import { SMS_TEMPLATE } from "../sms/sms.constant";
 import { RefundRequestPayloadDto } from "./dto/refund-request.dto";
 import { RefundListQueryDto } from "./dto/refund-list.dto";
+import { RefundStatusPayloadDto } from "./dto/refund-status.dto";
 
 @Injectable()
 export class PaymentService {
@@ -466,6 +467,16 @@ export class PaymentService {
             refund.bankDetails = JSON.parse(this.$subPaisa.decrypt(refund.bankDetails));
         }
         return refund;
+    }
+
+
+    async refundStatus(payload: RefundStatusPayloadDto, adminId: string, id: string) {
+        const refund = await this.$prisma.paymentRefund.findFirst({
+            where: {
+                id
+            }
+        });
+        if (!refund) ApiException.badData('REFUND.NOT_FOUND');
     }
 }
 
