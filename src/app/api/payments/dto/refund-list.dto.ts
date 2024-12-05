@@ -3,7 +3,7 @@ import { Type } from "class-transformer";
 import { IsOptional, IsNumber, Min, Max, IsEnum, IsBoolean, IsString } from "class-validator";
 import { Transform } from "stream";
 import { PaymentRefundMethod, PaymentRefundStatus } from "../payment.constant";
-import { PaginateResultDto } from "@app/api/api.dto";
+import { PaginateResultDto, ResponseDto } from "@app/api/api.dto";
 
 export class RefundListQueryDto {
     @ApiProperty({
@@ -173,6 +173,14 @@ export class RefundListResponseDto {
         type: RefundListResultDto
     })
     data: RefundListResultDto;
+}
+
+
+export class RefundDetailsResponseDto extends ResponseDto {
+    @ApiProperty({
+        type: RefundListDetailsDto
+    })
+    result: RefundListDetailsDto;
 }
 
 

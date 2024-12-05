@@ -12,7 +12,7 @@ import { IAuthUser } from "../auth/interfaces/auth-user";
 import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
 import { ApiActionNames, AppModuleNames } from "../api.constant";
 import { LinkPaymentQueryDto } from "./dto/link-payment.dto";
-import { RefundListQueryDto, RefundListResponseDto } from "./dto/refund-list.dto";
+import { RefundDetailsResponseDto, RefundListQueryDto, RefundListResponseDto } from "./dto/refund-list.dto";
 
 @Controller({
     path: 'payments',
@@ -113,5 +113,18 @@ export class PaymentController {
         @Query() payload: RefundListQueryDto
     ) {
         return this.$payment.refundList(payload)
+    }
+
+    @Get('refunds/:id')
+    @SetApiMetadata(AppModuleNames.Refund, ApiActionNames.View, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('PAYMENT.REFUND_DETAILs')
+    @ApiOkResponse({ type: RefundDetailsResponseDto })
+    @ApiOperation({ summary: 'Refund details by admin' })
+    async refundDetails(
+        @Param('id') id: string
+    ) {
+        return this.$payment.refundDetails(id)
     }
 }

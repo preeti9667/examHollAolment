@@ -448,5 +448,24 @@ export class PaymentService {
             })
         }
     }
+
+
+
+
+    async refundDetails(id: string) {
+        const refund = await this.$prisma.paymentRefund.findFirst({
+            where: {
+                id
+            }
+        });
+        if (!refund) ApiException.badData('REFUND.NOT_FOUND');
+        if (refund.paymentMethod === PaymentRefundMethod.Upi) {
+            refund.upiId = this.$subPaisa.decrypt(refund.upiId);
+        }
+        if (refund.paymentMethod === PaymentRefundMethod.NetBanking) {
+            refund.bankDetails = JSON.parse(this.$subPaisa.decrypt(refund.bankDetails));
+        }
+        return refund;
+    }
 }
 
