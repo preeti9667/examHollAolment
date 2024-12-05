@@ -270,20 +270,24 @@ model Payment {
 }
 
 model PaymentRefund {
-  id            String   @id @default(uuid())
+  id            String    @id @default(uuid())
   displayId     String
   refundType    String
   amount        Float
   status        String
-  booking       Booking  @relation(fields: [bookingId], references: [id])
+  booking       Booking   @relation(fields: [bookingId], references: [id])
   bookingId     String
-  user          User?    @relation(fields: [userId], references: [id])
+  user          User?     @relation(fields: [userId], references: [id])
   userId        String
-  paymentMethod String   @default("UPI")
+  paymentMethod String    @default("UPI")
   upiId         String?
   bankDetails   String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  statusBy      Admin?    @relation("statusBy", fields: [adminId], references: [id])
+  adminId       String?
+  comment       String?
+  statusAt      DateTime?
 }
 
 model Role {
@@ -299,19 +303,20 @@ model Role {
 }
 
 model Admin {
-  id          String    @id @default(uuid())
-  displayId   String    @unique()
-  name        String
-  role        Role      @relation(fields: [roleId], references: [id])
-  roleId      String
-  email       String
-  phoneNumber String
-  countryCode String
-  isActive    Boolean   @default(true)
-  isDeleted   Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  booking     Booking[]
+  id            String          @id @default(uuid())
+  displayId     String          @unique()
+  name          String
+  role          Role            @relation(fields: [roleId], references: [id])
+  roleId        String
+  email         String
+  phoneNumber   String
+  countryCode   String
+  isActive      Boolean         @default(true)
+  isDeleted     Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  booking       Booking[]
+  paymentRefund PaymentRefund[] @relation("statusBy")
 
   @@index([phoneNumber, countryCode])
   @@index([email])
