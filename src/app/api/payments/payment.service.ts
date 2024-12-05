@@ -457,6 +457,35 @@ export class PaymentService {
         const refund = await this.$prisma.paymentRefund.findFirst({
             where: {
                 id
+            },
+            select: {
+                id: true,
+                displayId: true,
+                status: true,
+                paymentMethod: true,
+                upiId: true,
+                bankDetails: true,
+                amount: true,
+                createdAt: true,
+                updatedAt: true,
+                booking: {
+                    select: {
+                        id: true,
+                        displayId: true,
+                        examName: true,
+                    }
+                },
+                comment: true,
+                statusAt: true,
+                refundType: true,
+                statusBy: {
+                    select: {
+                        id: true,
+                        displayId: true,
+                        name: true,
+                        email: true
+                    }
+                }
             }
         });
         if (!refund) ApiException.badData('REFUND.NOT_FOUND');
@@ -477,6 +506,35 @@ export class PaymentService {
             }
         });
         if (!refund) ApiException.badData('REFUND.NOT_FOUND');
+
+        await this.$prisma.paymentRefund.update({
+            where: {
+                id
+            },
+            data: {
+                status: payload.status,
+                statusAt: new Date(),
+                adminId: adminId,
+                comment: payload.comment
+            }
+        });
+
+        if (payload.status === PaymentRefundStatus.Approved) {
+            await this.$prisma.booking.update({
+                where: {
+                    id: refund.bookingId
+                },
+                data: {
+                    status: BookingStatus.Refunded
+                }
+            })
+        }
+
+        return {
+            id: refund.id,
+            displayId: refund.displayId,
+            status: payload.status,
+        }
     }
 }
 

@@ -1,5 +1,5 @@
 import { COMMON_HEADERS } from "@app/app.constant";
-import { Body, Controller, Get, Param, Post, Query, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post, Query, Res, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { InitPaymentBodyDto, InitPaymentResponseDto } from "./dto/init-payment.dto";
 import { AuthUser, Message } from "@app/decorators";
@@ -13,7 +13,7 @@ import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
 import { ApiActionNames, AppModuleNames } from "../api.constant";
 import { LinkPaymentQueryDto } from "./dto/link-payment.dto";
 import { RefundListQueryDto, RefundListResponseDto } from "./dto/refund-list.dto";
-import { RefundParamDto } from "./dto/refund-status.dto";
+import { RefundParamDto, RefundStatusPayloadDto, RefundStatusResponseDto } from "./dto/refund-status.dto";
 import { RefundDetailsResponseDto } from "./dto/refund-detail.dto";
 
 @Controller({
@@ -128,5 +128,20 @@ export class PaymentController {
         @Param() param: RefundParamDto
     ) {
         return this.$payment.refundDetails(param.id)
+    }
+
+    @Patch('refunds/:id')
+    @SetApiMetadata(AppModuleNames.Refund, ApiActionNames.Status, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('PAYMENT.REFUND_STATUS')
+    @ApiOkResponse({ type: RefundStatusResponseDto })
+    @ApiOperation({ summary: 'Refund status by admin' })
+    async refundStatus(
+        @Param() param: RefundParamDto,
+        @Body() payload: RefundStatusPayloadDto,
+        @AuthUser() user: IAuthUser
+    ) {
+        return this.$payment.refundStatus(payload, user.id, param.id)
     }
 }
