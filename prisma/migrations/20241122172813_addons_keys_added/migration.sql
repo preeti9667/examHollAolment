@@ -1,7 +1,0 @@
--- AlterTable
-ALTER TABLE "Booking" ADD COLUMN     "addOnPrice" DOUBLE PRECISION NOT NULL DEFAULT 0;
-
--- AlterTable
-ALTER TABLE "BookingAddOn" ADD COLUMN     "addOnRaw" JSONB,
-ALTER COLUMN "quantity" SET DEFAULT 0,
-ALTER COLUMN "totalPrice" SET DEFAULT 0;
