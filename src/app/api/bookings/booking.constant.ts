@@ -9,6 +9,7 @@ export enum BookingStatus {
     Cancelled = 90,
     Completed = 110,
     RefundRequested = 130,
+    RefundRejected = 170,
     Refunded = 150
 }
 

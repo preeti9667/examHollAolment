@@ -10,9 +10,9 @@ export enum PaymentStatus {
 
 
 export enum PaymentRefundStatus {
-    Requested = 'REQUESTED',
-    Rejected = 'REJECTED',
-    Approved = 'APPROVED'
+    Requested = 130,
+    Rejected = 170,
+    Approved = 150
 }
 
 
