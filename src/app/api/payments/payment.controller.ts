@@ -12,8 +12,9 @@ import { IAuthUser } from "../auth/interfaces/auth-user";
 import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
 import { ApiActionNames, AppModuleNames } from "../api.constant";
 import { LinkPaymentQueryDto } from "./dto/link-payment.dto";
-import { RefundDetailsResponseDto, RefundListQueryDto, RefundListResponseDto } from "./dto/refund-list.dto";
+import { RefundListQueryDto, RefundListResponseDto } from "./dto/refund-list.dto";
 import { RefundParamDto } from "./dto/refund-status.dto";
+import { RefundDetailsResponseDto } from "./dto/refund-detail.dto";
 
 @Controller({
     path: 'payments',

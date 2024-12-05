@@ -176,12 +176,7 @@ export class RefundListResponseDto {
 }
 
 
-export class RefundDetailsResponseDto extends ResponseDto {
-    @ApiProperty({
-        type: RefundListDetailsDto
-    })
-    result: RefundListDetailsDto;
-}
+
 
 
 
