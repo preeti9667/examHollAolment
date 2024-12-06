@@ -49,7 +49,8 @@ export class ListHallQueryDto {
     @ApiProperty({
         type: String,
         description: "eg name id",
-        example: 'AX'
+        example: 'AX',
+        required: false
     })
     @IsString()
     @IsOptional()

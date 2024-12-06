@@ -335,6 +335,12 @@ export class HallService {
                 }
             },
             {
+                groupName: {
+                    contains: query.search, mode: 'insensitive'
+
+                }
+            },
+            {
                 displayId: {
                     contains: query.search, mode: 'insensitive'
                 }
