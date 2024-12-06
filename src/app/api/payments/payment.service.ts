@@ -529,6 +529,16 @@ export class PaymentService {
                 }
             })
         }
+        if (payload.status === PaymentRefundStatus.Rejected) {
+            await this.$prisma.booking.update({
+                where: {
+                    id: refund.bookingId
+                },
+                data: {
+                    status: BookingStatus.RefundRejected
+                }
+            })
+        }
 
         return {
             id: refund.id,
