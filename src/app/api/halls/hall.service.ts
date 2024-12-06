@@ -327,6 +327,19 @@ export class HallService {
         const skip = limit * page - limit;
         const take = limit;
         if (query.isActive !== undefined) where['isActive'] = query.isActive;
+        if (query.search) where.OR = [
+            {
+                name: {
+                    contains: query.search, mode: 'insensitive'
+
+                }
+            },
+            {
+                displayId: {
+                    contains: query.search, mode: 'insensitive'
+                }
+            }
+        ]
 
         const [halls, total] = await Promise.all([
             this.$prisma.hall.findMany({

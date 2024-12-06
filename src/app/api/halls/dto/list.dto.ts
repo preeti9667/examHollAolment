@@ -47,6 +47,15 @@ export class ListHallQueryDto {
     sort: 'asc' | 'desc';
 
     @ApiProperty({
+        type: String,
+        description: "eg name id",
+        example: 'AX'
+    })
+    @IsString()
+    @IsOptional()
+    search: string;
+
+    @ApiProperty({
         description: 'boolean value true or false',
         type: String,
         enum: ['true', 'false'],
