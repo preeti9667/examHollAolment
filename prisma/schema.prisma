@@ -25,6 +25,7 @@ model User {
   gstNo            String?
   jobTitle         String?
   organizationName String?
+  institutionType  String?
   isActive         Boolean         @default(true)
   isDeleted        Boolean         @default(false)
   createdAt        DateTime        @default(now())
