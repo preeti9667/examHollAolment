@@ -27,7 +27,8 @@ export class UserService {
                 gstNo: payload.gstNo,
                 jobTitle: payload.jobTitle,
                 organizationName: payload.organizationName,
-                email: payload.email
+                email: payload.email,
+                institutionType: payload.institutionType
             }
         })
 
@@ -70,6 +71,7 @@ export class UserService {
             jobTitle: profile.jobTitle,
             createdAt: profile.createdAt,
             updatedAt: profile.updatedAt,
+            institutionType: profile.institutionType,
             address: {
                 id: address.id,
                 ...payload.address
@@ -110,6 +112,7 @@ export class UserService {
             jobTitle: profile.jobTitle,
             createdAt: profile.createdAt,
             updatedAt: profile.updatedAt,
+            institutionType: profile.institutionType,
             address: profile.address[0]
         }
     }

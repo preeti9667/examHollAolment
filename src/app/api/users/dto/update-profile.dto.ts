@@ -69,6 +69,15 @@ export class UpdateProfilePayloadDto {
 
     @ApiProperty({
         type: String,
+        required: true,
+        example: 'saini dev'
+    })
+    @IsOptional()
+    @IsString()
+    institutionType: string;
+
+    @ApiProperty({
+        type: String,
         required: false,
         example: '1234567890'
     })

@@ -62,6 +62,15 @@ export class UserProfileDto {
 
     @ApiProperty({
         type: String,
+        required: true,
+        example: 'Institute type'
+    })
+    @IsOptional()
+    @IsString()
+    institutionType: string;
+
+    @ApiProperty({
+        type: String,
         required: false,
         example: '1234567890'
     })
