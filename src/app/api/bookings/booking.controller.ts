@@ -15,6 +15,7 @@ import { CancelBookingDto, CancelBookingResultDto } from "./dto/cancel.dto";
 import { BookingListAdminQueryDto, BookingListAdminResponseDto, BookingListAdminResultDto } from "./dto/list-admin.dto";
 import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
 import { ApiActionNames, AppModuleNames } from "../api.constant";
+import { BookingStatusPayloadDto } from "./dto/status.dto";
 
 @Controller({
     path: 'booking',
@@ -140,6 +141,26 @@ export class BookingController {
     ) {
         const result = await this.$booking.bookingDetails(payload.id, user.id);
         return plainToInstance(BookingDetailsDto, result);
+    }
+
+    @Patch('/:id/status')
+    @SetApiMetadata(AppModuleNames.Booking, ApiActionNames.Status, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message((req) => {
+        if (req.body.status === BookingStatus.Cancelled) return 'BOOKING.CANCELLED';
+        if (req.body.status === BookingStatus.Completed) return 'BOOKING.COMPLETED';
+        return 'BOOKING.STATUS_CHANGED';
+    })
+    @ApiOkResponse({ type: BookingDetailsResponseDto })
+    @ApiOperation({ summary: 'Booking status for Admin' })
+    async statusAdmin(
+        @Param() payload: BookingDetailParamsDto,
+        @Body() body: BookingStatusPayloadDto,
+        @AuthUser() admin: IAuthUser
+    ) {
+        const result = await this.$booking.status(body, payload.id, admin.id);
+        return result;
     }
 
 

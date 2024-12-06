@@ -729,10 +729,6 @@ export class BookingService {
         }
 
         if (status === BookingStatus.Completed) {
-            const todayDate = new Date();
-            if (todayDate <= new Date(booking.endDate)) {
-                ApiException.badData('BOOKING.COMPLETED_BEFORE_NOT_ALLOWED');
-            }
             promises.push(
                 this.$prisma.booking.update({
                     where: { id: bookingId },

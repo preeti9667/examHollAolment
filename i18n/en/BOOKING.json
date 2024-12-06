@@ -9,5 +9,8 @@
   "CANCELLED": "Booking cancelled successfully",
   "NOT_COMPLETED": "Booking not completed",
   "DETAILS": "Booking details fetched successfully",
-  "INVALID_DATE_RANGE": "Invalid date range"
+  "INVALID_DATE_RANGE": "Invalid date range",
+  "CANCEL_NOT_ALLOWED": "Cancel not allowed",
+  "COMPLETED": "Booking completed successfully",
+  "STATUS_CHANGED": "Booking status updated successfully"
 }
