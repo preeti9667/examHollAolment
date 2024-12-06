@@ -58,6 +58,14 @@ export class RefundListQueryDto {
     @IsString()
     @IsOptional()
     search?: string;
+
+    @ApiProperty({
+        type: Number,
+        example: PaymentRefundStatus.Approved,
+    })
+    @IsEnum(PaymentRefundStatus)
+    @IsOptional()
+    status: PaymentRefundStatus;
 }
 export class RefundListBookingDetailsDto {
     @ApiProperty({

@@ -395,14 +395,16 @@ export class PaymentService {
 
 
     async refundList(payload: RefundListQueryDto) {
-        const { page = 1, limit = 10, sort = 'desc', sortBy = 'createdAt', search } = payload;
+        const { page = 1, limit = 10, sort = 'desc', sortBy = 'createdAt', search, status } = payload;
         const skip = (page - 1) * limit;
         const where: any = {};
+        if (status) where.status = status;
         if (search) where.OR = [
             {
                 displayId: { contains: search, mode: 'insensitive' }
             }
         ]
+
 
         const [total, data] = await Promise.all([
             this.$prisma.paymentRefund.count({ where }),
