@@ -656,6 +656,9 @@ export class BookingService {
                 {
                     displayId: { contains: search, mode: 'insensitive' }
                 },
+                {
+                    examName: { contains: search, mode: 'insensitive' }
+                }
             ];
         }
 
