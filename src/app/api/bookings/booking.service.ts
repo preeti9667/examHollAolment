@@ -413,6 +413,8 @@ export class BookingService {
                 examName: true,
                 addOnPrice: true,
                 isPaymentDone: true,
+                paymentLink: true,
+                paymentMethod: true,
                 bookingAddOn: {
                     select: {
                         id: true,

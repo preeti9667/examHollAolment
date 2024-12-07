@@ -380,6 +380,23 @@ export class BookingDetailsDto {
     @IsNumber()
     totalCost: 80000;
 
+    @ApiProperty({
+        type: String,
+        example: true
+    })
+    isPaymentDone: true;
+
+    @ApiProperty({
+        type: String,
+        example: 'https://rzp.io/l/3e9e93bd-ff1f-4c89-bd12-f09bb8b7f3d3'
+    })
+    paymentLink: string;
+
+    @ApiProperty({
+        type: String,
+        example: 'Card'
+    })
+    paymentMethod: string;
 
     @ApiProperty({
         type: String,
