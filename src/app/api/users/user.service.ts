@@ -5,13 +5,18 @@ import { PrismaService } from "@app/databases/prisma/prisma.service";
 import { OpenId } from "src/utils";
 import { add } from "winston";
 import { UserListQueryDto } from "./dto/list.dto";
-import { CreateUserDto } from "./dto/create.dto";
+import { EnvService } from "@app/shared/env";
+import { SmsService } from "../sms/sms.service";
+import { SMS_TEMPLATE } from "../sms/sms.constant";
+import { CreateUserPayloadDto } from "./dto/create.dto";
 
 @Injectable()
 export class UserService {
     constructor(
         private $logger: LoggerService,
         private $prisma: PrismaService,
+        private $env: EnvService,
+        private $sms: SmsService
     ) {
 
     }
@@ -190,8 +195,53 @@ export class UserService {
     }
 
     /** create user by admin */
-    async create(payload: CreateUserDto) {
+    async create(payload: CreateUserPayloadDto) {
+        const phoneNumber = payload.phoneNumber;
+        const countryCode = payload.countryCode;
 
+        let authUser = await this.$prisma.auth.findFirst({
+            where: {
+                phoneNumber,
+                countryCode
+            }
+        });
+
+        if (!authUser) {
+            authUser = await this.$prisma.auth.create({
+                data: {
+                    phoneNumber,
+                    countryCode
+                }
+            });
+        }
+
+        let otp = this.$env.BYPASS_OTP;
+        if (!otp) {
+            otp = OpenId.otp(6);
+            await this.$sms.sendSms(
+                phoneNumber,
+                SMS_TEMPLATE.loginOtp,
+                [{ otp }],
+            );
+        }
+
+        await this.$prisma.authOtp.deleteMany({ where: { userId: authUser.id } })
+        const otpRequest = await this.$prisma.authOtp.create({
+            data: {
+                phoneNumber,
+                countryCode,
+                otp,
+                userId: authUser.id,
+                profile: {
+                    ...payload
+                }
+            }
+        });
+
+        return {
+            requestId: otpRequest.id,
+            type: authUser.type
+        }
     }
 
 }

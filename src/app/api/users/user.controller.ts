@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { UpdateProfilePayloadDto, UpdateProfileResponseDto } from "./dto/update-profile.dto";
 import { AuthUser, Message } from "@app/decorators";
@@ -11,6 +11,7 @@ import { UserListQueryDto, UserListResponseDto } from "./dto/list.dto";
 import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
 import { AppModuleNames, ApiActionNames } from "../api.constant";
 import { identity } from "rxjs";
+import { CreateUserPayloadDto } from "./dto/create.dto";
 
 @Controller({
     path: 'users',
@@ -59,6 +60,19 @@ export class UserController {
         @AuthUser() user: IAuthUser
     ) {
         return this.$user.details(user.id);
+    }
+
+    @Post('create')
+    @SetApiMetadata(AppModuleNames.User, ApiActionNames.Add, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('USER.CREATED')
+    @ApiOkResponse({ type: ProfileDetailsResponseDto })
+    @ApiOperation({ summary: 'create user by admin and get request id' })
+    async create(
+        @Body() payload: CreateUserPayloadDto,
+    ) {
+        return this.$user.create(payload);
     }
 
 
