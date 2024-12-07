@@ -104,10 +104,10 @@ export class UserController {
     @ApiOperation({ summary: 'Update user status by admin' })
     async status(
         @Body() payload: StatusPayloadDto,
-        @AuthUser() user: IAuthUser,
+        @AuthUser() admin: IAuthUser,
         @Param('id') userId: string
     ) {
-        return this.$user.status(userId, payload);
+        return this.$user.status(userId, payload, admin.id);
     }
 
 

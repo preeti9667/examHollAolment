@@ -5,5 +5,7 @@
   "OTP_SENT": "OTP sent successfully to provided phone number",
   "CREATED": "User created successfully",
   "ACTIVATED": "User activated successfully",
-  "DEACTIVATED": "User deactivated successfully"
+  "DEACTIVATED": "User deactivated successfully",
+  "ALREADY_ACTIVE": "User is already active",
+  "ALREADY_INACTIVE": "User is already inactive"
 }

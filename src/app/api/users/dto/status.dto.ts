@@ -1,6 +1,6 @@
 import { ResponseDto } from "@app/api/api.dto";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsObject, IsString, IsUUID } from "class-validator";
+import { IsBoolean, IsNotEmpty, IsObject, IsString, IsUUID } from "class-validator";
 
 export class StatusPayloadDto {
     @ApiProperty({
@@ -8,9 +8,17 @@ export class StatusPayloadDto {
         required: true,
         example: true
     })
-    @IsString()
     @IsBoolean()
     isActive: boolean;
+
+    @ApiProperty({
+        type: String,
+        required: true,
+        example: 'user is doing unexpected things'
+    })
+    @IsNotEmpty()
+    @IsString()
+    reason: string;
 }
 
 export class StatusResultDto {

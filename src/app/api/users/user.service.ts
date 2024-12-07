@@ -312,7 +312,34 @@ export class UserService {
     }
 
     /** update user by admin */
-    async status(id: string, payload: StatusPayloadDto) {
+    async status(id: string, payload: StatusPayloadDto, adminId: string) {
+        const user = await this.$prisma.user.findFirst({
+            where: {
+                id
+            }
+        });
+
+        if (!user) ApiException.badData('USER.NOT_FOUND');
+
+        if (user.isActive === payload.isActive) {
+            if (payload.isActive) ApiException.badData('USER.ALREADY_ACTIVE');
+            else ApiException.badData('USER.ALREADY_INACTIVE');
+        }
+
+        const statusBy = adminId;
+        const statusReason = payload.reason;
+
+        const statusLog = [];
+        if (user.statusLog) {
+            statusLog.push(user.statusLog);
+        }
+
+        statusLog.push({
+            statusBy,
+            statusReason,
+            createdAt: new Date(),
+            isActive: payload.isActive
+        })
         await this.$prisma.$transaction([
             this.$prisma.auth.update({
                 where: { id },
@@ -323,7 +350,10 @@ export class UserService {
             this.$prisma.user.update({
                 where: { id },
                 data: {
-                    isActive: payload.isActive
+                    isActive: payload.isActive,
+                    statusBy,
+                    statusReason,
+                    statusLog
                 }
             })
         ]);
