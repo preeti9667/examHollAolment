@@ -11,6 +11,7 @@ import { SMS_TEMPLATE } from "../sms/sms.constant";
 import { CreateUserPayloadDto } from "./dto/create.dto";
 import { CreateUserVerifyOtpDto } from "./dto/verify-otp.dto";
 import { ApiException } from "../api.exception";
+import { StatusPayloadDto } from "./dto/status.dto";
 
 @Injectable()
 export class UserService {
@@ -310,5 +311,26 @@ export class UserService {
 
     }
 
+    /** update user by admin */
+    async status(id: string, payload: StatusPayloadDto) {
+        await this.$prisma.$transaction([
+            this.$prisma.auth.update({
+                where: { id },
+                data: {
+                    isActive: payload.isActive
+                }
+            }),
+            this.$prisma.user.update({
+                where: { id },
+                data: {
+                    isActive: payload.isActive
+                }
+            })
+        ]);
 
+        return {
+            id,
+            isActive: payload.isActive
+        }
+    }
 }

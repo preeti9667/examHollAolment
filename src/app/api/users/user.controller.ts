@@ -13,6 +13,8 @@ import { AppModuleNames, ApiActionNames } from "../api.constant";
 import { identity } from "rxjs";
 import { CreateUserPayloadDto, CreateUserResponseDto } from "./dto/create.dto";
 import { CreateUserVerifyOtpDto, CreateUserVerifyOtpResponseDto } from "./dto/verify-otp.dto";
+import { ResponseDto } from "../api.dto";
+import { StatusPayloadDto, StatusResponseDto } from "./dto/status.dto";
 
 @Controller({
     path: 'users',
@@ -88,6 +90,24 @@ export class UserController {
         @AuthUser() user: IAuthUser
     ) {
         return this.$user.createdUserVerifyOtp(payload, user.id);
+    }
+
+    @Patch(':id')
+    @SetApiMetadata(AppModuleNames.User, ApiActionNames.Status, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message((req) => {
+        if (req.body.status === true) return 'USER.ACTIVATED';
+        return 'USER.DEACTIVATED';
+    })
+    @ApiOkResponse({ type: StatusResponseDto })
+    @ApiOperation({ summary: 'Update user status by admin' })
+    async status(
+        @Body() payload: StatusPayloadDto,
+        @AuthUser() user: IAuthUser,
+        @Param('id') userId: string
+    ) {
+        return this.$user.status(userId, payload);
     }
 
 
