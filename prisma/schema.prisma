@@ -28,6 +28,7 @@ model User {
   institutionType  String?
   isActive         Boolean         @default(true)
   isDeleted        Boolean         @default(false)
+  createdBy        String?
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
   address          UserAddress[]
@@ -272,24 +273,25 @@ model Payment {
 }
 
 model PaymentRefund {
-  id            String   @id @default(uuid())
-  displayId     String
-  refundType    String
-  amount        Float
-  status        Int
-  booking       Booking  @relation(fields: [bookingId], references: [id])
-  bookingId     String
-  user          User?    @relation(fields: [userId], references: [id])
-  userId        String
-  paymentMethod String   @default("UPI")
-  upiId         String?
-  bankDetails   String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  statusBy      Admin?   @relation("statusBy", fields: [adminId], references: [id])
-  adminId       String?
-  comment       String?
-  statusAt      DateTime @default(now())
+  id              String   @id @default(uuid())
+  displayId       String
+  refundType      String
+  amount          Float
+  processedAmount Float?
+  status          Int
+  booking         Booking  @relation(fields: [bookingId], references: [id])
+  bookingId       String
+  user            User?    @relation(fields: [userId], references: [id])
+  userId          String
+  paymentMethod   String   @default("UPI")
+  upiId           String?
+  bankDetails     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  statusBy        Admin?   @relation("statusBy", fields: [adminId], references: [id])
+  adminId         String?
+  comment         String?
+  statusAt        DateTime @default(now())
 }
 
 model Role {

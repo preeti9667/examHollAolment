@@ -5,6 +5,7 @@ import { PrismaService } from "@app/databases/prisma/prisma.service";
 import { OpenId } from "src/utils";
 import { add } from "winston";
 import { UserListQueryDto } from "./dto/list.dto";
+import { CreateUserDto } from "./dto/create.dto";
 
 @Injectable()
 export class UserService {
@@ -189,7 +190,7 @@ export class UserService {
     }
 
     /** create user by admin */
-    async create() {
+    async create(payload: CreateUserDto) {
 
     }
 
