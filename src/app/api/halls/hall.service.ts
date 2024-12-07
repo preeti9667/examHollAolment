@@ -9,6 +9,7 @@ import { ListHallQueryDto } from "./dto/list.dto";
 import { Prisma } from "@prisma/client";
 import { IHall } from "./interfaces/hall";
 import { BookingStatus } from "../bookings/booking.constant";
+import { EditHallDto } from "./dto/edit.dto";
 
 @Injectable()
 export class HallService {
@@ -317,6 +318,62 @@ export class HallService {
                 }
             })
         }
+        return true;
+    }
+
+    async edit(payload: EditHallDto, hallId: string) {
+        const hall = await this.$prisma.hall.findFirst({
+            where: {
+                id: hallId
+            }
+        });
+        if (!hall) ApiException.badData('HALL.INVALID_ID');
+
+        await this.$prisma.hall.update({
+            where: {
+                id: hallId
+            },
+            data: {
+                name: payload.name || hall.name,
+                groupName: payload.groupName || hall.groupName,
+                slots: payload.slots || hall.slots,
+                floor: payload.floor || hall.floor,
+                capacity: payload.capacity || hall.capacity,
+                price: payload.price || hall.price || 0,
+                isActive: payload.isActive,
+            }
+        });
+
+
+        if (payload.slots && payload.slots.length > 0) {
+            for (const t of hall.slots) {
+                await this.$prisma.hallTimeSlot.upsert({
+                    where: {
+                        hallId_timeSlotId: {
+                            hallId: hall.id,
+                            timeSlotId: t
+                        }
+                    },
+                    create: {
+                        hallId: hall.id,
+                        timeSlotId: t
+                    },
+                    update: {
+                        hallId: hall.id,
+                        timeSlotId: t
+                    }
+                })
+            }
+        }
+
+        if (payload.slots && !payload.slots.length) {
+            await this.$prisma.hallTimeSlot.deleteMany({
+                where: {
+                    hallId: hall.id
+                }
+            });
+        }
+
         return true;
     }
 

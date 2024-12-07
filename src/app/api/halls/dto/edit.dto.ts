@@ -1,17 +1,28 @@
 import { ResponseDto } from '@app/api/api.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsDefined, IsMongoId, IsArray, IsNotEmpty, IsNumber, IsBoolean } from 'class-validator';
+import { IsString, IsDefined, IsMongoId, IsArray, IsNotEmpty, IsNumber, IsBoolean, IsOptional, IsUUID } from 'class-validator';
 
-export class CreateHallDto {
+
+export class HallParamDto {
+    @ApiProperty({
+        type: String,
+        required: true,
+        example: '5f7c2c4d-6b2a-4f1a-8b7b-3c1a2b3a4c1a',
+        description: 'unique id of the Hall'
+    })
+    @IsNotEmpty()
+    @IsUUID()
+    id: string;
+}
+export class EditHallDto {
 
     @ApiProperty({
         required: true,
         description: 'Name of the Hall',
         example: 'HALL_001',
     })
-    @IsDefined()
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     name!: string;
 
     @ApiProperty({
@@ -21,7 +32,7 @@ export class CreateHallDto {
     })
     @IsDefined()
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     groupName!: string;
 
     @ApiProperty({
@@ -30,8 +41,7 @@ export class CreateHallDto {
         example: 200,
     })
     @IsNumber()
-    @IsDefined()
-    @IsNotEmpty()
+    @IsOptional()
     capacity!: number;
 
     @ApiProperty({
@@ -40,8 +50,7 @@ export class CreateHallDto {
         example: 0,
     })
     @IsNumber()
-    @IsDefined()
-    @IsNotEmpty()
+    @IsOptional()
     floor!: number;
 
     @ApiProperty({
@@ -50,8 +59,7 @@ export class CreateHallDto {
         example: 20000,
     })
     @IsNumber()
-    @IsDefined()
-    @IsNotEmpty()
+    @IsOptional()
     price!: number;
 
     @ApiProperty({
@@ -59,9 +67,10 @@ export class CreateHallDto {
         isArray: true,
         type: String,
         description: 'Slots Ids',
+        example: ['1b53c972-bdc7-4cfb-bf86-90a55e8b95ae'],
     })
     @IsArray()
-    @IsDefined()
+    @IsOptional()
     slots!: string[];
 
     @ApiProperty({
@@ -69,11 +78,11 @@ export class CreateHallDto {
         type: Boolean,
     })
     @IsBoolean()
-    @IsDefined()
+    @IsOptional()
     isActive!: boolean;
 }
 
-export class CreateHallResponseDto extends ResponseDto {
+export class EditHallResponseDto extends ResponseDto {
     @ApiProperty({
         type: Boolean,
         description: 'Status',

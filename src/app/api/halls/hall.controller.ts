@@ -3,13 +3,14 @@ import { Message } from "@app/decorators";
 import { AuthGuard } from "@app/guards/auth.guard";
 import { LoggerService } from "@app/shared/logger";
 import { HallAvailabilityQueryDto, HallAvailabilityResponseDto } from "./dto/availability.dto";
-import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { HallService } from "./hall.service";
 import { CreateHallDto, CreateHallResponseDto } from "./dto/create.dto";
 import { HallListResponseDto, HallListResultDto, ListHallDto, ListHallQueryDto } from "./dto/list.dto";
 import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
 import { ApiActionNames, AppModuleNames } from "../api.constant";
+import { EditHallDto, HallParamDto } from "./dto/edit.dto";
 
 @Controller({
     path: 'hall',
@@ -49,6 +50,23 @@ export class HallController {
     async create(@Body() createDto: CreateHallDto) {
         return await this.$hall.create(
             createDto
+        );
+    }
+
+    @Patch(':id')
+    @SetApiMetadata(AppModuleNames.Hall, ApiActionNames.Edit, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('HALL.EDITED')
+    @ApiOkResponse({ type: CreateHallResponseDto })
+    @ApiOperation({ summary: 'Edit Hall by admin' })
+    async edit(
+        @Body() dto: EditHallDto,
+        @Param() param: HallParamDto
+    ) {
+        return await this.$hall.edit(
+            dto,
+            param.id
         );
     }
 

@@ -1,5 +1,6 @@
 {
   "CREATE": "Hall created successfully.",
   "LIST": "Hall list retrieved successfully.",
-  "AVAILABILITY": "Hall availability retrieved successfully."
+  "AVAILABILITY": "Hall availability retrieved successfully.",
+  "EDITED": "Hall updated successfully."
 }
