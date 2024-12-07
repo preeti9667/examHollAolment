@@ -160,6 +160,8 @@ export class UserService {
                     organizationName: true,
                     name: true,
                     email: true,
+                    institutionType: true,
+                    isActive: true,
                     countryCode: true,
                     phoneNumber: true,
                     createdAt: true,
