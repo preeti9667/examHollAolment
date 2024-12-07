@@ -11,7 +11,7 @@ import { UserListQueryDto, UserListResponseDto } from "./dto/list.dto";
 import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
 import { AppModuleNames, ApiActionNames } from "../api.constant";
 import { identity } from "rxjs";
-import { CreateUserPayloadDto } from "./dto/create.dto";
+import { CreateUserPayloadDto, CreateUserResponseDto } from "./dto/create.dto";
 
 @Controller({
     path: 'users',
@@ -67,7 +67,7 @@ export class UserController {
     @UseGuards(AuthGuard)
     @ApiBearerAuth('AccessToken')
     @Message('USER.CREATED')
-    @ApiOkResponse({ type: ProfileDetailsResponseDto })
+    @ApiOkResponse({ type: CreateUserResponseDto })
     @ApiOperation({ summary: 'create user by admin and get request id' })
     async create(
         @Body() payload: CreateUserPayloadDto,

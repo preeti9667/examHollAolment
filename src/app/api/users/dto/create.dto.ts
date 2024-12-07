@@ -1,5 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsOptional, IsEmail, IsNotEmpty } from "class-validator";
+import { IsString, IsOptional, IsEmail, IsNotEmpty, IsObject } from "class-validator";
+import { UserType } from "../user.constant";
+import { ResponseDto } from "@app/api/api.dto";
 
 export class CreateUserPayloadDto {
     @ApiProperty({
@@ -82,4 +84,33 @@ export class CreateUserPayloadDto {
     @IsEmail()
     @IsOptional()
     email?: string;
+}
+
+
+export class CreateUserResultDto {
+    @ApiProperty({
+        type: String,
+        example: '3e9e93bd-ff1f-4c89-bd12-f09bb8b7f3d3',
+        required: true,
+        description: 'request id that you need to send with otp in next api',
+    })
+    @IsString()
+    requestId: string;
+
+    @ApiProperty({
+        type: String,
+        example: UserType.User,
+        required: true
+    })
+    @IsString()
+    type: UserType;
+}
+
+
+export class CreateUserResponseDto extends ResponseDto {
+    @ApiProperty({
+        type: CreateUserResultDto,
+    })
+    @IsObject()
+    result: CreateUserResultDto;
 }
