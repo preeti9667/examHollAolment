@@ -148,6 +148,9 @@ export class UserService {
             },
             {
                 displayId: { contains: search, mode: 'insensitive' }
+            },
+            {
+                organizationName: { contains: search, mode: 'insensitive' }
             }
         ]
 
