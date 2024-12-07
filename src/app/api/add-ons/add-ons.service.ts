@@ -5,6 +5,8 @@ import { ApiException } from "../api.exception";
 import { CreateAddOnsDto } from "./dto/create.dto";
 import { LoggerService } from "@app/shared/logger";
 import { ListAddOnsQueryDto } from "./dto/list.dto";
+import { EditAddOnsDto } from "./dto/edit.dto";
+import { add } from "winston";
 
 @Injectable()
 export class AddOnsService {
@@ -17,6 +19,23 @@ export class AddOnsService {
         await this.$prisma.addOn.create({
             data: {
                 displayId: OpenId.format('AO'),
+                ...payload
+            }
+        })
+        return true;
+    }
+
+    async edit(payload: EditAddOnsDto, id: string) {
+        const addOn = await this.$prisma.addOn.findFirst({
+            where: {
+                id
+            }
+        });
+        if (!addOn) ApiException.badData('ADD_ON.NOT_FOUND');
+
+        await this.$prisma.addOn.update({
+            where: { id },
+            data: {
                 ...payload
             }
         })

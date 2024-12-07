@@ -1,4 +1,6 @@
 {
   "CREATE": "Add-On created successfully.",
-  "LIST": "Add-On list retrieved successfully."
+  "LIST": "Add-On list retrieved successfully.",
+  "UPDATED": "Add-On updated successfully.",
+  "NOT_FOUND": "Invalid Add-On ID."
 }

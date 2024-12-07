@@ -1,13 +1,14 @@
 import { COMMON_HEADERS } from "@app/app.constant";
 import { Message } from "@app/decorators";
 import { AuthGuard } from "@app/guards/auth.guard";
-import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AddOnsService } from "./add-ons.service";
 import { CreateAddOnsDto, CreateAddOnsResponseDto } from "./dto/create.dto";
 import { AddOnsListResponseDto, AddOnsListResultDto, ListAddOnsQueryDto } from "./dto/list.dto";
 import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
 import { AppModuleNames, ApiActionNames } from "../api.constant";
+import { AddonParamDto, EditAddOnsDto } from "./dto/edit.dto";
 
 @Controller({
     path: 'add-ons',
@@ -32,6 +33,23 @@ export class AddOnsController {
     async create(@Body() createDto: CreateAddOnsDto) {
         return await this.$addOnsService.create(
             createDto
+        );
+    }
+
+    @Patch(':id')
+    @SetApiMetadata(AppModuleNames.Hall, ApiActionNames.Edit, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('ADD-ONS.UPDATED')
+    @ApiOkResponse({ type: CreateAddOnsResponseDto })
+    @ApiOperation({ summary: 'update add-ons by admin' })
+    async edit(
+        @Body() payload: EditAddOnsDto,
+        @Param() params: AddonParamDto
+    ) {
+        return await this.$addOnsService.edit(
+            payload,
+            params.id
         );
     }
 
