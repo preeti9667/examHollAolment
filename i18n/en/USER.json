@@ -1,5 +1,7 @@
 {
   "SUCCESS": "Success",
   "UPDATED": "Profile updated successfully",
-  "DETAILS": "Profile details retrieved successfully"
+  "DETAILS": "Profile details retrieved successfully",
+  "OTP_SENT": "OTP sent successfully to provided phone number",
+  "CREATED": "User created successfully"
 }

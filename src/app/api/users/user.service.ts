@@ -2,13 +2,15 @@ import { LoggerService } from "@app/shared/logger";
 import { Injectable } from "@nestjs/common";
 import { UpdateProfilePayloadDto, UpdateProfileResultDto } from "./dto/update-profile.dto";
 import { PrismaService } from "@app/databases/prisma/prisma.service";
-import { OpenId } from "src/utils";
+import { dateDifferenceInMinutes, OpenId } from "src/utils";
 import { add } from "winston";
 import { UserListQueryDto } from "./dto/list.dto";
 import { EnvService } from "@app/shared/env";
 import { SmsService } from "../sms/sms.service";
 import { SMS_TEMPLATE } from "../sms/sms.constant";
 import { CreateUserPayloadDto } from "./dto/create.dto";
+import { CreateUserVerifyOtpDto } from "./dto/verify-otp.dto";
+import { ApiException } from "../api.exception";
 
 @Injectable()
 export class UserService {
@@ -242,6 +244,70 @@ export class UserService {
             requestId: otpRequest.id,
             type: authUser.type
         }
+    }
+
+
+    async createdUserVerifyOtp(payload: CreateUserVerifyOtpDto, adminId: string) {
+        const { requestId, otp } = payload;
+        const authOtp = await this.$prisma.authOtp.findFirst({
+            where: { id: requestId }
+        });
+        if (!authOtp) {
+            ApiException.badData('AUTH.INVALID_REQUEST_ID')
+        }
+        if (authOtp.otp !== otp) {
+            ApiException.badData('AUTH.INVALID_OTP')
+        }
+        const timeDifference = dateDifferenceInMinutes(authOtp.createdAt, new Date());
+        if (timeDifference > 10) {
+            ApiException.gone('AUTH.OTP_EXPIRED');
+        }
+
+        const authUser = await this.$prisma.auth.findFirst({
+            where: {
+                id: authOtp.userId
+
+            }
+        });
+
+
+        const obj = {
+            id: authUser.id,
+            email: authUser.email,
+            phoneNumber: authUser.phoneNumber,
+            countryCode: authUser.countryCode,
+            isActive: authUser.isActive,
+            isDeleted: authUser.isDeleted,
+            bio: authOtp.profile['bio'],
+            name: authOtp.profile['name'],
+            gstNo: authOtp.profile['gstNo'],
+            jobTitle: authOtp.profile['jobTitle'],
+            organizationName: authOtp.profile['organizationName'],
+            institutionType: authOtp.profile['institutionType']
+        }
+
+        if (!authUser.email) delete obj.email;
+        if (!authUser.phoneNumber) {
+            delete obj.phoneNumber;
+            delete obj.phoneNumber;
+        }
+
+        const user = await this.$prisma.user.create({
+            data: {
+                displayId: OpenId.format('USR', 6),
+                createdBy: adminId,
+                ...obj
+            }
+        })
+        await this.$prisma.authOtp.delete({ where: { id: requestId } })
+        return {
+            type: authUser.type,
+            user: {
+                id: user.id,
+                displayId: user.displayId
+            }
+        }
+
     }
 
 

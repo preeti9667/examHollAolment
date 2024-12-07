@@ -12,6 +12,7 @@ import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
 import { AppModuleNames, ApiActionNames } from "../api.constant";
 import { identity } from "rxjs";
 import { CreateUserPayloadDto, CreateUserResponseDto } from "./dto/create.dto";
+import { CreateUserVerifyOtpDto, CreateUserVerifyOtpResponseDto } from "./dto/verify-otp.dto";
 
 @Controller({
     path: 'users',
@@ -62,17 +63,31 @@ export class UserController {
         return this.$user.details(user.id);
     }
 
+    @Post('otp')
+    @SetApiMetadata(AppModuleNames.User, ApiActionNames.Add, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('USER.OTP_SENT')
+    @ApiOkResponse({ type: CreateUserResponseDto })
+    @ApiOperation({ summary: 'create user by admin and get request id, sent otp to user number' })
+    async create(
+        @Body() payload: CreateUserPayloadDto,
+    ) {
+        return this.$user.create(payload);
+    }
+
     @Post('create')
     @SetApiMetadata(AppModuleNames.User, ApiActionNames.Add, true)
     @UseGuards(AuthGuard)
     @ApiBearerAuth('AccessToken')
     @Message('USER.CREATED')
-    @ApiOkResponse({ type: CreateUserResponseDto })
-    @ApiOperation({ summary: 'create user by admin and get request id' })
-    async create(
-        @Body() payload: CreateUserPayloadDto,
+    @ApiOkResponse({ type: CreateUserVerifyOtpResponseDto })
+    @ApiOperation({ summary: 'verify otp and create user by admin' })
+    async createVerifyOtp(
+        @Body() payload: CreateUserVerifyOtpDto,
+        @AuthUser() user: IAuthUser
     ) {
-        return this.$user.create(payload);
+        return this.$user.createdUserVerifyOtp(payload, user.id);
     }
 
 
