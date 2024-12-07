@@ -45,6 +45,7 @@ model AuthOtp {
   phoneNumber String?
   countryCode String?
   email       String?
+  profile     Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
