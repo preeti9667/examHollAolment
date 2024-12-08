@@ -81,25 +81,25 @@ export class LoggerService extends ConsoleLogger {
     }
     log(message: string, context: string = this.context) {
         super.log(message, this.contextWithCorrelation(context));
-        logger.info(message, this.createMetadata(context));
+        this.logger.info(message, this.createMetadata(context));
     }
     error(message: string, stack: string, context: string = this.context) {
         super.error(message, stack, this.contextWithCorrelation(context));
         const meta = this.createMetadata(context);
         meta.stack = stack;
-        logger.error(message, meta);
+        this.logger.error(message, meta);
     }
     warn(message: string, context: string = this.context) {
         super.warn(message, this.contextWithCorrelation(context));
-        logger.warn(message, this.createMetadata(context));
+        this.logger.warn(message, this.createMetadata(context));
     }
     debug(message: string, context: string = this.context) {
         super.debug(message, this.contextWithCorrelation(context));
-        logger.debug(message, this.createMetadata(context));
+        this.logger.debug(message, this.createMetadata(context));
     }
     json(data: object | object[], context: string = this.context) {
         super.debug(data);
-        logger.debug('', this.createMetadata(context));
+        this.logger.debug('', this.createMetadata(context));
     }
     request(req: Request, res: Response, cid = '') {
         const start = Date.now();
@@ -139,7 +139,7 @@ export class LoggerService extends ConsoleLogger {
                 }\x1b[0m${this.formatTimestampDiff(meta.resTime)}`,
                 `${meta.context}${cid ? `-${cid}` : ''}`,
             );
-            logger.info(
+            this.logger.info(
                 `${meta.method} ${meta.url} ${meta.status} +${meta.resTime}ms`,
                 meta,
             );
@@ -149,6 +149,6 @@ export class LoggerService extends ConsoleLogger {
         const meta = this.createMetadata(context.getClass().name);
         meta.handler = context.getHandler().name;
         meta.stack = err.stack ?? '';
-        logger.error(err.message, meta);
+        this.logger.error(err.message, meta);
     }
 }

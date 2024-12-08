@@ -18,4 +18,10 @@ export class LoggerModule {
             ],
         };
     }
+
+    constructor(
+        private $logger: LoggerService
+    ) {
+        this.$logger.bootstrap()
+    }
 }
