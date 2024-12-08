@@ -440,6 +440,11 @@ export class HallService {
 
 
         if (payload.slots && payload.slots.length > 0) {
+            await this.$prisma.hallTimeSlot.deleteMany({
+                where: {
+                    hallId: hall.id
+                }
+            });
             for (const t of hall.slots) {
                 await this.$prisma.hallTimeSlot.upsert({
                     where: {
