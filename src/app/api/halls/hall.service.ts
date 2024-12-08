@@ -267,6 +267,100 @@ export class HallService {
 
     }
 
+    async availabilityNew(query: HallAvailabilityQueryDto) {
+        const startDate = dateStringToUtc(query.startDate);
+        const endDate = dateStringToUtc(query.endDate);
+
+        if (startDate > endDate || startDate < new Date() || endDate < new Date()) {
+            ApiException.badData('HALL.INVALID_DATES')
+        }
+        const noOfCandidates = query.noOfCandidates;
+
+        const sqlQuery = `
+                WITH date_series AS (
+                    SELECT generate_series(
+                    $1::date, 
+                    $2::date, 
+                    '1 day'::interval
+                    )::date AS "bookingDate"
+                )
+                SELECT 
+                    DS."bookingDate",
+                    HTS."timeSlotId" AS "timeSlotId",
+                    SUM(H."capacity")-SUM(COALESCE((BH."hallRaw"->>'capacity')::INTEGER, 0)) AS "totalCapacity",
+                    COUNT(H."id")-COUNT(BH."hallId") AS "hallCount",
+                    (
+                        SELECT JSON_BUILD_OBJECT(
+                            'date', OD.date,
+                            'offType', OD."offType"
+                        )
+                        FROM public."OffDate" OD
+                        WHERE OD."date" = DS."bookingDate"
+                        LIMIT 1
+                    ) AS "offDate",
+                    (
+                        SELECT JSON_BUILD_OBJECT(
+                            'id',TS.id,
+                            'from',TS.from,
+                            'to',TS.to
+                        )
+                        FROM public."TimeSlot" TS
+                        WHERE TS."id" = HTS."timeSlotId"
+                        LIMIT 1
+                    ) AS "slot"
+                FROM date_series DS
+                CROSS JOIN public."Hall" H
+                JOIN public."HallTimeSlot" HTS
+                 ON HTS."hallId" = H.id
+                LEFT JOIN public."BookingHall" BH
+                ON BH."hallId" = H.id
+                AND BH.date = DS."bookingDate"
+                AND BH.status IN (30, 50, 60)
+                AND HTS."timeSlotId" = BH."timeSlotId"
+                WHERE H."isActive" = true
+                GROUP BY DS."bookingDate", HTS."timeSlotId"
+                ORDER BY DS."bookingDate" ASC, HTS."timeSlotId";
+                `;
+
+        const data = await this.$prisma.$queryRawUnsafe(sqlQuery, startDate, endDate);
+
+
+
+        const groupByDateObj = {};
+        (data as any[]).forEach(e => {
+            if (!groupByDateObj[e.bookingDate]) {
+                groupByDateObj[e.bookingDate] = {
+                    date: utcToDateString(e.bookingDate),
+                    slots: [
+                        {
+                            id: e.slot.id,
+                            isAvailable: e.offDate ? false : noOfCandidates < e.totalCapacity ? true : false,
+                            from: format24TO12([e.slot]['from']),
+                            to: format24TO12([e.slot]['to']),
+                            capacity: e.offDate ? 0 : Number(e.totalCapacity),
+                            hallCount: e.offDate ? 0 : Number(e.hallCount),
+                            offDate: e.offDate,
+                        }
+                    ]
+                }
+            }
+            else {
+                groupByDateObj[e.bookingDate].slots.push({
+                    id: e.slot.id,
+                    isAvailable: e.offDate ? false : noOfCandidates < e.totalCapacity ? true : false,
+                    from: format24TO12([e.slot]['from']),
+                    to: format24TO12([e.slot]['to']),
+                    capacity: e.offDate ? 0 : Number(e.totalCapacity),
+                    hallCount: e.offDate ? 0 : Number(e.hallCount),
+                    offDate: e.offDate,
+                })
+            }
+        });
+
+        return Object.values(groupByDateObj)
+
+    }
+
 
     async availableHallsForDate(slotId: string, date: Date): Promise<IHall[]> {
 
