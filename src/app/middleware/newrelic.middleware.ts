@@ -1,4 +1,3 @@
-import { LoggerService } from '@app/shared/logger';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import * as newrelic from 'newrelic';

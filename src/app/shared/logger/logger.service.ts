@@ -62,10 +62,10 @@ export class LoggerService extends ConsoleLogger {
                 format: 'DD-MM-YYYY, HH:MM:SS',
             }),
         ];
-        //   if (process.env['NEW_RELIC.APP_NAME'] && process.env['NEW_RELIC.LICENSE']) {
-        //     const newrelic = await import('./newrelic.index');
-        //     formatters.push(newrelic.formatter());
-        //   }
+        if (process.env['NEW_RELIC.APP_NAME'] && process.env['NEW_RELIC.LICENSE']) {
+            const newrelic = await import('./newrelic.index');
+            formatters.push(newrelic.formatter());
+        }
         this.logger = createLogger({
             levels: wConfig.syslog.levels,
             defaultMeta: { context: 'default' },
