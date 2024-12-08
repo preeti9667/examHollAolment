@@ -10,7 +10,8 @@ export enum AppModuleNames {
     Hall = 'HALL',
     TimeSlot = 'TIME_SLOT',
     OffDate = 'OFF_DATE',
-    Refund = 'REFUND'
+    Refund = 'REFUND',
+    Dashboard = 'DASHBOARD'
 }
 
 export enum ApiActionNames {
