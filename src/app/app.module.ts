@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, OnApplicationShutdown } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EnvModule } from '@app/shared/env/env.module';
@@ -10,6 +10,7 @@ import { ClsModule } from 'nestjs-cls';
 import { PrismaModule } from './databases/prisma/prisma.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TransformInterceptor } from '@interceptors/transform/transform.interceptor';
+import { NewrelicMiddleware } from './middleware';
 
 
 @Module({
@@ -48,4 +49,12 @@ import { TransformInterceptor } from '@interceptors/transform/transform.intercep
   ],
 
 })
-export class AppModule { }
+export class AppModule implements NestModule, OnApplicationShutdown {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(NewrelicMiddleware).forRoutes('*');
+  }
+
+  onApplicationShutdown(signal?: string) {
+    console.log('Application closed');
+  }
+}

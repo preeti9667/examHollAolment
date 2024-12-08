@@ -12,7 +12,7 @@ import { I18nService } from 'nestjs-i18n';
 import { HttpExceptionFilter } from './filters/http-exception.filter';
 import { CorrelationInterceptor } from '@interceptors/correlation.interceptor';
 import { SecuritySchemeType } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
-
+import 'newrelic';
 
 class Server {
   constructor(public app: INestApplication) {
