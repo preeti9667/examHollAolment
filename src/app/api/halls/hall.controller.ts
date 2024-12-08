@@ -36,7 +36,7 @@ export class HallController {
     async availability(
         @Query() query: HallAvailabilityQueryDto
     ) {
-        const availability = await this.$hall.availabilityNew(query);
+        const availability = await this.$hall.availability(query);
         return { availability };
     }
 
