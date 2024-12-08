@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEnum, IsObject, IsSemVer, IsString, IsUUID } from "class-validator";
+import { IsEnum, IsNotEmpty, IsNumber, IsObject, IsSemVer, IsString, IsUUID } from "class-validator";
 import { PaymentRefundStatus } from "../payment.constant";
 import { Extensions } from "@prisma/client/runtime/library";
 import { ResponseDto } from "@app/api/api.dto";
@@ -20,6 +20,7 @@ export class RefundStatusPayloadDto {
         description: 'status of the refund',
         enum: [PaymentRefundStatus.Approved, PaymentRefundStatus.Rejected],
     })
+    @IsNotEmpty()
     @IsEnum([PaymentRefundStatus.Approved, PaymentRefundStatus.Rejected])
     status: PaymentRefundStatus;
 
@@ -30,7 +31,16 @@ export class RefundStatusPayloadDto {
         example: 'test reason'
     })
     @IsString()
-    comment: string
+    comment: string;
+
+
+    @ApiProperty({
+        type: Number,
+        example: 11590,
+        description: 'amount to be refunded'
+    })
+    @IsNumber()
+    processedAmount: number;
 }
 
 

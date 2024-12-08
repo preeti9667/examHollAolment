@@ -509,37 +509,53 @@ export class PaymentService {
         });
         if (!refund) ApiException.badData('REFUND.NOT_FOUND');
 
-        await this.$prisma.paymentRefund.update({
-            where: {
-                id
-            },
-            data: {
-                status: payload.status,
-                statusAt: new Date(),
-                adminId: adminId,
-                comment: payload.comment
-            }
-        });
-
         if (payload.status === PaymentRefundStatus.Approved) {
-            await this.$prisma.booking.update({
-                where: {
-                    id: refund.bookingId
-                },
-                data: {
-                    status: BookingStatus.Refunded
-                }
-            })
+            await this.$prisma.$transaction([
+                this.$prisma.paymentRefund.update({
+                    where: {
+                        id
+                    },
+                    data: {
+                        status: payload.status,
+                        statusAt: new Date(),
+                        adminId: adminId,
+                        comment: payload.comment,
+                        processedAmount: payload.processedAmount || refund.amount
+                    }
+                }),
+                this.$prisma.booking.update({
+                    where: {
+                        id: refund.bookingId
+                    },
+                    data: {
+                        status: BookingStatus.Refunded
+                    }
+                })
+            ])
         }
         if (payload.status === PaymentRefundStatus.Rejected) {
-            await this.$prisma.booking.update({
-                where: {
-                    id: refund.bookingId
-                },
-                data: {
-                    status: BookingStatus.RefundRejected
-                }
-            })
+            await this.$prisma.$transaction([
+                this.$prisma.booking.update({
+                    where: {
+                        id: refund.bookingId
+                    },
+                    data: {
+                        status: BookingStatus.RefundRejected
+                    }
+                }),
+                this.$prisma.paymentRefund.update({
+                    where: {
+                        id
+                    },
+                    data: {
+                        status: payload.status,
+                        statusAt: new Date(),
+                        adminId: adminId,
+                        comment: payload.comment,
+                        processedAmount: 0
+                    }
+                })
+            ])
         }
 
         return {
