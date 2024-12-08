@@ -335,8 +335,8 @@ export class HallService {
                         {
                             id: e.slot.id,
                             isAvailable: e.offDate ? false : noOfCandidates < e.totalCapacity ? true : false,
-                            from: format24TO12([e.slot]['from']),
-                            to: format24TO12([e.slot]['to']),
+                            from: format24TO12(e.slot['from']),
+                            to: format24TO12(e.slot['to']),
                             capacity: e.offDate ? 0 : Number(e.totalCapacity),
                             hallCount: e.offDate ? 0 : Number(e.hallCount),
                             offDate: e.offDate,
@@ -348,8 +348,8 @@ export class HallService {
                 groupByDateObj[e.bookingDate].slots.push({
                     id: e.slot.id,
                     isAvailable: e.offDate ? false : noOfCandidates < e.totalCapacity ? true : false,
-                    from: format24TO12([e.slot]['from']),
-                    to: format24TO12([e.slot]['to']),
+                    from: format24TO12(e.slot['from']),
+                    to: format24TO12(e.slot['to']),
                     capacity: e.offDate ? 0 : Number(e.totalCapacity),
                     hallCount: e.offDate ? 0 : Number(e.hallCount),
                     offDate: e.offDate,
