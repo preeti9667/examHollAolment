@@ -144,7 +144,7 @@ export class AdminService {
         });
 
         if (!admin) ApiException.notFound('ADMIN.NOT_FOUND');
-        let result = {};
+        let result = { ...admin };
         if (admin.statusBy) {
             const statusBy = await this.$prisma.admin.findFirst({
                 where: {
