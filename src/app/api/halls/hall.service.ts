@@ -500,11 +500,6 @@ export class HallService {
                 displayId: {
                     contains: query.search, mode: 'insensitive'
                 }
-            },
-            {
-                floor: {
-                    contains: query.search, mode: 'insensitive'
-                }
             }
         ]
 
