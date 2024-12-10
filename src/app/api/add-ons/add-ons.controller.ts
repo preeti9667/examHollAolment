@@ -9,6 +9,7 @@ import { AddOnsListResponseDto, AddOnsListResultDto, ListAddOnsQueryDto } from "
 import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
 import { AppModuleNames, ApiActionNames } from "../api.constant";
 import { AddonParamDto, EditAddOnsDto } from "./dto/edit.dto";
+import { AddOnDetailsResponseDto } from "./dto/details.dto";
 
 @Controller({
     path: 'add-ons',
@@ -24,7 +25,7 @@ export class AddOnsController {
     ) { }
 
     @Post('')
-    @SetApiMetadata(AppModuleNames.Hall, ApiActionNames.Add, true)
+    @SetApiMetadata(AppModuleNames.AddOns, ApiActionNames.Add, true)
     @UseGuards(AuthGuard)
     @ApiBearerAuth('AccessToken')
     @Message('ADD-ONS.CREATE')
@@ -37,7 +38,7 @@ export class AddOnsController {
     }
 
     @Patch(':id')
-    @SetApiMetadata(AppModuleNames.Hall, ApiActionNames.Edit, true)
+    @SetApiMetadata(AppModuleNames.AddOns, ApiActionNames.Edit, true)
     @UseGuards(AuthGuard)
     @ApiBearerAuth('AccessToken')
     @Message('ADD-ONS.UPDATED')
@@ -67,7 +68,7 @@ export class AddOnsController {
     }
 
     @Get('')
-    @SetApiMetadata(AppModuleNames.Hall, ApiActionNames.Add, true)
+    @SetApiMetadata(AppModuleNames.AddOns, ApiActionNames.Add, true)
     @UseGuards(AuthGuard)
     @ApiBearerAuth('AccessToken')
     @Message('ADD-ONS.LIST')
@@ -80,6 +81,22 @@ export class AddOnsController {
             query
         );
         return AddOnsListResultDto.parse(result);
+    }
+
+
+    @Get(':id')
+    @SetApiMetadata(AppModuleNames.AddOns, ApiActionNames.View, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('ADD-ONS.DETAILS')
+    @ApiOkResponse({ type: AddOnDetailsResponseDto })
+    @ApiOperation({ summary: 'Get add ons details by admin' })
+    async details(
+        @Param() params: AddonParamDto
+    ) {
+        return await this.$addOnsService.details(
+            params.id
+        );
     }
 
 

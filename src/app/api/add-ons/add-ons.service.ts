@@ -86,4 +86,26 @@ export class AddOnsService {
 
         return data;
     }
+
+
+
+    async details(id: string) {
+        const addOn = await this.$prisma.addOn.findFirst({
+            where: {
+                id
+            },
+            select: {
+                id: true,
+                name: true,
+                price: true,
+                displayId: true,
+                type: true,
+                isActive: true,
+                createdAt: true,
+                updatedAt: true,
+            }
+        });
+
+        return addOn;
+    }
 }
