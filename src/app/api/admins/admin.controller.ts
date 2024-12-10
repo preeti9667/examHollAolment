@@ -1,5 +1,5 @@
 import { COMMON_HEADERS } from "@app/app.constant";
-import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AdminService } from "./admin.service";
 import { AuthUser, Message } from "@app/decorators";
@@ -10,6 +10,7 @@ import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
 import { ApiActionNames, AppModuleNames } from "../api.constant";
 import { CreateAdminPayloadDto, CreateAdminResponseDto } from "./dto/create.dto";
 import { ListAdminQueryDto, ListAdminResponseDto } from "./dto/list.dto";
+import { AdminDetailsResponseDto, AdminParamDto } from "./dto/details.dto";
 
 @Controller({
     path: 'admins',
@@ -58,5 +59,19 @@ export class AdminController {
         @AuthUser() user: IAuthAdmin
     ) {
         return this.$admin.profile(user);
+    }
+
+
+    @Get(':id')
+    @SetApiMetadata(AppModuleNames.Admin, ApiActionNames.View, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('ADMIN.DETAILS')
+    @ApiOkResponse({ type: AdminDetailsResponseDto })
+    @ApiOperation({ summary: 'fetch other admin profile details' })
+    async details(
+        @Param() param: AdminParamDto
+    ) {
+        return this.$admin.details(param);
     }
 }

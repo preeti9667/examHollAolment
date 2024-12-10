@@ -9,6 +9,8 @@ import { CreateAdminPayloadDto } from "./dto/create.dto";
 import { ApiException } from "../api.exception";
 import { ListAdminQueryDto } from "./dto/list.dto";
 import { AccountType } from "@prisma/client";
+import { AdminParamDto } from "./dto/details.dto";
+import { stat } from "fs";
 
 @Injectable()
 export class AdminService {
@@ -108,6 +110,55 @@ export class AdminService {
             ...adminDetails,
             role: admin.role
         }
+    }
+
+
+    async details(payload: AdminParamDto) {
+        const { id } = payload;
+        const admin = await this.$prisma.admin.findFirst({
+            where: {
+                id
+            },
+            select: {
+                id: true,
+                displayId: true,
+                name: true,
+                email: true,
+                countryCode: true,
+                phoneNumber: true,
+                isActive: true,
+                createdAt: true,
+                updatedAt: true,
+                role: {
+                    select: {
+                        name: true,
+                        id: true,
+                        isSuper: true,
+                        isActive: true,
+                        permissions: true
+                    }
+                },
+                statusBy: true,
+                statusReason: true,
+            }
+        });
+
+        if (!admin) ApiException.notFound('ADMIN.NOT_FOUND');
+        let result = {};
+        if (admin.statusBy) {
+            const statusBy = await this.$prisma.admin.findFirst({
+                where: {
+                    id: admin.statusBy
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    displayId: true
+                }
+            })
+            result = { ...admin, ...statusBy };
+        }
+        return result;
     }
 
     async create(payload: CreateAdminPayloadDto) {
