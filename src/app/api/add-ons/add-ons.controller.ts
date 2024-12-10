@@ -68,7 +68,7 @@ export class AddOnsController {
     }
 
     @Get('')
-    @SetApiMetadata(AppModuleNames.AddOns, ApiActionNames.Add, true)
+    @SetApiMetadata(AppModuleNames.AddOns, ApiActionNames.View, true)
     @UseGuards(AuthGuard)
     @ApiBearerAuth('AccessToken')
     @Message('ADD-ONS.LIST')
