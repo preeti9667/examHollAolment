@@ -11,6 +11,8 @@ import { HallListResponseDto, HallListResultDto, ListHallDto, ListHallQueryDto }
 import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
 import { ApiActionNames, AppModuleNames } from "../api.constant";
 import { EditHallDto, HallParamDto } from "./dto/edit.dto";
+import { plainToInstance } from "class-transformer";
+import { HallDetailsResultDto } from "./dto/details.dto";
 
 @Controller({
     path: 'hall',
@@ -85,5 +87,19 @@ export class HallController {
             query
         );
         return HallListResultDto.parse(result);
+    }
+
+    @Get(':id')
+    @SetApiMetadata(AppModuleNames.Hall, ApiActionNames.View, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('HALL.DETAILS')
+    @ApiOkResponse({ type: HallListResponseDto })
+    @ApiOperation({ summary: 'Hall Details By admin' })
+    async details(
+        @Param() param: HallParamDto
+    ) {
+        const result = await this.$hall.details(param.id);
+        return plainToInstance(HallDetailsResultDto, result);
     }
 }

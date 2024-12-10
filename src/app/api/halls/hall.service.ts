@@ -534,4 +534,42 @@ export class HallService {
             data: hallDataWithSlots,
         };
     }
+
+
+    async details(id: string) {
+        const hall = await this.$prisma.hall.findFirst({
+            where: {
+                id
+            },
+            select: {
+                id: true,
+                displayId: true,
+                name: true,
+                groupName: true,
+                floor: true,
+                capacity: true,
+                price: true,
+                isActive: true,
+                createdAt: true,
+                updatedAt: true,
+                slots: true
+            }
+        });
+        if (!hall) ApiException.badData('HALL.INVALID_ID');
+        const slots = await this.$prisma.timeSlot.findMany(
+            {
+                where:
+                {
+                    id: { in: hall.slots },
+                },
+                select: {
+                    id: true,
+                    from: true,
+                    to: true
+                }
+            }
+        );
+
+        return { ...hall, slots };
+    }
 }
