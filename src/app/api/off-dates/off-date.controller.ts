@@ -1,5 +1,5 @@
 import { COMMON_HEADERS } from "@app/app.constant";
-import { Body, Controller, Delete, Get, Post, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ResponseDto } from "../api.dto";
 import { Message } from "@app/decorators";
@@ -10,6 +10,7 @@ import { AddUpdateOffDatePayloadDto } from "./dto/add-update.dto";
 import { OffDateService } from "./off-date.service";
 import { OffDateListQueryDto, OffDateListResponseDto } from "./dto/list.dto";
 import { OffDateRemoveQueryDto } from "./dto/delete.dto";
+import { OffDateParamDto } from "./dto/detail.dto";
 
 @Controller({
     path: 'off-dates',
@@ -60,6 +61,19 @@ export class OffDateController {
         @Query() payload: OffDateRemoveQueryDto
     ) {
         return this.$offDate.remove(payload);
+    }
+
+    @Get(':date')
+    @SetApiMetadata(AppModuleNames.OffDate, ApiActionNames.View, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message('OFF_DATE.DETAILS')
+    @ApiOkResponse({ type: ResponseDto })
+    @ApiOperation({ summary: 'Off date details by admin' })
+    async details(
+        @Param() params: OffDateParamDto
+    ) {
+        return this.$offDate.details(params);
     }
 
 

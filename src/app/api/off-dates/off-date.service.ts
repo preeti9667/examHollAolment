@@ -4,6 +4,9 @@ import { AddUpdateOffDatePayloadDto } from "./dto/add-update.dto";
 import { dateStringToUtc, format24TO12, utcToDateString } from "src/utils";
 import { OffDateListQueryDto } from "./dto/list.dto";
 import { OffDateRemoveQueryDto } from "./dto/delete.dto";
+import { OffDateParamDto } from "./dto/detail.dto";
+import { ApiException } from "../api.exception";
+import { off } from "process";
 
 @Injectable()
 export class OffDateService {
@@ -120,6 +123,61 @@ export class OffDateService {
             limit,
             data
         }
+    }
+
+
+    async details(payload: OffDateParamDto) {
+        const { date } = payload;
+        const offDates = await this.$prisma.offDate.findMany({
+            where: {
+                date: dateStringToUtc(date)
+            },
+            select: {
+                date: true,
+                offType: true,
+                description: true,
+                timeSlotId: true,
+                timeSlot: {
+                    select: {
+                        id: true,
+                        from: true,
+                        to: true
+                    }
+                },
+                createdAt: true
+            },
+        });
+
+        if (!offDates.length) {
+            ApiException.badData('OFF_DATE.NOT_FOUND');
+        }
+
+        const dateObj = {} as any;
+        for (const item of offDates) {
+            const date = utcToDateString(item.date);
+            if (!dateObj[date]) {
+                dateObj[date] = {
+                    date,
+                    offType: item.offType,
+                    description: item.description,
+                    createdAt: item.createdAt,
+                    slots: [{
+                        id: item.timeSlot.id,
+                        from: format24TO12(item.timeSlot.from),
+                        to: format24TO12(item.timeSlot.to)
+                    }]
+                }
+            } else {
+                dateObj[date].slots.push({
+                    id: item.timeSlot.id,
+                    from: format24TO12(item.timeSlot.from),
+                    to: format24TO12(item.timeSlot.to)
+                });
+            }
+        }
+
+        const result = Object.values(dateObj)[0];
+        return result;
     }
 
 
