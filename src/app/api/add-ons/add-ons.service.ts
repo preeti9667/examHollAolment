@@ -36,7 +36,10 @@ export class AddOnsService {
         await this.$prisma.addOn.update({
             where: { id },
             data: {
-                ...payload
+                name: payload.name || addOn.name,
+                price: payload.price || addOn.price,
+                isActive: payload.isActive === undefined ? addOn.isActive : payload.isActive,
+                type: payload.type
             }
         })
         return true;

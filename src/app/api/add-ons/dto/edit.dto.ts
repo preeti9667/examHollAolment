@@ -1,6 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsUUID } from "class-validator";
-import { CreateAddOnsDto } from "./create.dto";
+import { IsBoolean, IsDefined, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class AddonParamDto {
     @ApiProperty({
@@ -13,5 +12,43 @@ export class AddonParamDto {
     id: string
 }
 
-export class EditAddOnsDto extends CreateAddOnsDto {
+export class EditAddOnsDto {
+    @ApiProperty({
+        required: true,
+        description: 'Name of the AddOns',
+        example: 'CCTV',
+    })
+    @IsDefined()
+    @IsString()
+    @IsOptional()
+    name!: string;
+
+    @ApiProperty({
+        required: true,
+        description: 'Add-Ons',
+        example: 'SECURITY',
+    })
+    @IsDefined()
+    @IsString()
+    @IsOptional()
+    type!: string;
+
+    @ApiProperty({
+        type: Number,
+        description: 'Add-Ons price',
+        example: 200,
+    })
+    @IsNumber()
+    @IsDefined()
+    @IsOptional()
+    price!: number;
+
+
+    @ApiProperty({
+        type: Boolean,
+        example: true
+    })
+    @IsBoolean()
+    @IsOptional()
+    isActive: boolean
 }
