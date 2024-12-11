@@ -11,6 +11,7 @@ import { ListAdminQueryDto } from "./dto/list.dto";
 import { AccountType } from "@prisma/client";
 import { AdminParamDto } from "./dto/details.dto";
 import { stat } from "fs";
+import { StatusPayloadDto } from "../users/dto/status.dto";
 
 @Injectable()
 export class AdminService {
@@ -296,6 +297,60 @@ export class AdminService {
             page,
             limit,
             data
+        }
+    }
+
+
+    async status(id: string, payload: StatusPayloadDto, adminId: string) {
+        if (payload.isActive && id === adminId) ApiException.badData('ADMIN.SELF_STATUS_ACTIVE');
+        const admin = await this.$prisma.admin.findFirst({
+            where: {
+                id
+            }
+        });
+
+        if (!admin) ApiException.badData('ADMIN.NOT_FOUND');
+
+        if (admin.isActive === payload.isActive) {
+            if (payload.isActive) ApiException.badData('ADMIN.ALREADY_ACTIVE');
+            else ApiException.badData('ADMIN.ALREADY_INACTIVE');
+        }
+
+        const statusBy = adminId;
+        const statusReason = payload.reason;
+
+        const statusLog = [];
+        if (admin.statusLog) {
+            statusLog.push(admin.statusLog);
+        }
+
+        statusLog.push({
+            statusBy,
+            statusReason,
+            createdAt: new Date(),
+            isActive: payload.isActive
+        })
+        await this.$prisma.$transaction([
+            this.$prisma.auth.update({
+                where: { id },
+                data: {
+                    isActive: payload.isActive
+                }
+            }),
+            this.$prisma.admin.update({
+                where: { id },
+                data: {
+                    isActive: payload.isActive,
+                    statusBy,
+                    statusReason,
+                    statusLog
+                }
+            })
+        ]);
+
+        return {
+            id,
+            isActive: payload.isActive
         }
     }
 }

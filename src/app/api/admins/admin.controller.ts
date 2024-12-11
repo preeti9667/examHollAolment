@@ -1,9 +1,9 @@
 import { COMMON_HEADERS } from "@app/app.constant";
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AdminService } from "./admin.service";
 import { AuthUser, Message } from "@app/decorators";
-import { IAuthAdmin } from "../auth/interfaces/auth-user";
+import { IAuthAdmin, IAuthUser } from "../auth/interfaces/auth-user";
 import { AuthGuard } from "@app/guards/auth.guard";
 import { MyProfileResponseDto } from "./dto/profile.dto";
 import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
@@ -11,6 +11,7 @@ import { ApiActionNames, AppModuleNames } from "../api.constant";
 import { CreateAdminPayloadDto, CreateAdminResponseDto } from "./dto/create.dto";
 import { ListAdminQueryDto, ListAdminResponseDto } from "./dto/list.dto";
 import { AdminDetailsResponseDto, AdminParamDto } from "./dto/details.dto";
+import { StatusPayloadDto, StatusResponseDto } from "../users/dto/status.dto";
 
 @Controller({
     path: 'admins',
@@ -59,6 +60,24 @@ export class AdminController {
         @AuthUser() user: IAuthAdmin
     ) {
         return this.$admin.profile(user);
+    }
+
+    @Patch(':id')
+    @SetApiMetadata(AppModuleNames.Admin, ApiActionNames.Status, true)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth('AccessToken')
+    @Message((req) => {
+        if (req.body.status === true) return 'ADMIN.ACTIVATED';
+        return 'ADMIN.DEACTIVATED';
+    })
+    @ApiOkResponse({ type: StatusResponseDto })
+    @ApiOperation({ summary: 'Update admin sub admin status by admin' })
+    async status(
+        @Body() payload: StatusPayloadDto,
+        @AuthUser() admin: IAuthUser,
+        @Param('id') userId: string
+    ) {
+        return this.$admin.status(userId, payload, admin.id);
     }
 
 

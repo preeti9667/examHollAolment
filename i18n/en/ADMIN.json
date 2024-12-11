@@ -2,5 +2,10 @@
   "EXISTS": "Admin already exists.",
   "ROLE_NOT_FOUND": "Role not found.",
   "CREATED": "Admin created successfully.",
-  "USER_ADMIN_SAME": "Admin and user cannot be same."
+  "USER_ADMIN_SAME": "Admin and user cannot be same.",
+  "ACTIVATED": "Admin activated successfully.",
+  "DEACTIVATED": "Admin deactivated successfully.",
+  "ALREADY_ACTIVE": "Admin is already active.",
+  "ALREADY_INACTIVE": "Admin is already inactive.",
+  "SELF_STATUS_ACTIVE": "you cannot activate your own account."
 }
