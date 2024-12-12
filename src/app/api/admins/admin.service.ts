@@ -286,6 +286,7 @@ export class AdminService {
                             name: true,
                         }
                     },
+                    isActive: true,
                     createdAt: true,
                     updatedAt: true
                 }
