@@ -6,7 +6,6 @@ import { CreateAddOnsDto } from "./dto/create.dto";
 import { LoggerService } from "@app/shared/logger";
 import { ListAddOnsQueryDto } from "./dto/list.dto";
 import { EditAddOnsDto } from "./dto/edit.dto";
-import { add } from "winston";
 
 @Injectable()
 export class AddOnsService {

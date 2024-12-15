@@ -34,6 +34,15 @@ export class EditAddOnsDto {
     type!: string;
 
     @ApiProperty({
+        required: false,
+        example: 'description'
+    })
+    @IsDefined()
+    @IsString()
+    @IsOptional()
+    description!: string;
+
+    @ApiProperty({
         type: Number,
         description: 'Add-Ons price',
         example: 200,

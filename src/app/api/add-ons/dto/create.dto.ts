@@ -1,6 +1,6 @@
 import { ResponseDto } from '@app/api/api.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsDefined, IsNotEmpty, IsNumber, IsEnum, IsBoolean } from 'class-validator';
+import { IsString, IsDefined, IsNotEmpty, IsNumber, IsEnum, IsBoolean, IsOptional } from 'class-validator';
 
 export class CreateAddOnsDto {
 
@@ -23,6 +23,15 @@ export class CreateAddOnsDto {
     @IsString()
     @IsNotEmpty()
     type!: string;
+
+    @ApiProperty({
+        required: false,
+        example: 'description'
+    })
+    @IsDefined()
+    @IsString()
+    @IsOptional()
+    description!: string;
 
     @ApiProperty({
         type: Number,
