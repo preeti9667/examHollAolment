@@ -106,6 +106,14 @@ export class ListAddOnsDto {
 
     @ApiProperty({
         type: String,
+        example: 'description',
+    })
+    @IsString()
+    @Expose()
+    description!: string;
+
+    @ApiProperty({
+        type: String,
         example: 'SECURITY',
     })
     @IsString()

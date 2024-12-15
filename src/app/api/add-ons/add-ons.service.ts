@@ -6,6 +6,7 @@ import { CreateAddOnsDto } from "./dto/create.dto";
 import { LoggerService } from "@app/shared/logger";
 import { ListAddOnsQueryDto } from "./dto/list.dto";
 import { EditAddOnsDto } from "./dto/edit.dto";
+import { add } from "winston";
 
 @Injectable()
 export class AddOnsService {
@@ -38,7 +39,8 @@ export class AddOnsService {
                 name: payload.name || addOn.name,
                 price: payload.price || addOn.price,
                 isActive: payload.isActive === undefined ? addOn.isActive : payload.isActive,
-                type: payload.type
+                type: payload.type,
+                description: payload.description || addOn.description
             }
         })
         return true;
@@ -83,6 +85,7 @@ export class AddOnsService {
                 name: true,
                 price: true,
                 displayId: true,
+                description: true,
             }
         });
 
@@ -103,6 +106,7 @@ export class AddOnsService {
                 displayId: true,
                 type: true,
                 isActive: true,
+                description: true,
                 createdAt: true,
                 updatedAt: true,
             }
