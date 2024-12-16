@@ -16,6 +16,7 @@ import { SMS_TEMPLATE } from "../sms/sms.constant";
 import { RefundRequestPayloadDto } from "./dto/refund-request.dto";
 import { RefundListQueryDto } from "./dto/refund-list.dto";
 import { RefundStatusPayloadDto } from "./dto/refund-status.dto";
+import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 
 @Injectable()
 export class PaymentService {
@@ -326,10 +327,10 @@ export class PaymentService {
         let upiId = payload.upiId;
         let bankDetails = null;
         if (refundMethod === PaymentRefundMethod.Upi) {
-            upiId = this.$subPaisa.encrypt(payload.upiId);
+            upiId = this.encrypt(payload.upiId);
         }
         if (refundMethod === PaymentRefundMethod.NetBanking) {
-            bankDetails = this.$subPaisa.encrypt(JSON.stringify(payload.bankDetails));
+            bankDetails = this.encrypt(JSON.stringify(payload.bankDetails));
         }
 
 
@@ -384,13 +385,37 @@ export class PaymentService {
         });
         return list.map(refund => {
             if (refund.paymentMethod === PaymentRefundMethod.Upi) {
-                refund.upiId = this.$subPaisa.decrypt(refund.upiId);
+                refund.upiId = this.decrypt(refund.upiId);
             }
             if (refund.paymentMethod === PaymentRefundMethod.NetBanking) {
-                refund.bankDetails = JSON.parse(this.$subPaisa.decrypt(refund.bankDetails));
+                refund.bankDetails = JSON.parse(this.decrypt(refund.bankDetails));
             }
             return refund;
         });
+    }
+
+    encrypt(text: string) {
+        // const key = randomBytes(32);
+        // const iv = randomBytes(16)
+        // let cipher = createCipheriv('aes-128-cbc',
+        //     key, iv);
+        // let encrypted = cipher.update(text);
+        // encrypted = Buffer.concat([encrypted, cipher.final()]);
+        // return encrypted.toString('base64');
+        return this.$subPaisa.encrypt(text);
+    }
+
+
+    decrypt(text: string) {
+        // const key = randomBytes(32);
+        // const iv = randomBytes(16)
+        // let decipher = createDecipheriv(
+        //     'aes-128-cbc',
+        //     key, iv);
+        // let decrypted = decipher.update(Buffer.from(text, 'base64'));
+        // decrypted = Buffer.concat([decrypted, decipher.final()]);
+        // return decrypted.toString();
+        return this.$subPaisa.decrypt(text)
     }
 
 
@@ -442,10 +467,11 @@ export class PaymentService {
             total,
             data: data.map(refund => {
                 if (refund.paymentMethod === PaymentRefundMethod.Upi) {
-                    refund.upiId = this.$subPaisa.decrypt(refund.upiId);
+                    refund.upiId = this.decrypt(refund.upiId);
                 }
+                console.log(refund)
                 if (refund.paymentMethod === PaymentRefundMethod.NetBanking) {
-                    refund.bankDetails = JSON.parse(this.$subPaisa.decrypt(refund.bankDetails));
+                    refund.bankDetails = JSON.parse(this.decrypt(refund.bankDetails));
                 }
                 return refund;
             })
@@ -492,10 +518,10 @@ export class PaymentService {
         });
         if (!refund) ApiException.badData('REFUND.NOT_FOUND');
         if (refund.paymentMethod === PaymentRefundMethod.Upi) {
-            refund.upiId = this.$subPaisa.decrypt(refund.upiId);
+            refund.upiId = this.decrypt(refund.upiId);
         }
         if (refund.paymentMethod === PaymentRefundMethod.NetBanking) {
-            refund.bankDetails = JSON.parse(this.$subPaisa.decrypt(refund.bankDetails));
+            refund.bankDetails = JSON.parse(this.decrypt(refund.bankDetails));
         }
         return refund;
     }
