@@ -22,6 +22,7 @@ export class SettingService {
             data: {
                 pricePerSeat: SETTINGS.pricePerSeat,
                 securityDeposit: SETTINGS.securityDeposit,
+                history: []
             }
         })
     }
@@ -38,8 +39,18 @@ export class SettingService {
     }
 
 
-    async update(payload: SettingsPayloadDto) {
+    async update(payload: SettingsPayloadDto, adminId: string) {
         let isExists = await this.$prisma.settings.findFirst();
+        let history = [];
+        if (isExists.history) {
+            history = isExists.history as object[];
+            history.push({
+                adminId,
+                pricePerSeat: payload.pricePerSeat,
+                securityDeposit: payload.securityDeposit,
+                updatedAt: new Date()
+            })
+        }
         if (isExists) {
             isExists = await this.$prisma.settings.update({
                 where: {
@@ -48,6 +59,7 @@ export class SettingService {
                 data: {
                     pricePerSeat: payload.pricePerSeat,
                     securityDeposit: payload.securityDeposit,
+                    history
                 }
             });
         }
@@ -56,6 +68,7 @@ export class SettingService {
                 data: {
                     pricePerSeat: payload.pricePerSeat,
                     securityDeposit: payload.securityDeposit,
+                    history
                 }
             });
         }

@@ -4,9 +4,10 @@ import { ApiBearerAuth, ApiHeaders, ApiOkResponse, ApiOperation, ApiTags } from 
 import { ApiActionNames, AppModuleNames } from "../api.constant";
 import { SettingsPayloadDto, SettingsResponseDto } from "./dto/settings.dto";
 import { SettingService } from "./setting.service";
-import { Message } from "@app/decorators";
+import { AuthUser, Message } from "@app/decorators";
 import { SetApiMetadata } from "@app/decorators/set-api-data.decorator";
 import { AuthGuard } from "@app/guards/auth.guard";
+import { IAuthUser } from "../auth/interfaces/auth-user";
 
 @Controller({
     path: 'settings',
@@ -40,8 +41,9 @@ export class SettingController {
     @ApiOkResponse({ type: SettingsResponseDto })
     @ApiOperation({ summary: 'Settings edit by admin' })
     async edit(
-        @Body() payload: SettingsPayloadDto
+        @Body() payload: SettingsPayloadDto,
+        @AuthUser() user: IAuthUser
     ) {
-        return this.$setting.update(payload);
+        return this.$setting.update(payload, user.id);
     }
 }
