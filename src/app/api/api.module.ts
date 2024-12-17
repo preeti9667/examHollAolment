@@ -13,6 +13,7 @@ import { PaymentModule } from "./payments/payment.module";
 import { AdminModule } from "./admins/admin.module";
 import { OffDateModule } from "./off-dates/off-date.module";
 import { DashboardModule } from "./dashboard/dashboard.module";
+import { SettingModule } from "./settings/setting.module";
 
 @Module({
         imports: [
@@ -27,7 +28,8 @@ import { DashboardModule } from "./dashboard/dashboard.module";
                 RoleModule,
                 AdminModule,
                 OffDateModule,
-                DashboardModule
+                DashboardModule,
+                SettingModule
         ],
         exports: [],
         controllers: [ApiController],
