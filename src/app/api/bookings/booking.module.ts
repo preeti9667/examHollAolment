@@ -6,6 +6,7 @@ import { HallModule } from "../halls/hall.module";
 import { SubPaisaModule } from "../subpaisa/subpaisa.module";
 import { SmsModule } from "../sms/sms.module";
 import { PaymentModule } from "../payments/payment.module";
+import { SettingModule } from "../settings/setting.module";
 
 @Module({
     controllers: [
@@ -16,8 +17,10 @@ import { PaymentModule } from "../payments/payment.module";
             context: BookingModule.name
         }),
         HallModule,
+        SettingModule,
         SmsModule,
         forwardRef(() => PaymentModule)
+
     ],
     exports: [BookingService],
     providers: [BookingService]

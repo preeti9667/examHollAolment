@@ -17,6 +17,7 @@ import { SMS_TEMPLATE } from "../sms/sms.constant";
 import { PaymentService } from "../payments/payment.service";
 import { BookingListAdminQueryDto } from "./dto/list-admin.dto";
 import { BookingStatusPayloadDto } from "./dto/status.dto";
+import { SettingService } from "../settings/setting.service";
 
 @Injectable()
 export class BookingService {
@@ -27,7 +28,8 @@ export class BookingService {
         private $hall: HallService,
         private $sms: SmsService,
         @Inject(forwardRef(() => PaymentService))
-        private $payment: PaymentService
+        private $payment: PaymentService,
+        private $settings: SettingService
     ) {
 
     }
@@ -191,7 +193,7 @@ export class BookingService {
         const notAvailableHalls = [];
         let hallCost = 0;
         let noOfCandidates = 0;
-        let securityDeposit = BOOKING_PRICE.SECURITY_DEPOSIT;
+        let securityDeposit = this.$settings.settings.securityDeposit;
 
         for (const slot of payload.timeSlots) {
             const date = dateStringToUtc(slot.date);
@@ -212,7 +214,7 @@ export class BookingService {
             }
 
             allocateHalls.forEach(e => {
-                hallCost += (BOOKING_PRICE.PER_SEAT * e.seatsAllocated);
+                hallCost += (this.$settings.settings.pricePerSeat * e.seatsAllocated);
                 // hallCost += e.price;
                 hallIds.push(e.id);
                 bookingHall.push(
@@ -220,7 +222,7 @@ export class BookingService {
                         ...bookingHallObj,
                         hallId: e.id,
                         seatsAllocated: e.seatsAllocated,
-                        totalPrice: BOOKING_PRICE.PER_SEAT * e.seatsAllocated,
+                        totalPrice: this.$settings.settings.pricePerSeat * e.seatsAllocated,
                         hallRaw: {
                             id: e.id,
                             displayId: e.displayId,
@@ -564,8 +566,8 @@ export class BookingService {
             noOfCandidates += slot.noOfCandidates;
             const allocateHalls = this.allocateHalls(halls, slot.noOfCandidates);
             totalHalls += allocateHalls.length;
-            totalCost += BOOKING_PRICE.PER_SEAT * slot.noOfCandidates;
-            seatPrice += BOOKING_PRICE.PER_SEAT * slot.noOfCandidates;
+            totalCost += this.$settings.settings.pricePerSeat * slot.noOfCandidates;
+            seatPrice += this.$settings.settings.pricePerSeat * slot.noOfCandidates;
         }
 
         if (notAvailableHalls.length) {
@@ -573,12 +575,12 @@ export class BookingService {
         }
 
         const addOnCost = addOns.reduce((acc: number, addOn) => acc + addOn.price, 0) * noOfCandidates;
-        totalCost = totalCost + BOOKING_PRICE.SECURITY_DEPOSIT + addOnCost;
+        totalCost = totalCost + this.$settings.settings.securityDeposit + addOnCost;
 
         return {
             totalCost,
             seatPrice,
-            securityDeposit: BOOKING_PRICE.SECURITY_DEPOSIT,
+            securityDeposit: this.$settings.settings.securityDeposit,
             addOnPrice: addOnCost,
             totalHalls,
             noOfCandidates,

@@ -1,18 +1,30 @@
 import { PrismaService } from "@app/databases/prisma/prisma.service";
-import { Injectable } from "@nestjs/common";
+import { Injectable, OnModuleInit } from "@nestjs/common";
 import { SETTINGS } from "./setting.constant";
 import { SettingsPayloadDto } from "./dto/settings.dto";
+import { ISetting } from "./interfaces/settings";
 
 @Injectable()
-export class SettingService {
+export class SettingService implements OnModuleInit {
 
+    settings: ISetting;
     constructor(
         private $prisma: PrismaService
     ) {
+    }
+    async onModuleInit() {
+        await this.init();
+        const settings = await this.$prisma.settings.findFirst({
+            select: {
+                pricePerSeat: true,
+                securityDeposit: true
+            }
+        });
 
-        setTimeout(() => {
-            this.init();
-        }, 1000)
+        this.settings = {
+            pricePerSeat: settings.pricePerSeat,
+            securityDeposit: settings.securityDeposit
+        };
     }
 
     async init() {
@@ -24,10 +36,14 @@ export class SettingService {
                 securityDeposit: SETTINGS.securityDeposit,
                 history: []
             }
-        })
+        });
+        return {
+            pricePerSeat: SETTINGS.pricePerSeat,
+            securityDeposit: SETTINGS.securityDeposit
+        }
     }
 
-    async get() {
+    async details() {
         return await this.$prisma.settings.findFirst({
             select: {
                 pricePerSeat: true,
@@ -73,6 +89,11 @@ export class SettingService {
             });
         }
 
+        this.settings = {
+            pricePerSeat: payload.pricePerSeat,
+            securityDeposit: payload.securityDeposit
+        };
+
         return {
             pricePerSeat: isExists.pricePerSeat,
             securityDeposit: isExists.securityDeposit,
@@ -81,6 +102,8 @@ export class SettingService {
         }
 
     }
+
+
 
 
 

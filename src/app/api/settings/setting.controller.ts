@@ -30,7 +30,7 @@ export class SettingController {
     @ApiOperation({ summary: 'Settings details by admin' })
     async details(
     ) {
-        return this.$setting.get();
+        return this.$setting.details();
     }
 
     @Patch('/')
