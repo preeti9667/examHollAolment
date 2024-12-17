@@ -11,7 +11,8 @@ export enum AppModuleNames {
     TimeSlot = 'TIME_SLOT',
     OffDate = 'OFF_DATE',
     Refund = 'REFUND',
-    Dashboard = 'DASHBOARD'
+    Dashboard = 'DASHBOARD',
+    Setting = 'SETTING'
 }
 
 export enum ApiActionNames {

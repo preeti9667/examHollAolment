@@ -29,10 +29,10 @@ export const PERMISSIONS = [
         module: AppModuleNames.OffDate,
         actions: Object.values(ApiActionNames),
     },
-    // {
-    //     module: AppModuleNames.TimeSlot,
-    //     actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
-    // }
+    {
+        module: AppModuleNames.Setting,
+        actions: ['ADD', 'EDIT', 'DELETE', 'VIEW', 'STATUS'],
+    }
 ]
 
 export const ROLES = [
